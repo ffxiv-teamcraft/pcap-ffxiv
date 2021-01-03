@@ -54,6 +54,10 @@ export class CaptureInterface extends EventEmitter {
 		this._registerInternalHandlers();
 	}
 
+	close() {
+		this._cap.close();
+	}
+
 	async _loadOpcodes() {
 		this._opcodeLists = await downloadOpcodes();
 	}
