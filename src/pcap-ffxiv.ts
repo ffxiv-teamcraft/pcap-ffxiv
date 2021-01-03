@@ -10,7 +10,6 @@ import { OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
 import { downloadOpcodes } from "./opcode-downloader";
-import { performance } from "perf_hooks";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -30,9 +29,6 @@ export class CaptureInterface extends EventEmitter {
 
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _region: Region;
-
-	private _avg = 0;
-	private _count = 0;
 
 	constructor(region: Region = "Global") {
 		super();
@@ -67,8 +63,6 @@ export class CaptureInterface extends EventEmitter {
 
 	private _registerInternalHandlers() {
 		this._cap.on("packet", (nBytes: number) => {
-			const start = performance.now();
-
 			// The total buffer is way bigger than the relevant data, so we trim that first.
 			const payload = this._buf.slice(0, nBytes);
 
@@ -171,12 +165,6 @@ export class CaptureInterface extends EventEmitter {
 					this.emit("packet", packet);
 				}
 			}
-
-			const end = performance.now();
-			this._avg = (end - start + this._count * this._avg) / ++this._count;
-
-			console.clear();
-			console.log(`${this._avg}ms`);
 		});
 	}
 }
