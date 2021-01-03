@@ -1,6 +1,6 @@
 {
   "name": "pcap-ffxiv",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "A zero-IPC library for capturing FFXIV game packets in JS/TS.",
   "main": "lib/pcap-ffxiv.js",
   "repository": "https://github.com/karashiiro/pcap-ffxiv.git",
