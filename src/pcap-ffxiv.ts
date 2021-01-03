@@ -6,9 +6,11 @@ import {
 	parseIpcHeader,
 	parseSegmentHeader,
 } from "./frame-processing";
-import { Packet, Segment, SegmentType } from "./models";
+import { OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
+import { downloadOpcodes } from "./opcode-downloader";
+import { type } from "os";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -26,10 +28,23 @@ export class CaptureInterface extends EventEmitter {
 	private readonly _cap: Cap;
 	private readonly _buf: Buffer;
 
-	constructor() {
+	private _opcodeLists: OpcodeList[] | undefined;
+	private _region: Region;
+
+	constructor(region: Region = "Global") {
 		super();
+
 		this._cap = new Cap();
 		this._buf = Buffer.alloc(65535);
+		this._region = region;
+
+		this._loadOpcodes().then(() => {
+			this.emit("ready");
+		});
+	}
+
+	setRegion(region: Region) {
+		this._region = region;
 	}
 
 	open(deviceIdentifier: string) {
@@ -37,6 +52,10 @@ export class CaptureInterface extends EventEmitter {
 		this._cap.open(device, FILTER, 10 * MEGABYTE, this._buf);
 		this._cap.setMinBytes && this._cap.setMinBytes(0);
 		this._registerInternalHandlers();
+	}
+
+	async _loadOpcodes() {
+		this._opcodeLists = await downloadOpcodes();
 	}
 
 	private _registerInternalHandlers() {
@@ -115,9 +134,20 @@ export class CaptureInterface extends EventEmitter {
 							ipcHeader,
 							ipcData,
 						};
-
 						packet.childFrame.segments.push();
-						this.emit("message", "unknown", segment);
+
+						// If the segment is an IPC segment, get the known name of the contained message and fire an event.
+						if (ipcHeader != null) {
+							const regionOpcodes = this._opcodeLists?.find((ol) => ol.region === this._region);
+							const opcodeInfo = regionOpcodes?.lists.ServerZoneIpcType.find(
+								(oi) => oi.opcode === ipcHeader?.type,
+							);
+							let typeName = opcodeInfo?.name ?? "unknown";
+							typeName = typeName[0].toLowerCase() + typeName.slice(1);
+							this.emit("message", typeName, segment);
+						}
+
+						this.emit("segment", segment);
 
 						offset += segmentHeader.size;
 					}
@@ -130,7 +160,9 @@ export class CaptureInterface extends EventEmitter {
 }
 
 interface CaptureInterfaceEvents {
+	ready: () => void;
 	packet: (packet: Packet) => void;
+	segment: (segment: Segment) => void;
 	message: (type: string, message: Segment) => void;
 }
 

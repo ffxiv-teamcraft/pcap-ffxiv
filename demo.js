@@ -1,8 +1,8 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
 const ci = new CaptureInterface();
-ci.on("message", (_type, message) => {
+ci.on("message", (type, message) => {
+    console.log(type);
     console.log(message);
 })
-
-ci.open(process.argv[2]);
+ci.on("ready", () => ci.open(process.argv[2]));
