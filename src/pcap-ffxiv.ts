@@ -10,7 +10,7 @@ import { OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
 import { downloadOpcodes } from "./opcode-downloader";
-import { type } from "os";
+import { performance } from "perf_hooks";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -30,6 +30,9 @@ export class CaptureInterface extends EventEmitter {
 
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _region: Region;
+
+	private _avg = 0;
+	private _count = 0;
 
 	constructor(region: Region = "Global") {
 		super();
@@ -64,6 +67,8 @@ export class CaptureInterface extends EventEmitter {
 
 	private _registerInternalHandlers() {
 		this._cap.on("packet", (nBytes: number) => {
+			const start = performance.now();
+
 			// The total buffer is way bigger than the relevant data, so we trim that first.
 			const payload = this._buf.slice(0, nBytes);
 
@@ -129,7 +134,14 @@ export class CaptureInterface extends EventEmitter {
 							const ipcPayload = remainder.slice(offset + SEG_HEADER_SIZE);
 							ipcHeader = parseIpcHeader(ipcPayload);
 
-							ipcData = Buffer.alloc(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE);
+							/* Copy the IPC data to a new Buffer, so that it's not removed from under us.
+							 * All of the buffers we used previously can potentially be views of the packet
+							 * buffer itself, which is subject to change after this callback.
+							 *
+							 * We can use allocUnsafe here because we're copying the existing data right
+							 * over the uninitialized memory.
+							 */
+							ipcData = Buffer.allocUnsafe(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE);
 							ipcPayload.copy(ipcData, 0, IPC_HEADER_SIZE);
 						}
 
@@ -159,6 +171,12 @@ export class CaptureInterface extends EventEmitter {
 					this.emit("packet", packet);
 				}
 			}
+
+			const end = performance.now();
+			this._avg = (end - start + this._count * this._avg) / ++this._count;
+
+			console.clear();
+			console.log(`${this._avg}ms`);
 		});
 	}
 }
