@@ -9,6 +9,8 @@ import { inventoryTransaction } from "./packet-processors/inventoryTransaction";
 import { itemInfo } from "./packet-processors/itemInfo";
 import { marketBoardItemListingCount } from "./packet-processors/marketBoardItemListingCount";
 import { marketBoardItemListingHistory } from "./packet-processors/marketBoardItemListingHistory";
+import { marketBoardSearchResult } from "./packet-processors/marketBoardSearchResult";
+import { marketTaxRates } from "./packet-processors/marketTaxRates";
 
 export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 	return {
@@ -23,5 +25,7 @@ export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 		itemInfo,
 		marketBoardItemListingCount,
 		marketBoardItemListingHistory,
+		marketBoardSearchResult,
+		marketTaxRates,
 	};
 }

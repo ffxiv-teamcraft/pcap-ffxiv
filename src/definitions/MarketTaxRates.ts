@@ -1,4 +1,6 @@
 export interface MarketTaxRates {
+	type: number;
+	category: number;
 	unknown1: number;
 	unknown2: number;
 	limsaLominsa: number;

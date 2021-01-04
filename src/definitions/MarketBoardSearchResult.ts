@@ -1,10 +1,11 @@
 export interface MarketBoardSearchResult {
 	items: {
-		itemCatalogID: number;
+		itemCatalogId: number;
 		quantity: number;
 		demand: number;
 	}[];
 	itemIndexEnd: number;
+	padding1: number;
 	itemIndexStart: number;
-	requestID: number;
+	requestId: number;
 }
