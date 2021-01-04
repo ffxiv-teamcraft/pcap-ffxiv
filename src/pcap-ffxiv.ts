@@ -49,6 +49,15 @@ export class CaptureInterface extends EventEmitter {
 		this._region = region;
 	}
 
+	getDevices(): {
+		name: string;
+		description?: string;
+		addresses: { addr: string; netmask: string; broadaddr?: string }[];
+		flags?: string;
+	}[] {
+		return Cap.deviceList();
+	}
+
 	open(deviceIdentifier: string) {
 		const device = Cap.findDevice(deviceIdentifier);
 		this._cap.open(device, FILTER, 10 * MEGABYTE, this._buf);
