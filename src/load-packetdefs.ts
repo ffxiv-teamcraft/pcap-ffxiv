@@ -5,6 +5,10 @@ import { eventPlay } from "./packet-processors/eventPlay";
 import { eventPlay32 } from "./packet-processors/eventPlay32";
 import { eventPlay4 } from "./packet-processors/eventPlay4";
 import { initZone } from "./packet-processors/initZone";
+import { inventoryTransaction } from "./packet-processors/inventoryTransaction";
+import { itemInfo } from "./packet-processors/itemInfo";
+import { marketBoardItemListingCount } from "./packet-processors/marketBoardItemListingCount";
+import { marketBoardItemListingHistory } from "./packet-processors/marketBoardItemListingHistory";
 
 export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 	return {
@@ -15,5 +19,9 @@ export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 		eventPlay4,
 		eventPlay32,
 		initZone,
+		inventoryTransaction,
+		itemInfo,
+		marketBoardItemListingCount,
+		marketBoardItemListingHistory,
 	};
 }
