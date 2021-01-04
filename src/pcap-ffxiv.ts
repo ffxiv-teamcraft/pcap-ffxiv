@@ -10,6 +10,7 @@ import { OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
 import { downloadOpcodes } from "./opcode-downloader";
+import { loadPacketDefs } from "./load-packetdefs";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -28,6 +29,7 @@ export class CaptureInterface extends EventEmitter {
 	private readonly _buf: Buffer;
 
 	private _opcodeLists: OpcodeList[] | undefined;
+	private _packetDefs: { [key: string]: (buf: Buffer) => any };
 	private _region: Region;
 
 	constructor(region: Region = "Global") {
@@ -36,6 +38,7 @@ export class CaptureInterface extends EventEmitter {
 		this._cap = new Cap();
 		this._buf = Buffer.alloc(65535);
 		this._region = region;
+		this._packetDefs = loadPacketDefs();
 
 		this._loadOpcodes().then(() => {
 			this.emit("ready");
@@ -139,12 +142,12 @@ export class CaptureInterface extends EventEmitter {
 							ipcPayload.copy(ipcData, 0, IPC_HEADER_SIZE);
 						}
 
-						const segment = {
+						const segment: Segment<any> = {
 							header: segmentHeader,
 							ipcHeader,
 							ipcData,
 						};
-						packet.childFrame.segments.push();
+						packet.childFrame.segments.push(segment);
 
 						// If the segment is an IPC segment, get the known name of the contained message and fire an event.
 						if (ipcHeader != null) {
@@ -154,6 +157,12 @@ export class CaptureInterface extends EventEmitter {
 							);
 							let typeName = opcodeInfo?.name ?? "unknown";
 							typeName = typeName[0].toLowerCase() + typeName.slice(1);
+
+							// Unmarshal the data, if possible.
+							if (this._packetDefs[typeName]) {
+								segment.parsedIpcData = this._packetDefs[typeName](ipcData!);
+							}
+
 							this.emit("message", typeName, segment);
 						}
 
@@ -172,8 +181,8 @@ export class CaptureInterface extends EventEmitter {
 interface CaptureInterfaceEvents {
 	ready: () => void;
 	packet: (packet: Packet) => void;
-	segment: (segment: Segment) => void;
-	message: (type: string, message: Segment) => void;
+	segment: (segment: Segment<any>) => void;
+	message: (type: string, message: Segment<any>) => void;
 }
 
 export declare interface CaptureInterface {
