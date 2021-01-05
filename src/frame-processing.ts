@@ -1,3 +1,4 @@
+import BufferReader from "buffer-reader";
 import { ConnectionType, FrameHeader, SegmentHeader, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 
@@ -23,19 +24,23 @@ export function parseFrameHeader(buf: Buffer): FrameHeader {
 }
 
 export function parseSegmentHeader(buf: Buffer): SegmentHeader {
+	const br = new BufferReader(buf);
 	return {
-		size: buf.readUInt32LE(0),
-		sourceActor: buf.readUInt32LE(4),
-		targetActor: buf.readUInt32LE(8),
-		segmentType: buf.readUInt16LE(12) as SegmentType,
+		size: br.nextUInt32LE(),
+		sourceActor: br.nextUInt32LE(),
+		targetActor: br.nextUInt32LE(),
+		segmentType: br.nextUInt16LE() as SegmentType,
 	};
 }
 
 export function parseIpcHeader(buf: Buffer): IpcHeader {
+	const br = new BufferReader(buf);
 	return {
-		reserved: buf.readUInt16LE(0),
-		type: buf.readUInt16LE(2),
-		serverId: buf.readUInt16LE(6),
-		timestamp: buf.readUInt32LE(8),
+		reserved: br.nextUInt16LE(),
+		type: br.nextUInt16LE(),
+		padding: br.nextUInt16LE(),
+		serverId: br.nextUInt16LE(),
+		timestamp: br.nextUInt32LE(),
+		padding1: br.nextUInt32LE(),
 	};
 }
