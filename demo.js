@@ -4,6 +4,8 @@ try {
 	const ci = new CaptureInterface();
 
 	ci.on("message", (type, message) => {
+		console.log(type);
+		console.log(message.parsedIpcData);
 	});
 
 // Get the first device with an IPv4 address.
