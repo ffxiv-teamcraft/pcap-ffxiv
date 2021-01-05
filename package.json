@@ -22,7 +22,7 @@
   },
   "prettier": {
     "singleQuote": false,
-    "printWidth": 100,
+    "printWidth": 120,
     "semi": true,
     "useTabs": true,
     "trailingComma": "all",

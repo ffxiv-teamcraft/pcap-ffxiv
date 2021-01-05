@@ -71,12 +71,16 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	async _loadOpcodes() {
-		this._opcodeLists = await downloadJson("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json");
+		this._opcodeLists = await downloadJson(
+			"https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json",
+		);
 		this.updateOpcodesCache();
 	}
 
 	async _loadConstants() {
-		this._constants = await downloadJson("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/constants.min.json");
+		this._constants = await downloadJson(
+			"https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/constants.min.json",
+		);
 	}
 
 	private _registerInternalHandlers() {
@@ -171,7 +175,11 @@ export class CaptureInterface extends EventEmitter {
 
 							// Unmarshal the data, if possible.
 							if (this._packetDefs[typeName]) {
-								segment.parsedIpcData = this._packetDefs[typeName](ipcData!);
+								try {
+									segment.parsedIpcData = this._packetDefs[typeName](ipcData!);
+								} catch (err) {
+									this.emit("error", err);
+								}
 							}
 
 							this.emit("message", typeName, segment);
@@ -209,8 +217,5 @@ interface CaptureInterfaceEvents {
 export declare interface CaptureInterface {
 	on<U extends keyof CaptureInterfaceEvents>(event: U, listener: CaptureInterfaceEvents[U]): this;
 
-	emit<U extends keyof CaptureInterfaceEvents>(
-		event: U,
-		...args: Parameters<CaptureInterfaceEvents[U]>
-	): boolean;
+	emit<U extends keyof CaptureInterfaceEvents>(event: U, ...args: Parameters<CaptureInterfaceEvents[U]>): boolean;
 }

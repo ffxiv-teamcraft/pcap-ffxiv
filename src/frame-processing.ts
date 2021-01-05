@@ -10,16 +10,17 @@ export function isMagical(header: FrameHeader): boolean {
 }
 
 export function parseFrameHeader(buf: Buffer): FrameHeader {
+	const br = new BufferIOReader(buf);
 	return {
-		magic1: buf.readBigUInt64LE(0),
-		magic2: buf.readBigUInt64LE(8),
-		timestamp: buf.readBigUInt64LE(16),
-		size: buf.readUInt32LE(24),
-		connectionType: buf.readUInt16LE(28) as ConnectionType,
-		segmentCount: buf.readUInt16LE(30),
-		unknown20: buf.readUInt8(32),
-		isCompressed: Boolean(buf.readUInt8(33)),
-		unknown24: buf.readUInt32LE(34),
+		magic1: br.UInt64LE(),
+		magic2: br.UInt64LE(),
+		timestamp: br.UInt64LE(),
+		size: br.UInt32LE(),
+		connectionType: br.UInt16LE() as ConnectionType,
+		segmentCount: br.UInt16LE(),
+		unknown20: br.UInt8(),
+		isCompressed: Boolean(br.UInt8()),
+		unknown24: br.UInt32LE(),
 	};
 }
 
