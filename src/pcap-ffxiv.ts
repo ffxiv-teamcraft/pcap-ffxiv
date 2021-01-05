@@ -27,7 +27,7 @@ export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: { [key in Region]: ConstantsList } | undefined;
 	private _packetDefs: { [key: string]: (buf: Buffer) => any };
-	private _region: Region = "Global";
+	private _region: Region;
 	private _opcodes: Record<number, string> = {};
 
 	constructor(region: Region = "Global") {
@@ -35,7 +35,7 @@ export class CaptureInterface extends EventEmitter {
 
 		this._cap = new Cap();
 		this._buf = Buffer.alloc(65535);
-		this.setRegion(region);
+		this._region = region;
 		this._packetDefs = loadPacketDefs();
 
 		this._loadOpcodes().then(async () => {
@@ -46,6 +46,10 @@ export class CaptureInterface extends EventEmitter {
 
 	setRegion(region: Region) {
 		this._region = region;
+		this.updateOpcodesCache();
+	}
+
+	updateOpcodesCache(): void {
 		const regionOpcodes = this._opcodeLists?.find((ol) => ol.region === this._region);
 		this._opcodes = regionOpcodes?.lists.ServerZoneIpcType.reduce((acc, entry) => {
 			return {
@@ -68,6 +72,7 @@ export class CaptureInterface extends EventEmitter {
 
 	async _loadOpcodes() {
 		this._opcodeLists = await downloadJson("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json");
+		this.updateOpcodesCache();
 	}
 
 	async _loadConstants() {
