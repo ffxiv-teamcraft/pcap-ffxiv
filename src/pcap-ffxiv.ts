@@ -9,8 +9,9 @@ import {
 import { OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
-import { downloadOpcodes } from "./opcode-downloader";
+import { downloadJson } from "./json-downloader";
 import { loadPacketDefs } from "./load-packetdefs";
+import { ConstantsList } from "./models/ConstantsList";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -29,6 +30,7 @@ export class CaptureInterface extends EventEmitter {
 	private readonly _buf: Buffer;
 
 	private _opcodeLists: OpcodeList[] | undefined;
+	private _constants: { [key in Region]: ConstantsList } | undefined;
 	private _packetDefs: { [key: string]: (buf: Buffer) => any };
 	private _region: Region;
 
@@ -40,7 +42,8 @@ export class CaptureInterface extends EventEmitter {
 		this._region = region;
 		this._packetDefs = loadPacketDefs();
 
-		this._loadOpcodes().then(() => {
+		this._loadOpcodes().then(async () => {
+			await this._loadConstants();
 			this.emit("ready");
 		});
 	}
@@ -70,7 +73,11 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	async _loadOpcodes() {
-		this._opcodeLists = await downloadOpcodes();
+		this._opcodeLists = await downloadJson("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json");
+	}
+
+	async _loadConstants() {
+		this._constants = await downloadJson("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/constants.min.json");
 	}
 
 	private _registerInternalHandlers() {

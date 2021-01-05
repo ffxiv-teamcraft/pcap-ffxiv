@@ -1,10 +1,9 @@
 import https from "https";
-import { OpcodeList } from "./models";
 
-export function downloadOpcodes(): Promise<OpcodeList[]> {
+export function downloadJson<T>(uri: string): Promise<T> {
 	return new Promise((resolve) => {
 		const req = https.request(
-			new URL("https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.json"),
+			new URL(uri),
 			(res) => {
 				const data: any[] = [];
 				res.setEncoding("utf8");
