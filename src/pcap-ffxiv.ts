@@ -1,11 +1,6 @@
 import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
-import {
-	isMagical,
-	parseFrameHeader,
-	parseIpcHeader,
-	parseSegmentHeader,
-} from "./frame-processing";
+import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from "./frame-processing";
 import { OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
@@ -32,14 +27,15 @@ export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: { [key in Region]: ConstantsList } | undefined;
 	private _packetDefs: { [key: string]: (buf: Buffer) => any };
-	private _region: Region;
+	private _region: Region = "Global";
+	private _opcodes: Record<number, string> = {};
 
 	constructor(region: Region = "Global") {
 		super();
 
 		this._cap = new Cap();
 		this._buf = Buffer.alloc(65535);
-		this._region = region;
+		this.setRegion(region);
 		this._packetDefs = loadPacketDefs();
 
 		this._loadOpcodes().then(async () => {
@@ -50,6 +46,13 @@ export class CaptureInterface extends EventEmitter {
 
 	setRegion(region: Region) {
 		this._region = region;
+		const regionOpcodes = this._opcodeLists?.find((ol) => ol.region === this._region);
+		this._opcodes = regionOpcodes?.lists.ServerZoneIpcType.reduce((acc, entry) => {
+			return {
+				...acc,
+				[entry.opcode]: entry.name,
+			};
+		}, {}) as Record<number, string>;
 	}
 
 	open(deviceIdentifier: string) {
@@ -158,11 +161,7 @@ export class CaptureInterface extends EventEmitter {
 
 						// If the segment is an IPC segment, get the known name of the contained message and fire an event.
 						if (ipcHeader != null) {
-							const regionOpcodes = this._opcodeLists?.find((ol) => ol.region === this._region);
-							const opcodeInfo = regionOpcodes?.lists.ServerZoneIpcType.find(
-								(oi) => oi.opcode === ipcHeader?.type,
-							);
-							let typeName = opcodeInfo?.name ?? "unknown";
+							let typeName = this._opcodes[ipcHeader?.type] || "unknown";
 							typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
 							// Unmarshal the data, if possible.
@@ -204,6 +203,7 @@ interface CaptureInterfaceEvents {
 
 export declare interface CaptureInterface {
 	on<U extends keyof CaptureInterfaceEvents>(event: U, listener: CaptureInterfaceEvents[U]): this;
+
 	emit<U extends keyof CaptureInterfaceEvents>(
 		event: U,
 		...args: Parameters<CaptureInterfaceEvents[U]>
