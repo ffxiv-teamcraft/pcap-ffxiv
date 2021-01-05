@@ -1,13 +1,17 @@
 export interface RetainerInformation {
-	retainerID: number;
+	unknown0: BigInt;
+	retainerId: BigInt;
 	hireOrder: number;
 	itemCount: number;
+	unknown5: number;
 	gil: number;
-	itemSellingCount: number;
-	cityID: number;
-	classJobID: number;
+	sellingCount: number;
+	cityId: number;
+	classJob: number;
 	level: number;
-	ventureID: number;
+	unknown11: number;
+	ventureId: number;
 	ventureComplete: number;
+	unknown14: number;
 	name: string;
 }

@@ -1,4 +1,5 @@
 export interface PlayerStats {
+	strength: number;
 	dexterity: number;
 	vitality: number;
 	intelligence: number;
@@ -6,22 +7,27 @@ export interface PlayerStats {
 	piety: number;
 	hp: number;
 	mp: number;
+	tp: number;
 	gp: number;
 	cp: number;
+	delay: number;
 	tenacity: number;
 	attackPower: number;
 	defense: number;
-	directHit: number;
+	directHitRate: number;
+	evasion: number;
 	magicDefense: number;
 	criticalHit: number;
 	attackMagicPotency: number;
-	strength: number;
 	healingMagicPotency: number;
+	elementalBonus: number;
 	determination: number;
 	skillSpeed: number;
 	spellSpeed: number;
+	haste: number;
 	craftsmanship: number;
 	control: number;
 	gathering: number;
 	perception: number;
+	unknown: number[];
 }

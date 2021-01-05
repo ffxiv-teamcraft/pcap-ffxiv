@@ -1,17 +1,18 @@
 export interface PlayerSetup {
-	contentID: string;
+	contentId: BigInt;
 	unknown8: number;
 	unknownC: number;
-	charID: number;
-	restedXP: number;
-	companionCurrentXP: number;
+	charId: number;
+	restedExp: number;
+	companionCurrentExp: number;
 	unknown1C: number;
 	fishCaught: number;
-	useBaitCatalogID: number;
+	useBaitCatalogId: number;
 	unknown28: number;
-	unknownPVP2C: number;
+	unknownPvp2C: number;
 	unknown3: number;
 	pvpFrontlineOverallCampaigns: number;
-	unknown34: number;
+	unknownTimestamp34: number;
+	unknownTimestamp38: number;
 	name: string;
 }

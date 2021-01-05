@@ -11,6 +11,11 @@ import { marketBoardItemListingCount } from "./packet-processors/marketBoardItem
 import { marketBoardItemListingHistory } from "./packet-processors/marketBoardItemListingHistory";
 import { marketBoardSearchResult } from "./packet-processors/marketBoardSearchResult";
 import { marketTaxRates } from "./packet-processors/marketTaxRates";
+import { playerSetup } from "./packet-processors/playerSetup";
+import { playerStats } from "./packet-processors/playerStats";
+import { prepareZoning } from "./packet-processors/prepareZoning";
+import { retainerInformation } from "./packet-processors/retainerInformation";
+import { updateClassInfo } from "./packet-processors/updateClassInfo";
 
 export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 	return {
@@ -27,5 +32,10 @@ export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 		marketBoardItemListingHistory,
 		marketBoardSearchResult,
 		marketTaxRates,
+		playerSetup,
+		playerStats,
+		prepareZoning,
+		retainerInformation,
+		updateClassInfo,
 	};
 }
