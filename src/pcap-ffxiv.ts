@@ -189,6 +189,7 @@ export class CaptureInterface extends EventEmitter {
 
 interface CaptureInterfaceEvents {
 	ready: () => void;
+	error: (err: Error) => void;
 	packet: (packet: Packet) => void;
 	segment: (segment: Segment<any>) => void;
 	message: (type: string, message: Segment<any>) => void;
