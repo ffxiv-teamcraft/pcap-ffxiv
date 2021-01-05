@@ -39,17 +39,12 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@types/buffer-reader@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@types/buffer-reader/-/buffer-reader-0.1.0.tgz#7c352dd502b98b3df3521efc9a946a270b5d4f10"
-  integrity sha512-cYi/67qQTBtlY9auLyhmY/S60mEC013XXAz3YgUUoGNkfh7rXNAsEwws0KGEqYz4miDDeGrOyQ5jClMgWgajfg==
+"@imed.ch/buffer-io@^1.2.1":
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/@imed.ch/buffer-io/-/buffer-io-1.2.1.tgz#5179e4f108bda6b1b0b6c52207441a73bcd7046a"
+  integrity sha512-kc0oIljER4Na2VmA5nhnsYV3cJhZ+k5+JGWqK5vCiqBT09qYpTL8fi+TsRe/zasqDL+jZRz9JYTIGMLRc6FQrg==
   dependencies:
-    "@types/node" "*"
-
-"@types/node@*":
-  version "14.14.20"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.20.tgz#f7974863edd21d1f8a494a73e8e2b3658615c340"
-  integrity sha512-Y93R97Ouif9JEOWPIUyU+eyIdyRqQR0I8Ez1dzku4hDx34NWh4HbtIc3WNzwB1Y9ULvNGeu5B8h8bVL5cAk4/A==
+    ieee754 "1.1.13"
 
 "@types/node@^14.14.19":
   version "14.14.19"
@@ -139,11 +134,6 @@ brace-expansion@^1.1.7:
   dependencies:
     balanced-match "^1.0.0"
     concat-map "0.0.1"
-
-buffer-reader@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/buffer-reader/-/buffer-reader-0.1.0.tgz#62953f955bbc50d8aa8e875f9789326a3b0c7644"
-  integrity sha1-YpU/lVu8UNiqjodfl4kyajsMdkQ=
 
 callsites@^3.0.0:
   version "3.1.0"
@@ -444,6 +434,11 @@ has-flag@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
   integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
+
+ieee754@1.1.13:
+  version "1.1.13"
+  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
+  integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
 
 ignore@^4.0.6:
   version "4.0.6"

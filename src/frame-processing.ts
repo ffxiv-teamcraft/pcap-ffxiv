@@ -1,4 +1,4 @@
-import BufferReader from "buffer-reader";
+import { BufferIOReader } from "@imed.ch/buffer-io";
 import { ConnectionType, FrameHeader, SegmentHeader, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 
@@ -24,23 +24,23 @@ export function parseFrameHeader(buf: Buffer): FrameHeader {
 }
 
 export function parseSegmentHeader(buf: Buffer): SegmentHeader {
-	const br = new BufferReader(buf);
+	const br = new BufferIOReader(buf);
 	return {
-		size: br.nextUInt32LE(),
-		sourceActor: br.nextUInt32LE(),
-		targetActor: br.nextUInt32LE(),
-		segmentType: br.nextUInt16LE() as SegmentType,
+		size: br.UInt32LE(),
+		sourceActor: br.UInt32LE(),
+		targetActor: br.UInt32LE(),
+		segmentType: br.UInt16LE() as SegmentType,
 	};
 }
 
 export function parseIpcHeader(buf: Buffer): IpcHeader {
-	const br = new BufferReader(buf);
+	const br = new BufferIOReader(buf);
 	return {
-		reserved: br.nextUInt16LE(),
-		type: br.nextUInt16LE(),
-		padding: br.nextUInt16LE(),
-		serverId: br.nextUInt16LE(),
-		timestamp: br.nextUInt32LE(),
-		padding1: br.nextUInt32LE(),
+		reserved: br.UInt16LE(),
+		type: br.UInt16LE(),
+		padding: br.UInt16LE(),
+		serverId: br.UInt16LE(),
+		timestamp: br.UInt32LE(),
+		padding1: br.UInt32LE(),
 	};
 }
