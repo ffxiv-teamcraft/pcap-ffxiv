@@ -105,3 +105,6 @@ dist
 
 # Output files
 lib/
+
+# IDE folders
+.idea/
