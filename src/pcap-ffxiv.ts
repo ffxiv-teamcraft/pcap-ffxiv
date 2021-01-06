@@ -138,7 +138,7 @@ export class CaptureInterface extends EventEmitter {
 					buf.set(childFramePayload);
 
 					let frameHeader: FrameHeader;
-					const skip = this._discardUntilValid(buf);
+					const skip = this._discardUntilValid(buf); // Skip to the beginning of the next frame.
 					buf.set(buf.slice(skip));
 					try {
 						frameHeader = parseFrameHeader(buf);
