@@ -39,13 +39,6 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@imed.ch/buffer-io@^1.2.1":
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/@imed.ch/buffer-io/-/buffer-io-1.2.1.tgz#5179e4f108bda6b1b0b6c52207441a73bcd7046a"
-  integrity sha512-kc0oIljER4Na2VmA5nhnsYV3cJhZ+k5+JGWqK5vCiqBT09qYpTL8fi+TsRe/zasqDL+jZRz9JYTIGMLRc6FQrg==
-  dependencies:
-    ieee754 "1.1.13"
-
 "@types/node@^14.14.19":
   version "14.14.19"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.19.tgz#5135176a8330b88ece4e9ab1fdcfc0a545b4bab4"
@@ -434,11 +427,6 @@ has-flag@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-4.0.0.tgz#944771fd9c81c81265c4d6941860da06bb59479b"
   integrity sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==
-
-ieee754@1.1.13:
-  version "1.1.13"
-  resolved "https://registry.yarnpkg.com/ieee754/-/ieee754-1.1.13.tgz#ec168558e95aa181fd87d37f55c32bbcb6708b84"
-  integrity sha512-4vf7I2LYV/HaWerSo3XmlMkp5eZ83i+/CDluXi/IGTs/O1sejBNhTtnxzmRZfvOUqj7lZjqHkeTvpgSFDlWZTg==
 
 ignore@^4.0.6:
   version "4.0.6"

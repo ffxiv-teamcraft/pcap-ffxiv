@@ -20,13 +20,28 @@ export class BufferReader {
 		this.offset += length;
 	}
 
-	nextString(length: number, encoding: BufferEncoding = "utf8") {
+	slice(begin?: number, end?: number): Buffer {
+		return this.buf.slice(begin, end);
+	}
+
+	nextString(encoding: BufferEncoding = "utf8", length: number) {
 		this.offset += length;
 		try {
 			return this.buf.toString(encoding, this.offset - length, this.offset);
 		} catch (e) {
 			return "";
 		}
+	}
+
+	// This is the only function in here that isn't failsafe, be careful when using it
+	nextBuffer(length: number, asReader?: false): Buffer
+	nextBuffer(length: number, asReader: true): BufferReader
+	nextBuffer(length: number, asReader?: boolean): Buffer | BufferReader {
+		const buf = this.buf.slice(this.offset, this.offset + length);
+		if (asReader) {
+			return new BufferReader(buf);
+		}
+		return buf;
 	}
 
 	nextInt8(fallback = 0): number {
