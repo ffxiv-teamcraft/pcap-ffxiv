@@ -1,12 +1,14 @@
-type BufferFnProperties = Pick<Buffer, {
-	[K in keyof Buffer]: Buffer[K] extends Function ? K : never
-}[keyof Buffer]>;
+type BufferFnProperties = Pick<
+	Buffer,
+	{
+		[K in keyof Buffer]: Buffer[K] extends Function ? K : never;
+	}[keyof Buffer]
+>;
 
 export class BufferReader {
 	private offset = 0;
 
-	constructor(private buf: Buffer) {
-	}
+	constructor(private buf: Buffer) {}
 
 	reset(): void {
 		this.offset = 0;
@@ -54,11 +56,11 @@ export class BufferReader {
 	}
 
 	nextUInt64(fallback = 0): bigint {
-		return this.tryNext("readBigInt64LE", 8, BigInt(0));
+		return this.tryNext("readBigUInt64LE", 8, BigInt(0));
 	}
 
 	nextInt64(fallback = 0): bigint {
-		return this.tryNext("readBigUInt64LE", 8, BigInt(0));
+		return this.tryNext("readBigInt64LE", 8, BigInt(0));
 	}
 
 	nextFloat(fallback = 0): number {
