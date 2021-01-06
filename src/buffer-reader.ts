@@ -1,25 +1,27 @@
-type BufferFnProperties = Pick<
-	Buffer,
+type BufferFnProperties = Pick<Buffer,
 	{
 		[K in keyof Buffer]: Buffer[K] extends Function ? K : never;
-	}[keyof Buffer]
->;
+	}[keyof Buffer]>;
 
 export class BufferReader {
 	private offset = 0;
 
-	constructor(private buf: Buffer) {}
+	constructor(private buf: Buffer) {
+	}
 
-	reset(): void {
+	reset(): BufferReader {
 		this.offset = 0;
+		return this;
 	}
 
-	move(offset: number): void {
+	move(offset: number): BufferReader {
 		this.offset = offset;
+		return this;
 	}
 
-	skip(length: number): void {
+	skip(length: number): BufferReader {
 		this.offset += length;
+		return this;
 	}
 
 	slice(begin?: number, end?: number): Buffer {
@@ -84,6 +86,14 @@ export class BufferReader {
 
 	nextDouble(fallback = 0): number {
 		return this.tryNext("readDoubleLE", 8, 0);
+	}
+
+	nextPosition3UInt16(): { x: number, y: number, z: number } {
+		return {
+			x: this.nextUInt16(),
+			y: this.nextUInt16(),
+			z: this.nextUInt16(),
+		};
 	}
 
 	private tryNext<T>(fn: keyof BufferFnProperties, size: number, fallback: T): T {

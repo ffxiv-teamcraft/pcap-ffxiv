@@ -18,10 +18,18 @@ import { prepareZoning } from "./processors/prepareZoning";
 import { retainerInformation } from "./processors/retainerInformation";
 import { updateClassInfo } from "./processors/updateClassInfo";
 import { updateInventorySlot } from "./processors/updateInventorySlot";
+import { actorCast } from "./processors/actorCast";
+import { actorControlSelf } from "./processors/actorControlSelf";
+import { actorControlTarget } from "./processors/actorControlTarget";
+import { actorFreeSpawn } from "./processors/actorFreeSpawn";
 
 export function loadPacketProcessors(): Record<string, (reader: BufferReader) => any> {
 	return {
+		actorCast,
 		actorControl,
+		actorControlSelf,
+		actorControlTarget,
+		actorFreeSpawn,
 		currencyCrystalInfo,
 		effectResult,
 		eventPlay,
