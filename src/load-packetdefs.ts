@@ -16,6 +16,7 @@ import { playerStats } from "./packet-processors/playerStats";
 import { prepareZoning } from "./packet-processors/prepareZoning";
 import { retainerInformation } from "./packet-processors/retainerInformation";
 import { updateClassInfo } from "./packet-processors/updateClassInfo";
+import { updateInventorySlot } from "./packet-processors/updateInventorySlot";
 
 export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 	return {
@@ -37,5 +38,6 @@ export function loadPacketDefs(): { [key: string]: (buf: Buffer) => any } {
 		prepareZoning,
 		retainerInformation,
 		updateClassInfo,
+		updateInventorySlot,
 	};
 }

@@ -6,12 +6,14 @@ export interface UpdateInventorySlot {
 	quantity: number;
 	catalogId: number;
 	reservedFlag: number;
-	signatureId: number;
-	hqFlag: number;
-	unknown2: number;
+	signatureId: BigInt;
+	hqFlag: boolean;
 	condition: number;
 	spiritBond: number;
 	color: number;
 	glamourCatalogId: number;
 	materia: [number, number, number, number, number];
+	materiaTiers: [number, number, number, number, number];
+	padding: number;
+	unknown10: number;
 }
