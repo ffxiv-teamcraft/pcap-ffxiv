@@ -1,14 +1,8 @@
+import { Position3 } from "./Position3";
+
 export interface UpdatePositionInstance {
 	rotation: number;
 	interpolateRotation: number;
-	pos: {
-		x: number;
-		y: number;
-		z: number;
-	};
-	interpolatePos: {
-		x: number;
-		y: number;
-		z: number;
-	};
+	pos: Position3;
+	interpolatePos: Position3;
 }

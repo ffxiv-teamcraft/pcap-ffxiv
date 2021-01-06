@@ -14,7 +14,7 @@ export function marketBoardItemListingHistory(reader: BufferReader): MarketBoard
 				isHq: Boolean(chunk.nextUInt8()),
 				padding: chunk.nextUInt8(),
 				onMannequin: Boolean(chunk.nextUInt8()),
-				buyerName: chunk.nextString("utf8", 0x20),
+				buyerName: chunk.nextString(0x20),
 				itemCatalogId: chunk.nextUInt32(),
 			};
 		}),

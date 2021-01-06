@@ -1,3 +1,5 @@
+import { Position3 } from "./Position3";
+
 export interface NpcSpawn {
 	gimmickId: number;
 	u2b: number;
@@ -9,12 +11,12 @@ export interface NpcSpawn {
 	u3c: number;
 	pose: number;
 	u4: number;
-	targetId: string;
+	targetId: bigint;
 	u6: number;
 	u7: number;
-	mainWeaponModel: string;
-	secWeaponModel: string;
-	craftToolModel: string;
+	mainWeaponModel: bigint;
+	secWeaponModel: bigint;
+	craftToolModel: bigint;
 	u14: number;
 	u15: number;
 	bNPCBase: number;
@@ -56,13 +58,12 @@ export interface NpcSpawn {
 	elementalLevel: number;
 	element: number;
 	u30b: number;
+	effects: { ID: number, sourceActorID: number }[];
+	models: number[];
+	looks: number[];
 	effect_id: number;
 	sourceActorId: number;
-	pos: {
-		x: number;
-		y: number;
-		z: number;
-	};
+	pos: Position3;
 	name: string;
 	fcTag: string;
 	bNPCPartSlot: number;

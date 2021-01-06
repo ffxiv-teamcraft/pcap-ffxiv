@@ -1,7 +1,17 @@
 import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
 import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from "./frame-processing";
-import { DiagnosticInfo, FrameHeader, OpcodeList, Packet, Region, Segment, SegmentType, IpcHeader, ConstantsList } from "./models";
+import {
+	ConstantsList,
+	DiagnosticInfo,
+	FrameHeader,
+	IpcHeader,
+	OpcodeList,
+	Packet,
+	Region,
+	Segment,
+	SegmentType,
+} from "./models";
 import pako from "pako";
 import { downloadJson } from "./json-downloader";
 import { performance } from "perf_hooks";
@@ -34,7 +44,7 @@ export class CaptureInterface extends EventEmitter {
 
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: Record<keyof Region, ConstantsList> | undefined;
-	private _packetDefs: Record<string, (reader: BufferReader) => any>;
+	private _packetDefs: Record<string, (reader: BufferReader, constants: ConstantsList) => any>;
 	private _region: Region;
 	private _opcodes: Record<number, string> = {};
 
@@ -240,9 +250,9 @@ export class CaptureInterface extends EventEmitter {
 				typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
 				// Unmarshal the data, if possible.
-				if (this._packetDefs[typeName]) {
+				if (this._packetDefs[typeName] && this._constants) {
 					const reader = new BufferReader(ipcData!);
-					segment.parsedIpcData = this._packetDefs[typeName](reader);
+					segment.parsedIpcData = this._packetDefs[typeName](reader, this._constants[this._region]);
 				}
 
 				this.emit("message", typeName, segment);

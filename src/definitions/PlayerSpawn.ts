@@ -1,3 +1,5 @@
+import { Position3 } from "./Position3";
+
 export interface PlayerSpawn {
 	title: number;
 	u1b: number;
@@ -14,12 +16,12 @@ export interface PlayerSpawn {
 	u5b: number;
 	u5c: number;
 
-	targetId: number;
+	targetId: bigint;
 	u6: number;
 	u7: number;
-	mainWeaponModel: number;
-	secWeaponModel: number;
-	craftToolModel: number;
+	mainWeaponModel: bigint;
+	secWeaponModel: bigint;
+	craftToolModel: bigint;
 
 	u14: number;
 	u15: number;
@@ -61,17 +63,13 @@ export interface PlayerSpawn {
 
 	elementData: number;
 
-	effect: {
-		effect_id: number;
+	effects: {
+		ID: number;
 		param: number;
 		duration: number;
 		sourceActorId: number;
 	}[];
-	pos: {
-		x: number;
-		y: number;
-		z: number;
-	};
+	pos: Position3;
 	models: number[];
 	name: string;
 	look: number[];
