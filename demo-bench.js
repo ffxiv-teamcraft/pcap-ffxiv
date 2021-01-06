@@ -4,9 +4,9 @@ const ci = new CaptureInterface();
 
 let pTime = 0;
 let n = 0;
-ci.on("diagnostics", diagInfo => {
+ci.on("diagnostics", (diagInfo) => {
     pTime = (diagInfo.lastProcessingTimeMs + n * pTime) / ++n;
-	console.log("avg:", pTime)
+    console.log("avg:", pTime);
 });
 
 // Get the first device with an IPv4 address.
