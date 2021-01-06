@@ -1,12 +1,13 @@
 import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
 import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from "./frame-processing";
-import { OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
+import { DiagnosticInfo, OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
 import { downloadJson } from "./json-downloader";
 import { loadPacketDefs } from "./load-packetdefs";
 import { ConstantsList } from "./models/ConstantsList";
+import { performance } from "perf_hooks";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -85,6 +86,8 @@ export class CaptureInterface extends EventEmitter {
 
 	private _registerInternalHandlers() {
 		this._cap.on("packet", (nBytes: number) => {
+			const start = performance.now();
+
 			// The total buffer is way bigger than the relevant data, so we trim that first.
 			const payload = this._buf.slice(0, nBytes);
 
@@ -191,6 +194,11 @@ export class CaptureInterface extends EventEmitter {
 					}
 
 					this.emit("packet", packet);
+
+					const end = performance.now();
+					this.emit("diagnostics", {
+						lastProcessingTimeMs: end - start,
+					});
 				}
 			}
 		});
@@ -212,6 +220,7 @@ interface CaptureInterfaceEvents {
 	packet: (packet: Packet) => void;
 	segment: (segment: Segment<any>) => void;
 	message: (type: string, message: Segment<any>) => void;
+	diagnostics: (diagInfo: DiagnosticInfo) => void;
 }
 
 export declare interface CaptureInterface {

@@ -1,4 +1,5 @@
 export * from "./ConnectionType";
+export * from "./DiagnosticInfo";
 export * from "./Frame";
 export * from "./FrameHeader";
 export * from "./OpcodeList";
