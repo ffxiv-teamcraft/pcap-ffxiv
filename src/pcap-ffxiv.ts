@@ -1,7 +1,7 @@
 import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
 import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from "./frame-processing";
-import { DiagnosticInfo, OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
+import { DiagnosticInfo, Frame, FrameHeader, OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import pako from "pako";
 import { downloadJson } from "./json-downloader";
@@ -17,6 +17,8 @@ const BYTE = 1;
 const KILOBYTE = 1024 * BYTE;
 const MEGABYTE = 1024 * KILOBYTE;
 
+const BUFFER_SIZE = 65535;
+
 const ETH_HEADER_SIZE = 24;
 const IPV4_HEADER_SIZE = 20;
 const TCP_HEADER_SIZE = 20;
@@ -28,6 +30,9 @@ export class CaptureInterface extends EventEmitter {
 	private readonly _cap: Cap;
 	private readonly _buf: Buffer;
 
+	// We use the destination port as the key.
+	private readonly _bufTable: { [key: number]: Buffer };
+
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: { [key in Region]: ConstantsList } | undefined;
 	private _packetDefs: { [key: string]: (buf: Buffer) => any };
@@ -38,7 +43,9 @@ export class CaptureInterface extends EventEmitter {
 		super();
 
 		this._cap = new Cap();
-		this._buf = Buffer.alloc(65535);
+		this._buf = Buffer.alloc(BUFFER_SIZE);
+		this._bufTable = {};
+
 		this._region = region;
 		this._packetDefs = loadPacketDefs();
 
@@ -79,23 +86,25 @@ export class CaptureInterface extends EventEmitter {
 		this._cap.close();
 	}
 
-	async _loadOpcodes() {
+	private async _loadOpcodes() {
 		this._opcodeLists = await downloadJson(
 			"https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json",
 		);
 		this.updateOpcodesCache();
 	}
 
-	async _loadConstants() {
+	private async _loadConstants() {
 		this._constants = await downloadJson(
 			"https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/constants.min.json",
 		);
 	}
 
+	private _getBuffer(port: number): Buffer {
+		return (this._bufTable[port] ||= Buffer.alloc(BUFFER_SIZE));
+	}
+
 	private _registerInternalHandlers() {
 		this._cap.on("packet", (nBytes: number) => {
-			const start = performance.now();
-
 			// The total buffer is way bigger than the relevant data, so we trim that first.
 			const payload = this._buf.slice(0, nBytes);
 
@@ -115,98 +124,128 @@ export class CaptureInterface extends EventEmitter {
 					if ((ret.info.flags & 8) === 0) return; // Only TCP PSH has actual data.
 
 					const childFramePayload = payload.slice(payload.length - datalen);
-					const frameHeader = parseFrameHeader(childFramePayload);
+					const buf = this._getBuffer(ret.info.dstport);
+					buf.write(childFramePayload.toString("binary"), "binary");
 
-					if (!isMagical(frameHeader)) return;
-
-					const packet: Packet = {
-						source: {
-							address: srcAddr,
-							port: ret.info.srcport,
-						},
-						destination: {
-							address: dstAddr,
-							port: ret.info.dstport,
-						},
-						childFrame: {
-							header: frameHeader,
-							segments: [],
-						},
-					};
-
-					// Decompress the segments, if necessary.
-					let remainder = childFramePayload.slice(FRAME_HEADER_SIZE);
-					if (frameHeader.isCompressed) {
-						try {
-							const decompressed = pako.inflate(remainder);
-							remainder = Buffer.from(decompressed.buffer);
-						} catch (err) {
-							// This will happen if the packet contents are encrypted.
-							if (err === "incorrect header check") {
-								return;
-							}
+					let frameHeader: FrameHeader;
+					try {
+						frameHeader = parseFrameHeader(buf);
+					} catch (err) {
+						if (err instanceof RangeError) {
+							return; // We need to wait for the next frame to get enough data.
 						}
+
+						this.emit("error", err);
+						return;
 					}
 
-					let offset = 0;
-					for (let i = 0; i < frameHeader.segmentCount; i++) {
-						const segmentPayload = remainder.slice(offset);
-						const segmentHeader = parseSegmentHeader(segmentPayload);
-
-						let ipcHeader: IpcHeader | undefined;
-						let ipcData: Buffer | undefined;
-						if (segmentHeader.segmentType === SegmentType.Ipc) {
-							const ipcPayload = remainder.slice(offset + SEG_HEADER_SIZE);
-							ipcHeader = parseIpcHeader(ipcPayload);
-
-							/* Copy the IPC data to a new Buffer, so that it's not removed from under us.
-							 * All of the buffers we used previously can potentially be views of the packet
-							 * buffer itself, which is subject to change after this callback.
-							 *
-							 * We can use allocUnsafe here because we're copying the existing data right
-							 * over the uninitialized memory.
-							 */
-							ipcData = Buffer.allocUnsafe(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE);
-							ipcPayload.copy(ipcData, 0, IPC_HEADER_SIZE);
-						}
-
-						const segment: Segment<any> = {
-							header: segmentHeader,
-							ipcHeader,
-							ipcData,
-						};
-						packet.childFrame.segments.push(segment);
-
-						// If the segment is an IPC segment, get the known name of the contained message and fire an event.
-						if (ipcHeader != null) {
-							let typeName = this._opcodes[ipcHeader?.type] || "unknown";
-							typeName = typeName[0].toLowerCase() + typeName.slice(1);
-
-							// Unmarshal the data, if possible.
-							if (this._packetDefs[typeName]) {
-								try {
-									segment.parsedIpcData = this._packetDefs[typeName](ipcData!);
-								} catch (err) {
-									this.emit("error", err);
-								}
-							}
-
-							this.emit("message", typeName, segment);
-						}
-
-						this.emit("segment", segment);
-
-						offset += segmentHeader.size;
+					if (isMagical(frameHeader)) {
+						this._processFrame(
+							frameHeader,
+							buf.slice(0, frameHeader.size),
+							srcAddr,
+							dstAddr,
+							ret.info.srcport,
+							ret.info.dstport,
+						);
+						//this._bufTable[ret.info.dstport] = buf.slice(frameHeader.size);
 					}
-
-					this.emit("packet", packet);
-
-					const end = performance.now();
-					this.emit("diagnostics", {
-						lastProcessingTimeMs: end - start,
-					});
 				}
 			}
+		});
+	}
+
+	private _processFrame(
+		frameHeader: FrameHeader,
+		buf: Buffer,
+		srcAddr: string,
+		dstAddr: string,
+		srcPort: number,
+		dstPort: number,
+	) {
+		const start = performance.now();
+
+		const packet: Packet = {
+			source: {
+				address: srcAddr,
+				port: srcPort,
+			},
+			destination: {
+				address: dstAddr,
+				port: dstPort,
+			},
+			childFrame: {
+				header: frameHeader,
+				segments: [],
+			},
+		};
+
+		// Decompress the segments, if necessary.
+		let remainder = buf.slice(FRAME_HEADER_SIZE);
+		if (frameHeader.isCompressed) {
+			try {
+				const decompressed = pako.inflate(remainder);
+				remainder = Buffer.from(decompressed.buffer);
+			} catch (err) {
+				// This will happen if the packet contents are encrypted.
+				if (err === "incorrect header check") {
+					return;
+				}
+			}
+		}
+
+		let offset = 0;
+		for (let i = 0; i < frameHeader.segmentCount; i++) {
+			const segmentPayload = remainder.slice(offset);
+			const segmentHeader = parseSegmentHeader(segmentPayload);
+
+			let ipcHeader: IpcHeader | undefined;
+			let ipcData: Buffer | undefined;
+			if (segmentHeader.segmentType === SegmentType.Ipc) {
+				const ipcPayload = remainder.slice(offset + SEG_HEADER_SIZE);
+				ipcHeader = parseIpcHeader(ipcPayload);
+
+				/* Copy the IPC data to a new Buffer, so that it's not removed from under us.
+				 * All of the buffers we used previously can potentially be views of the packet
+				 * buffer itself, which is subject to change after this callback.
+				 *
+				 * We can use allocUnsafe here because we're copying the existing data right
+				 * over the uninitialized memory.
+				 */
+				ipcData = Buffer.allocUnsafe(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE);
+				ipcPayload.copy(ipcData, 0, IPC_HEADER_SIZE);
+			}
+
+			const segment: Segment<any> = {
+				header: segmentHeader,
+				ipcHeader,
+				ipcData,
+			};
+			packet.childFrame.segments.push(segment);
+
+			// If the segment is an IPC segment, get the known name of the contained message and fire an event.
+			if (ipcHeader != null) {
+				let typeName = this._opcodes[ipcHeader?.type] || "unknown";
+				typeName = typeName[0].toLowerCase() + typeName.slice(1);
+
+				// Unmarshal the data, if possible.
+				if (this._packetDefs[typeName]) {
+					segment.parsedIpcData = this._packetDefs[typeName](ipcData!);
+				}
+
+				this.emit("message", typeName, segment);
+			}
+
+			this.emit("segment", segment);
+
+			offset += segmentHeader.size;
+		}
+
+		this.emit("packet", packet);
+
+		const end = performance.now();
+		this.emit("diagnostics", {
+			lastProcessingTimeMs: end - start,
 		});
 	}
 
