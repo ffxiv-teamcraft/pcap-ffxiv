@@ -2,8 +2,8 @@ export interface DesynthResult {
 	unknown0: number;
 	unknown1: number;
 	itemId: number;
-	itemHQ: boolean;
+	itemHq: boolean;
 	itemResultId: number;
-	itemResultHQ: boolean;
+	itemResultHq: boolean;
 	itemResultQuantity: number;
 }

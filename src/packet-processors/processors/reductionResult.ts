@@ -11,7 +11,7 @@ export function reductionResult(reader: BufferReader): ReductionResult {
 			const itemResult = reader.nextUInt32();
 			return {
 				itemId: itemResult % 1000000,
-				itemHQ: itemResult > 1000000,
+				itemHq: itemResult > 1000000,
 				itemQuantity: reader.nextUInt32(),
 			};
 		}),

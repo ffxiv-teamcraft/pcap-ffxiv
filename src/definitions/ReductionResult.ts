@@ -5,7 +5,7 @@ export interface ReductionResult {
 	unknown2: number;
 	result: {
 		itemId: number;
-		itemHQ: boolean;
+		itemHq: boolean;
 		itemQuantity: number;
 	}[];
 }
