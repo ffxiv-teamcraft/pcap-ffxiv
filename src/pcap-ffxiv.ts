@@ -48,6 +48,10 @@ export class CaptureInterface extends EventEmitter {
 	private _region: Region;
 	private _opcodes: Record<number, string> = {};
 
+	public get constants(): ConstantsList | undefined {
+		return this._constants ? this._constants[this._region] : undefined;
+	}
+
 	constructor(region: Region = "Global") {
 		super();
 
