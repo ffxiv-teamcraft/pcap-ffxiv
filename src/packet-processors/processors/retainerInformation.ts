@@ -17,6 +17,6 @@ export function retainerInformation(reader: BufferReader): RetainerInformation {
 		ventureId: reader.nextUInt32(),
 		ventureComplete: reader.nextUInt32(),
 		unknown14: reader.nextUInt8(),
-		name: reader.nextString("utf8", 20),
+		name: reader.nextString(20),
 	};
 }

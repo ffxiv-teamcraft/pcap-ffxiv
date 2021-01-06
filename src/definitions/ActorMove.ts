@@ -1,10 +1,10 @@
 import { Position3 } from "./Position3";
 
-export interface UpdatePositionHandler {
+export interface ActorMove {
+	headRotation: number;
 	rotation: number;
 	animationType: number;
 	animationState: number;
-	clientAnimationType: number;
-	headPosition: number;
+	animationSpeed: number;
 	pos: Position3;
 }

@@ -1,3 +1,5 @@
+import { Position3 } from "./Position3";
+
 export interface ObjectSpawn {
 	spawnIndex: number;
 	objKind: number;
@@ -12,9 +14,5 @@ export interface ObjectSpawn {
 	scale: number;
 	rotation: number;
 	housingLink: number;
-	position: {
-		x: number;
-		y: number;
-		z: number;
-	};
+	position: Position3;
 }

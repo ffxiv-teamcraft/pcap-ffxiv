@@ -1,35 +1,42 @@
-type BufferFnProperties = Pick<
-	Buffer,
+import { Position3 } from "./definitions/Position3";
+
+type BufferFnProperties = Pick<Buffer,
 	{
 		[K in keyof Buffer]: Buffer[K] extends Function ? K : never;
-	}[keyof Buffer]
->;
+	}[keyof Buffer]>;
 
 export class BufferReader {
 	private offset = 0;
 
-	constructor(private buf: Buffer) {}
+	constructor(private buf: Buffer) {
+	}
 
-	reset(): void {
+	reset(): BufferReader {
 		this.offset = 0;
+		return this;
 	}
 
-	move(offset: number): void {
+	move(offset: number): BufferReader {
 		this.offset = offset;
+		return this;
 	}
 
-	skip(length: number): void {
+	skip(length: number): BufferReader {
 		this.offset += length;
+		return this;
 	}
 
 	slice(begin?: number, end?: number): Buffer {
 		return this.buf.slice(begin, end);
 	}
 
-	nextString(encoding: BufferEncoding = "utf8", length: number) {
+	nextString(length?: number) {
+		if (!length) {
+			length = this.buf.length - this.offset;
+		}
 		this.offset += length;
 		try {
-			return this.buf.toString(encoding, this.offset - length, this.offset);
+			return this.buf.toString("utf8", this.offset - length, this.offset);
 		} catch (e) {
 			return "";
 		}
@@ -84,6 +91,22 @@ export class BufferReader {
 
 	nextDouble(fallback = 0): number {
 		return this.tryNext("readDoubleLE", 8, 0);
+	}
+
+	nextPosition3UInt16(): Position3 {
+		return {
+			x: this.nextUInt16(),
+			y: this.nextUInt16(),
+			z: this.nextUInt16(),
+		};
+	}
+
+	nextPosition3(): Position3 {
+		return {
+			x: this.nextFloat(),
+			y: this.nextFloat(),
+			z: this.nextFloat(),
+		};
 	}
 
 	private tryNext<T>(fn: keyof BufferFnProperties, size: number, fallback: T): T {
