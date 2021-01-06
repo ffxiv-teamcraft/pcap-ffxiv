@@ -1,13 +1,12 @@
 import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
 import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from "./frame-processing";
-import { DiagnosticInfo, Frame, FrameHeader, OpcodeList, Packet, Region, Segment, SegmentType } from "./models";
-import { IpcHeader } from "./models/IpcHeader";
+import { DiagnosticInfo, FrameHeader, OpcodeList, Packet, Region, Segment, SegmentType, IpcHeader, ConstantsList } from "./models";
 import pako from "pako";
 import { downloadJson } from "./json-downloader";
-import { loadPacketDefs } from "./load-packetdefs";
-import { ConstantsList } from "./models/ConstantsList";
 import { performance } from "perf_hooks";
+import { loadPacketProcessors } from "./packet-processors/load-packet-processors";
+import { BufferReader } from "./buffer-reader";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -31,11 +30,11 @@ export class CaptureInterface extends EventEmitter {
 	private readonly _buf: Buffer;
 
 	// We use the destination port as the key.
-	private readonly _bufTable: { [key: number]: Buffer };
+	private readonly _bufTable: Record<number, Buffer>;
 
 	private _opcodeLists: OpcodeList[] | undefined;
-	private _constants: { [key in Region]: ConstantsList } | undefined;
-	private _packetDefs: { [key: string]: (buf: Buffer) => any };
+	private _constants: Record<keyof Region, ConstantsList> | undefined;
+	private _packetDefs: Record<string, (reader: BufferReader) => any>;
 	private _region: Region;
 	private _opcodes: Record<number, string> = {};
 
@@ -47,7 +46,7 @@ export class CaptureInterface extends EventEmitter {
 		this._bufTable = {};
 
 		this._region = region;
-		this._packetDefs = loadPacketDefs();
+		this._packetDefs = loadPacketProcessors();
 
 		this._loadOpcodes().then(async () => {
 			await this._loadConstants();
@@ -78,7 +77,7 @@ export class CaptureInterface extends EventEmitter {
 		const device = Cap.findDevice(deviceIdentifier);
 		this._cap.open(device, FILTER, 10 * MEGABYTE, this._buf);
 		this._cap.setMinBytes &&
-			this._cap.setMinBytes(ETH_HEADER_SIZE + IPV4_HEADER_SIZE + TCP_HEADER_SIZE + FRAME_HEADER_SIZE + SEG_HEADER_SIZE);
+		this._cap.setMinBytes(ETH_HEADER_SIZE + IPV4_HEADER_SIZE + TCP_HEADER_SIZE + FRAME_HEADER_SIZE + SEG_HEADER_SIZE);
 		this._registerInternalHandlers();
 	}
 
@@ -230,7 +229,8 @@ export class CaptureInterface extends EventEmitter {
 
 				// Unmarshal the data, if possible.
 				if (this._packetDefs[typeName]) {
-					segment.parsedIpcData = this._packetDefs[typeName](ipcData!);
+					const reader = new BufferReader(ipcData!);
+					segment.parsedIpcData = this._packetDefs[typeName](reader);
 				}
 
 				this.emit("message", typeName, segment);
