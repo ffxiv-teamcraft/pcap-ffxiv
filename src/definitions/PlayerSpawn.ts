@@ -35,7 +35,7 @@ export interface PlayerSpawn {
 	hPMax: number;
 	hPCurr: number;
 	displayFlags: number;
-	fateID: number;
+	fateId: number;
 	mPCurr: number;
 	mPMax: number;
 	unk: number;
@@ -64,7 +64,7 @@ export interface PlayerSpawn {
 	elementData: number;
 
 	effects: {
-		ID: number;
+		Id: number;
 		param: number;
 		duration: number;
 		sourceActorId: number;

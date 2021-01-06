@@ -3,7 +3,7 @@ import { WeatherChange } from "../../definitions/WeatherChange";
 
 export function weatherChange(reader: BufferReader): WeatherChange {
 	return {
-		weatherID: reader.nextUInt32(),
+		weatherId: reader.nextUInt32(),
 		delay: reader.nextFloat(),
 	};
 }

@@ -3,7 +3,7 @@ import { StatusEffectList } from "../../definitions/StatusEffectList";
 
 export function statusEffectList(reader: BufferReader): StatusEffectList {
 	return {
-		classID: reader.nextUInt8(),
+		classId: reader.nextUInt8(),
 		level1: reader.nextUInt8(),
 		level: reader.nextUInt16(),
 		currentHP: reader.nextUInt32(),
@@ -13,10 +13,10 @@ export function statusEffectList(reader: BufferReader): StatusEffectList {
 		currentTP: reader.nextUInt16(),
 		effects: Array(30).map(() => {
 			return {
-				effectID: reader.nextUInt16(),
+				effectId: reader.nextUInt16(),
 				unknown1: reader.nextUInt16(),
 				duration: reader.nextFloat(),
-				sourceActorID: reader.nextUInt32(),
+				sourceActorId: reader.nextUInt32(),
 			};
 		}),
 	};

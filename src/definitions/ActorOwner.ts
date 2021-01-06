@@ -1,5 +1,5 @@
 export interface ActorOwner {
 	type: number;
-	actorID: number;
-	actorID2: number;
+	actorId: number;
+	actorId2: number;
 }

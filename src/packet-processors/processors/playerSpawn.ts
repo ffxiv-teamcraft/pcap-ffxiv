@@ -37,7 +37,7 @@ export function playerSpawn(reader: BufferReader): PlayerSpawn {
 		hPMax: reader.nextUInt32(),
 		hPCurr: reader.nextUInt32(),
 		displayFlags: reader.nextUInt32(),
-		fateID: reader.nextUInt16(),
+		fateId: reader.nextUInt16(),
 		mPCurr: reader.nextUInt16(),
 		mPMax: reader.nextUInt16(),
 		unk: reader.nextUInt16(), // :: 0
@@ -69,7 +69,7 @@ export function playerSpawn(reader: BufferReader): PlayerSpawn {
 
 		effects: Array(30).map(() => {
 			return {
-				ID: reader.nextUInt16(),
+				Id: reader.nextUInt16(),
 				param: reader.nextUInt16(),
 				duration: reader.nextFloat(),
 				sourceActorId: reader.nextUInt32(),

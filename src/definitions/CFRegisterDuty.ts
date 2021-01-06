@@ -1,4 +1,4 @@
 export interface CFRegisterDuty {
-	rouletteID: number;
-	contentID: number;
+	rouletteId: number;
+	contentId: number;
 }

@@ -5,7 +5,7 @@ export interface DesynthOrReductionResult extends ActorControl {
 	param4: number;
 
 	resultType: number;
-	itemID: number;
+	itemId: number;
 	itemHQ: boolean;
 	exp: number;
 }

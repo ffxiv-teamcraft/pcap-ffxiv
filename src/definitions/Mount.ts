@@ -1,3 +1,3 @@
 export interface Mount {
-	ID: number;
+	Id: number;
 }

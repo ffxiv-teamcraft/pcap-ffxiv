@@ -29,7 +29,7 @@ export interface NpcSpawn {
 	hPMax: number;
 	hPCurr: number;
 	displayFlags: number;
-	fateID: number;
+	fateId: number;
 	mPCurr: number;
 	tPCurr: number;
 	mPMax: number;
@@ -58,7 +58,7 @@ export interface NpcSpawn {
 	elementalLevel: number;
 	element: number;
 	u30b: number;
-	effects: { ID: number; sourceActorID: number }[];
+	effects: { Id: number; sourceActorId: number }[];
 	models: number[];
 	looks: number[];
 	effect_id: number;

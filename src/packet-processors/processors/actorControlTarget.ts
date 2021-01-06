@@ -10,6 +10,6 @@ export function actorControlTarget(reader: BufferReader): ActorControlTarget {
 		param3: reader.nextUInt32(),
 		param4: reader.nextUInt32(),
 		padding1: reader.nextUInt32(),
-		targetID: reader.nextUInt64(),
+		targetId: reader.nextUInt64(),
 	};
 }

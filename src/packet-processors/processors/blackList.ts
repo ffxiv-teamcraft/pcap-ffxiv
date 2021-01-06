@@ -5,7 +5,7 @@ export function blackList(reader: BufferReader): BlackList {
 	return {
 		entries: Array(20).map(() => {
 			return {
-				contentID: reader.nextUInt64(),
+				contentId: reader.nextUInt64(),
 				name: reader.nextString(32),
 			};
 		}),

@@ -3,7 +3,7 @@ import { ActorFreeSpawn } from "../../definitions/ActorFreeSpawn";
 
 export function actorFreeSpawn(reader: BufferReader): ActorFreeSpawn {
 	return {
-		spawnID: reader.nextUInt32(),
-		actorID: reader.nextUInt32(),
+		spawnId: reader.nextUInt32(),
+		actorId: reader.nextUInt32(),
 	};
 }

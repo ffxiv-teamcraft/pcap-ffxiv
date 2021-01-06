@@ -3,7 +3,7 @@ import { PersistentEffect } from "../../definitions/PersistentEffect";
 
 export function persistentEffect(reader: BufferReader): PersistentEffect {
 	return {
-		actionID: reader.nextUInt16(),
-		effectID: reader.nextUInt16(),
+		actionId: reader.nextUInt16(),
+		effectId: reader.nextUInt16(),
 	};
 }

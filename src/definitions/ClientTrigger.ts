@@ -1,5 +1,5 @@
 export interface ClientTrigger {
-	commandID: number;
+	commandId: number;
 	// Named differently than in Sapphire because we count normally: number;
 	param1: number;
 	param2: number;

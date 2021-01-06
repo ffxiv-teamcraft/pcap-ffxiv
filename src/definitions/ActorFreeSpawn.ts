@@ -1,4 +1,4 @@
 export interface ActorFreeSpawn {
-	spawnID: number;
-	actorID: number;
+	spawnId: number;
+	actorId: number;
 }

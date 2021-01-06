@@ -31,7 +31,7 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		hPMax: reader.nextUInt32(),
 		hPCurr: reader.nextUInt32(),
 		displayFlags: reader.nextUInt32(),
-		fateID: reader.nextUInt16(),
+		fateId: reader.nextUInt16(),
 		mPCurr: reader.nextUInt16(),
 		tPCurr: reader.nextUInt16(),
 		mPMax: reader.nextUInt16(),
@@ -62,8 +62,8 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		u30b: reader.nextUInt32(),
 		effects: Array(30).map(() => {
 			return {
-				ID: reader.nextUInt16(),
-				sourceActorID: reader.nextUInt32(),
+				Id: reader.nextUInt16(),
+				sourceActorId: reader.nextUInt32(),
 			};
 		}),
 		effect_id: reader.nextUInt16(),

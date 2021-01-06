@@ -1,5 +1,5 @@
 export interface StatusEffectList {
-	classID: number;
+	classId: number;
 	level1: number;
 	level: number;
 	currentHP: number;
@@ -8,9 +8,9 @@ export interface StatusEffectList {
 	maxMP: number;
 	currentTP: number;
 	effects: {
-		effectID: number;
+		effectId: number;
 		unknown1: number;
 		duration: number;
-		sourceActorID: number;
+		sourceActorId: number;
 	}[];
 }

@@ -1,4 +1,4 @@
 export interface WeatherChange {
-	weatherID: number;
+	weatherId: number;
 	delay: number;
 }

@@ -3,7 +3,7 @@ import { CFPlayerInNeed } from "../../definitions/CFPlayerInNeed";
 
 export function cFPlayerInNeed(reader: BufferReader): CFPlayerInNeed {
 	return {
-		// Ordered by roulette ID
+		// Ordered by roulette Id
 		inNeeds: reader.nextBuffer(0x10),
 	};
 }

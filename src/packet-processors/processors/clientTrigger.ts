@@ -3,7 +3,7 @@ import { ClientTrigger } from "../../definitions/ClientTrigger";
 
 export function clientTrigger(reader: BufferReader): ClientTrigger {
 	return {
-		commandID: reader.nextUInt16(),
+		commandId: reader.nextUInt16(),
 		// Named differently than in Sapphire because we count normally
 		param1: reader.nextUInt32(),
 		param2: reader.nextUInt32(),
