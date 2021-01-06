@@ -8,7 +8,8 @@
   "license": "MIT",
   "scripts": {
     "build": "tsc",
-    "build:watch": "tsc -w"
+    "build:watch": "tsc -w",
+    "pcap-types:generate": "barrel-generator --sourceFolder=./src/definitions --barrelFileLocation=./src/definitions --barrelFileName=index.ts --includeFile=.ts"
   },
   "files": [
     "lib/"
@@ -32,13 +33,13 @@
   "devDependencies": {
     "@types/node": "^14.14.19",
     "@types/pako": "^1.0.1",
+    "barrel-generator": "^1.0.9",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "prettier": "^2.2.1",
     "typescript": "^4.1.3"
   },
   "dependencies": {
-    "barrel-generator": "^1.0.9",
     "cap": "^0.2.1",
     "pako": "^2.0.2"
   }
