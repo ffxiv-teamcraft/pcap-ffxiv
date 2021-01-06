@@ -52,12 +52,16 @@ export class CaptureInterface extends EventEmitter {
 
 	updateOpcodesCache(): void {
 		const regionOpcodes = this._opcodeLists?.find((ol) => ol.region === this._region);
-		this._opcodes = regionOpcodes?.lists.ServerZoneIpcType.reduce((acc, entry) => {
-			return {
-				...acc,
-				[entry.opcode]: entry.name,
-			};
-		}, {}) as Record<number, string>;
+
+		this._opcodes = regionOpcodes?.lists.ServerZoneIpcType.concat(regionOpcodes?.lists.ClientZoneIpcType).reduce(
+			(acc, entry) => {
+				return {
+					...acc,
+					[entry.opcode]: entry.name,
+				};
+			},
+			{},
+		) as Record<number, string>;
 	}
 
 	open(deviceIdentifier: string) {
