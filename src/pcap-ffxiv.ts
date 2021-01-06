@@ -103,6 +103,16 @@ export class CaptureInterface extends EventEmitter {
 		return (this._bufTable[port] ||= Buffer.alloc(BUFFER_SIZE));
 	}
 
+	private _discardUntilValid(buf: Buffer): number {
+		for (let i = 0; i < buf.length - FRAME_HEADER_SIZE; i++) {
+			const fh = parseFrameHeader(buf.slice(i));
+			if (isMagical(fh)) {
+				return i;
+			}
+		}
+		return buf.length;
+	}
+
 	private _registerInternalHandlers() {
 		this._cap.on("packet", (nBytes: number) => {
 			// The total buffer is way bigger than the relevant data, so we trim that first.
@@ -125,9 +135,11 @@ export class CaptureInterface extends EventEmitter {
 
 					const childFramePayload = payload.slice(payload.length - datalen);
 					const buf = this._getBuffer(ret.info.dstport);
-					buf.write(childFramePayload.toString("binary"), "binary");
+					buf.set(childFramePayload);
 
 					let frameHeader: FrameHeader;
+					const skip = this._discardUntilValid(buf);
+					buf.set(buf.slice(skip));
 					try {
 						frameHeader = parseFrameHeader(buf);
 					} catch (err) {
@@ -148,7 +160,7 @@ export class CaptureInterface extends EventEmitter {
 							ret.info.srcport,
 							ret.info.dstport,
 						);
-						//this._bufTable[ret.info.dstport] = buf.slice(frameHeader.size);
+						buf.set(buf.slice(frameHeader.size));
 					}
 				}
 			}
