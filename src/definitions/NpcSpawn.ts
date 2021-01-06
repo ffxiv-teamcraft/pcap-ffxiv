@@ -19,8 +19,8 @@ export interface NpcSpawn {
 	craftToolModel: bigint;
 	u14: number;
 	u15: number;
-	bNPCBase: number;
-	bNPCName: number;
+	bNpcBase: number;
+	bNpcName: number;
 	levelId: number;
 	u19: number;
 	directorId: number;
@@ -66,5 +66,5 @@ export interface NpcSpawn {
 	pos: Position3;
 	name: string;
 	fcTag: string;
-	bNPCPartSlot: number;
+	bNpcPartSlot: number;
 }

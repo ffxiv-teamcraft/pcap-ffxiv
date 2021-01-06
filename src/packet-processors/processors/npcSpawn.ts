@@ -21,8 +21,8 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		craftToolModel: reader.nextUInt64(),
 		u14: reader.nextUInt32(),
 		u15: reader.nextUInt32(),
-		bNPCBase: reader.nextUInt32(),
-		bNPCName: reader.nextUInt32(),
+		bNpcBase: reader.nextUInt32(),
+		bNpcName: reader.nextUInt32(),
 		levelId: reader.nextUInt32(),
 		u19: reader.nextUInt32(),
 		directorId: reader.nextUInt32(),
@@ -77,6 +77,6 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		}),
 		name: reader.nextString(),
 		fcTag: reader.nextString(),
-		bNPCPartSlot: reader.nextUInt8(),
+		bNpcPartSlot: reader.nextUInt8(),
 	};
 }

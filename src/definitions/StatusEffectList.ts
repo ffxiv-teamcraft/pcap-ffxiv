@@ -2,10 +2,10 @@ export interface StatusEffectList {
 	classId: number;
 	level1: number;
 	level: number;
-	currentHP: number;
-	maxHP: number;
-	currentMP: number;
-	maxMP: number;
+	currentHp: number;
+	maxHp: number;
+	currentMp: number;
+	maxMp: number;
 	currentTP: number;
 	effects: {
 		effectId: number;

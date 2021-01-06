@@ -25,8 +25,8 @@ export interface PlayerSpawn {
 
 	u14: number;
 	u15: number;
-	bNPCBase: number;
-	bNPCName: number;
+	bNpcBase: number;
+	bNpcName: number;
 	u18: number;
 	u19: number;
 	directorId: number;
