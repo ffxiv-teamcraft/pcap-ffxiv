@@ -3,7 +3,7 @@ import { CharaVisualEffect } from "../../definitions/CharaVisualEffect";
 
 export function charaVisualEffect(reader: BufferReader): CharaVisualEffect {
 	return {
-		Id: reader.nextUInt32(),
+		id: reader.nextUInt32(),
 		padding: reader.nextUInt32(),
 	};
 }

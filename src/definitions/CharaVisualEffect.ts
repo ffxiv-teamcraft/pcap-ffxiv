@@ -1,4 +1,4 @@
 export interface CharaVisualEffect {
-	Id: number;
+	id: number;
 	padding: number;
 }

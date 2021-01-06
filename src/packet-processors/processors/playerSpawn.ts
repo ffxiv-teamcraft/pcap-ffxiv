@@ -69,7 +69,7 @@ export function playerSpawn(reader: BufferReader): PlayerSpawn {
 
 		effects: Array(30).map(() => {
 			return {
-				Id: reader.nextUInt16(),
+				id: reader.nextUInt16(),
 				param: reader.nextUInt16(),
 				duration: reader.nextFloat(),
 				sourceActorId: reader.nextUInt32(),

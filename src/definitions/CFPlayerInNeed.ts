@@ -1,4 +1,4 @@
 export interface CFPlayerInNeed {
-	// Ordered by roulette Id: number;
+	// Ordered by roulette	id: number;
 	inNeeds: Buffer;
 }

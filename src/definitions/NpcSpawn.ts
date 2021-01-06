@@ -58,7 +58,7 @@ export interface NpcSpawn {
 	elementalLevel: number;
 	element: number;
 	u30b: number;
-	effects: { Id: number; sourceActorId: number }[];
+	effects: { id: number; sourceActorId: number }[];
 	models: number[];
 	looks: number[];
 	effect_id: number;

@@ -3,6 +3,6 @@ import { Mount } from "../../definitions/Mount";
 
 export function mount(reader: BufferReader): Mount {
 	return {
-		Id: reader.nextUInt32(),
+		id: reader.nextUInt32(),
 	};
 }

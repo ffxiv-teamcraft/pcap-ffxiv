@@ -64,7 +64,7 @@ export interface PlayerSpawn {
 	elementData: number;
 
 	effects: {
-		Id: number;
+		id: number;
 		param: number;
 		duration: number;
 		sourceActorId: number;

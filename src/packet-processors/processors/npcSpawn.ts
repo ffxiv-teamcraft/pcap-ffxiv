@@ -62,7 +62,7 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		u30b: reader.nextUInt32(),
 		effects: Array(30).map(() => {
 			return {
-				Id: reader.nextUInt16(),
+				id: reader.nextUInt16(),
 				sourceActorId: reader.nextUInt32(),
 			};
 		}),
