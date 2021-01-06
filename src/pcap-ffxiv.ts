@@ -115,9 +115,7 @@ export class CaptureInterface extends EventEmitter {
 					if ((ret.info.flags & 8) === 0) return; // Only TCP PSH has actual data.
 
 					const childFramePayload = payload.slice(payload.length - datalen);
-
-					const cfHeaderPayload = childFramePayload.slice(0, FRAME_HEADER_SIZE);
-					const frameHeader = parseFrameHeader(cfHeaderPayload);
+					const frameHeader = parseFrameHeader(childFramePayload);
 
 					if (!isMagical(frameHeader)) return;
 
