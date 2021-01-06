@@ -1,3 +1,3 @@
 export interface ConstantsList {
-    InventoryOperationBaseValue: number;
+	InventoryOperationBaseValue: number;
 }

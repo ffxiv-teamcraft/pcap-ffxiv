@@ -16,20 +16,8 @@ export function updateInventorySlot(reader: BufferReader): UpdateInventorySlot {
 		spiritBond: reader.nextUInt16(),
 		color: reader.nextUInt16(),
 		glamourCatalogId: reader.nextUInt32(),
-		materia: [
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-		],
-		materiaTiers: [
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-		],
+		materia: [reader.nextUInt16(), reader.nextUInt16(), reader.nextUInt16(), reader.nextUInt16(), reader.nextUInt16()],
+		materiaTiers: [reader.nextUInt8(), reader.nextUInt8(), reader.nextUInt8(), reader.nextUInt8(), reader.nextUInt8()],
 		padding: reader.nextUInt8(),
 		unknown10: reader.nextUInt32(),
 	};

@@ -73,7 +73,7 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 			return reader.nextUInt32();
 		}),
 		looks: Array(26).map(() => {
-			return reader.nextUInt8()
+			return reader.nextUInt8();
 		}),
 		name: reader.nextString(),
 		fcTag: reader.nextString(),

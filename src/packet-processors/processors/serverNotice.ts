@@ -1,7 +1,6 @@
 import { BufferReader } from "../../buffer-reader";
 import { ServerNotice } from "../../definitions/ServerNotice";
 
-
 const displayFlags = {
 	0: "chatLog",
 	2: "noDisplay",

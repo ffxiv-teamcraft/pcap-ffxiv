@@ -7,5 +7,5 @@ export interface ReductionResult {
 		itemID: number;
 		itemHQ: boolean;
 		itemQuantity: number;
-	}[]
+	}[];
 }

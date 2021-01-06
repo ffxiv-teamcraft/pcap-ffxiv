@@ -2,7 +2,6 @@ import { EffectResult } from "../../definitions";
 import { BufferReader } from "../../buffer-reader";
 
 export function effectResult(reader: BufferReader): EffectResult {
-
 	return {
 		globalSequence: reader.nextUInt32(),
 		actorId: reader.nextUInt32(),

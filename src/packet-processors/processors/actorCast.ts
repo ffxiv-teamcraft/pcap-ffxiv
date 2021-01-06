@@ -7,7 +7,7 @@ export function actorCast(reader: BufferReader): ActorCast {
 		skillType: {
 			0x1: "Normal",
 			0x2: "ItemAction",
-			0xD: "MountSkill",
+			0xd: "MountSkill",
 		}[reader.nextUInt8()],
 		castTime: reader.skip(5).nextFloat(),
 		targetID: reader.nextUInt32(),

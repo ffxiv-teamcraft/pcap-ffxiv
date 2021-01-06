@@ -17,20 +17,8 @@ export function itemInfo(reader: BufferReader): ItemInfo {
 		spiritBond: reader.nextUInt16(),
 		stain: reader.nextUInt16(),
 		glamourCatalogId: reader.nextUInt32(),
-		materia: [
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-			reader.nextUInt16(),
-		],
-		materiaTiers: [
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-			reader.nextUInt8(),
-		],
+		materia: [reader.nextUInt16(), reader.nextUInt16(), reader.nextUInt16(), reader.nextUInt16(), reader.nextUInt16()],
+		materiaTiers: [reader.nextUInt8(), reader.nextUInt8(), reader.nextUInt8(), reader.nextUInt8(), reader.nextUInt8()],
 		padding: reader.nextUInt8(),
 		unknown10: reader.nextUInt32(),
 	};

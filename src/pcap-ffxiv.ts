@@ -87,7 +87,7 @@ export class CaptureInterface extends EventEmitter {
 		const device = Cap.findDevice(deviceIdentifier);
 		this._cap.open(device, FILTER, 10 * MEGABYTE, this._buf);
 		this._cap.setMinBytes &&
-		this._cap.setMinBytes(ETH_HEADER_SIZE + IPV4_HEADER_SIZE + TCP_HEADER_SIZE + FRAME_HEADER_SIZE + SEG_HEADER_SIZE);
+			this._cap.setMinBytes(ETH_HEADER_SIZE + IPV4_HEADER_SIZE + TCP_HEADER_SIZE + FRAME_HEADER_SIZE + SEG_HEADER_SIZE);
 		this._registerInternalHandlers();
 	}
 
