@@ -1,3 +1,5 @@
+import { Position3 } from "./definitions/Position3";
+
 type BufferFnProperties = Pick<Buffer,
 	{
 		[K in keyof Buffer]: Buffer[K] extends Function ? K : never;
@@ -28,10 +30,13 @@ export class BufferReader {
 		return this.buf.slice(begin, end);
 	}
 
-	nextString(encoding: BufferEncoding = "utf8", length: number) {
+	nextString(length?: number) {
+		if (!length) {
+			length = this.buf.length - this.offset;
+		}
 		this.offset += length;
 		try {
-			return this.buf.toString(encoding, this.offset - length, this.offset);
+			return this.buf.toString("utf8", this.offset - length, this.offset);
 		} catch (e) {
 			return "";
 		}
@@ -88,11 +93,19 @@ export class BufferReader {
 		return this.tryNext("readDoubleLE", 8, 0);
 	}
 
-	nextPosition3UInt16(): { x: number, y: number, z: number } {
+	nextPosition3UInt16(): Position3 {
 		return {
 			x: this.nextUInt16(),
 			y: this.nextUInt16(),
 			z: this.nextUInt16(),
+		};
+	}
+
+	nextPosition3(): Position3 {
+		return {
+			x: this.nextFloat(),
+			y: this.nextFloat(),
+			z: this.nextFloat(),
 		};
 	}
 
