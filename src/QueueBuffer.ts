@@ -3,7 +3,7 @@ export class QueueBuffer extends Buffer {
 
 	static fromBuffer(buf: Buffer): QueueBuffer {
 		const qb = Object.create(QueueBuffer);
-		return Object.assign(buf, qb, qb.prototype);
+		return Object.assign(buf, { _end: 0 }, qb.prototype);
 	}
 
 	push(buf: Buffer) {
@@ -12,7 +12,7 @@ export class QueueBuffer extends Buffer {
 	}
 
 	pop(size: number): Buffer {
-		const bytesToCopy = size > this._end ? this._end : size;
+		const bytesToCopy = Math.min(this._end, size);
 		const buf = Buffer.allocUnsafe(bytesToCopy);
 		this.copy(buf);
 		this.set(this.slice(bytesToCopy));
