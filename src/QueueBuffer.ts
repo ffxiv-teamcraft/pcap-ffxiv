@@ -1,22 +1,21 @@
-export class QueueBuffer {
-	private _end: number;
-	public buffer: Buffer;
+export class QueueBuffer extends Buffer {
+	private _end: number = 0;
 
-	constructor(buf: Buffer) {
-		this._end = 0;
-		this.buffer = buf;
+	static fromBuffer(buf: Buffer): QueueBuffer {
+		const qb = Object.create(QueueBuffer);
+		return Object.assign(buf, qb, qb.prototype);
 	}
 
 	push(buf: Buffer) {
-		this.buffer.set(buf, this._end);
+		this.set(buf, this._end);
 		this._end += buf.length;
 	}
 
 	pop(size: number): Buffer {
 		const bytesToCopy = size > this._end ? this._end : size;
 		const buf = Buffer.allocUnsafe(bytesToCopy);
-		this.buffer.copy(buf, 0, 0, bytesToCopy);
-		this.buffer.set(this.buffer.slice(bytesToCopy), 0);
+		this.copy(buf, 0, 0, bytesToCopy);
+		this.set(this.slice(bytesToCopy), 0);
 		this._end -= bytesToCopy;
 		return buf;
 	}

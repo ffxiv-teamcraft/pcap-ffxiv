@@ -115,7 +115,7 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	private _getBuffer(port: number): QueueBuffer {
-		return (this._bufTable[port] ||= new QueueBuffer(Buffer.alloc(BUFFER_SIZE)));
+		return (this._bufTable[port] ||= QueueBuffer.fromBuffer(Buffer.alloc(BUFFER_SIZE)));
 	}
 
 	private _discardUntilValid(buf: Buffer): number {
@@ -130,10 +130,10 @@ export class CaptureInterface extends EventEmitter {
 
 	private _tryGetFrameHeader(buf: QueueBuffer): FrameHeader | null {
 		let frameHeader: FrameHeader | null = null;
-		const skip = this._discardUntilValid(buf.buffer); // Skip to the beginning of the next frame.
+		const skip = this._discardUntilValid(buf); // Skip to the beginning of the next frame.
 		buf.pop(skip);
 		try {
-			frameHeader = parseFrameHeader(buf.buffer);
+			frameHeader = parseFrameHeader(buf);
 		} catch (err) {
 			if (err instanceof RangeError) {
 				return null; // We need to wait for the next frame to get enough data.
