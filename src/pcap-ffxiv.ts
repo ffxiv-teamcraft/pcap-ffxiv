@@ -4,7 +4,6 @@ import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from 
 import {
 	ConstantsList,
 	DiagnosticInfo,
-	Frame,
 	FrameHeader,
 	IpcHeader,
 	OpcodeList,
