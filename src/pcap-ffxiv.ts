@@ -4,6 +4,7 @@ import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from 
 import {
 	ConstantsList,
 	DiagnosticInfo,
+	Frame,
 	FrameHeader,
 	IpcHeader,
 	OpcodeList,
@@ -16,7 +17,8 @@ import pako from "pako";
 import { downloadJson } from "./json-downloader";
 import { performance } from "perf_hooks";
 import { loadPacketProcessors } from "./packet-processors/load-packet-processors";
-import { BufferReader } from "./buffer-reader";
+import { BufferReader } from "./BufferReader";
+import { QueueBuffer } from "./QueueBuffer";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -40,7 +42,7 @@ export class CaptureInterface extends EventEmitter {
 	private readonly _buf: Buffer;
 
 	// We use the destination port as the key.
-	private readonly _bufTable: Record<number, Buffer>;
+	private readonly _bufTable: Record<number, QueueBuffer>;
 
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: Record<keyof Region, ConstantsList> | undefined;
@@ -112,8 +114,8 @@ export class CaptureInterface extends EventEmitter {
 		);
 	}
 
-	private _getBuffer(port: number): Buffer {
-		return (this._bufTable[port] ||= Buffer.alloc(BUFFER_SIZE));
+	private _getBuffer(port: number): QueueBuffer {
+		return (this._bufTable[port] ||= new QueueBuffer(Buffer.alloc(BUFFER_SIZE)));
 	}
 
 	private _discardUntilValid(buf: Buffer): number {
@@ -124,6 +126,22 @@ export class CaptureInterface extends EventEmitter {
 			}
 		}
 		return buf.length;
+	}
+
+	private _tryGetFrameHeader(buf: QueueBuffer): FrameHeader | null {
+		let frameHeader: FrameHeader | null = null;
+		const skip = this._discardUntilValid(buf.buffer); // Skip to the beginning of the next frame.
+		buf.pop(skip);
+		try {
+			frameHeader = parseFrameHeader(buf.buffer);
+		} catch (err) {
+			if (err instanceof RangeError) {
+				return null; // We need to wait for the next frame to get enough data.
+			}
+
+			this.emit("error", err);
+		}
+		return frameHeader;
 	}
 
 	private _registerInternalHandlers() {
@@ -148,32 +166,18 @@ export class CaptureInterface extends EventEmitter {
 
 					const childFramePayload = payload.slice(payload.length - datalen);
 					const buf = this._getBuffer(ret.info.dstport);
-					buf.set(childFramePayload);
+					buf.push(childFramePayload);
 
-					let frameHeader: FrameHeader;
-					const skip = this._discardUntilValid(buf); // Skip to the beginning of the next frame.
-					buf.set(buf.slice(skip));
-					try {
-						frameHeader = parseFrameHeader(buf);
-					} catch (err) {
-						if (err instanceof RangeError) {
-							return; // We need to wait for the next frame to get enough data.
-						}
-
-						this.emit("error", err);
-						return;
-					}
-
-					if (isMagical(frameHeader)) {
+					let frameHeader: FrameHeader | null;
+					while ((frameHeader = this._tryGetFrameHeader(buf)) && isMagical(frameHeader)) {
 						this._processFrame(
 							frameHeader,
-							buf.slice(0, frameHeader.size),
+							buf.pop(frameHeader.size),
 							srcAddr,
 							dstAddr,
 							ret.info.srcport,
 							ret.info.dstport,
 						);
-						buf.set(buf.slice(frameHeader.size));
 					}
 				}
 			}
