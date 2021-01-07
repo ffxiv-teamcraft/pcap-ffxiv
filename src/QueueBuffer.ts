@@ -22,12 +22,12 @@ export class QueueBuffer extends Buffer {
 		return QueueBuffer.fromBuffer(buf);
 	}
 
-	popUntil(fn: (buf: Buffer) => boolean): QueueBuffer {
-		for (let i = 0; i < this.length; i++) {
+	popUntil(fn: (buf: Buffer) => boolean, startIndex?: number, endIndex?: number): QueueBuffer {
+		for (let i = startIndex || 0; i < (endIndex || this.length); i++) {
 			if (fn(this.slice(i))) {
 				return this.pop(i);
 			}
 		}
-		return this.pop(this.length);
+		return this.pop(endIndex || this.length);
 	}
 }

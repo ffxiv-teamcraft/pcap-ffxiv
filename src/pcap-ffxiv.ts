@@ -119,12 +119,14 @@ export class CaptureInterface extends EventEmitter {
 
 	private _tryGetFrameHeader(buf: QueueBuffer): FrameHeader {
 		// Skip to the beginning of the next frame.
-		buf.popUntil((b) => {
-			if (b.length >= FRAME_HEADER_SIZE) {
+		buf.popUntil(
+			(b) => {
 				const fh = parseFrameHeader(b);
 				return isMagical(fh);
-			} else return false;
-		});
+			},
+			0,
+			buf.length - FRAME_HEADER_SIZE,
+		);
 
 		return parseFrameHeader(buf);
 	}
