@@ -149,36 +149,34 @@ export class CaptureInterface extends EventEmitter {
 			const payload = this._buf.slice(0, nBytes);
 
 			let ret = decoders.Ethernet(payload);
-			if (ret.info.type === PROTOCOL.ETHERNET.IPV4) {
-				ret = decoders.IPV4(payload, ret.offset);
+			if (ret.info.type !== PROTOCOL.ETHERNET.IPV4) return;
+			ret = decoders.IPV4(payload, ret.offset);
 
-				// The info object is destroyed once we decode the TCP data from the packet payload.
-				const srcAddr = ret.info.srcaddr;
-				const dstAddr = ret.info.dstaddr;
+			// The info object is destroyed once we decode the TCP data from the packet payload.
+			const srcAddr = ret.info.srcaddr;
+			const dstAddr = ret.info.dstaddr;
 
-				if (ret.info.protocol === PROTOCOL.IP.TCP) {
-					let datalen = ret.info.totallen - ret.hdrlen;
-					ret = decoders.TCP(payload, ret.offset);
-					datalen -= ret.hdrlen;
+			if (ret.info.protocol !== PROTOCOL.IP.TCP) return;
+			let datalen = ret.info.totallen - ret.hdrlen;
+			ret = decoders.TCP(payload, ret.offset);
+			datalen -= ret.hdrlen;
 
-					if ((ret.info.flags & 8) === 0) return; // Only TCP PSH has actual data.
+			if ((ret.info.flags & 8) === 0) return; // Only TCP PSH has actual data.
 
-					const childFramePayload = payload.slice(payload.length - datalen);
-					const buf = this._getBuffer(ret.info.dstport);
-					buf.push(childFramePayload);
+			const childFramePayload = payload.slice(payload.length - datalen);
+			const buf = this._getBuffer(ret.info.dstport);
+			buf.push(childFramePayload);
 
-					let frameHeader: FrameHeader | null;
-					while ((frameHeader = this._tryGetFrameHeader(buf)) && isMagical(frameHeader)) {
-						this._processFrame(
-							frameHeader,
-							buf.pop(frameHeader.size),
-							srcAddr,
-							dstAddr,
-							ret.info.srcport,
-							ret.info.dstport,
-						);
-					}
-				}
+			let frameHeader: FrameHeader | null;
+			while ((frameHeader = this._tryGetFrameHeader(buf)) && isMagical(frameHeader)) {
+				this._processFrame(
+					frameHeader,
+					buf.pop(frameHeader.size),
+					srcAddr,
+					dstAddr,
+					ret.info.srcport,
+					ret.info.dstport,
+				);
 			}
 		});
 	}
