@@ -117,29 +117,16 @@ export class CaptureInterface extends EventEmitter {
 		return (this._bufTable[port] ||= QueueBuffer.fromBuffer(Buffer.alloc(BUFFER_SIZE)));
 	}
 
-	private _tryGetFrameHeader(buf: QueueBuffer): FrameHeader | null {
-		let frameHeader: FrameHeader | null = null;
+	private _tryGetFrameHeader(buf: QueueBuffer): FrameHeader {
 		// Skip to the beginning of the next frame.
 		buf.popUntil((b) => {
-			try {
+			if (b.length >= FRAME_HEADER_SIZE) {
 				const fh = parseFrameHeader(b);
 				return isMagical(fh);
-			} catch (err) {
-				return false;
-			}
+			} else return false;
 		});
 
-		try {
-			frameHeader = parseFrameHeader(buf);
-		} catch (err) {
-			if (err instanceof RangeError) {
-				return null; // We need to wait for the next frame to get enough data.
-			}
-
-			this.emit("error", err);
-		}
-
-		return frameHeader;
+		return parseFrameHeader(buf);
 	}
 
 	private _registerInternalHandlers() {
@@ -166,7 +153,7 @@ export class CaptureInterface extends EventEmitter {
 			const buf = this._getBuffer(ret.info.dstport);
 			buf.push(childFramePayload);
 
-			let frameHeader: FrameHeader | null;
+			let frameHeader: FrameHeader;
 			while ((frameHeader = this._tryGetFrameHeader(buf)) && isMagical(frameHeader)) {
 				this._processFrame(
 					frameHeader,
