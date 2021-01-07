@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { PrepareZoning } from "../../definitions";
 
 export function prepareZoning(reader: BufferReader): PrepareZoning {

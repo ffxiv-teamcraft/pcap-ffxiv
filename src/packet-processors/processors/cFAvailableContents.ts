@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { CFAvailableContents } from "../../definitions/CFAvailableContents";
 
 export function cFAvailableContents(reader: BufferReader): CFAvailableContents {

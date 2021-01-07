@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { RetainerInformation } from "../../definitions";
 
 export function retainerInformation(reader: BufferReader): RetainerInformation {

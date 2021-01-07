@@ -1,5 +1,5 @@
 import { EffectResult } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function effectResult(reader: BufferReader): EffectResult {
 	return {

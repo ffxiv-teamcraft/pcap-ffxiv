@@ -1,5 +1,5 @@
 import { MarketTaxRates } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function marketTaxRates(reader: BufferReader): MarketTaxRates {
 	return {

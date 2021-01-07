@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ActorFreeSpawn } from "../../definitions/ActorFreeSpawn";
 
 export function actorFreeSpawn(reader: BufferReader): ActorFreeSpawn {

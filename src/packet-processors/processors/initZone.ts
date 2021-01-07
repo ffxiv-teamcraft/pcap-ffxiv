@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { InitZone } from "../../definitions";
 
 export function initZone(reader: BufferReader): InitZone {

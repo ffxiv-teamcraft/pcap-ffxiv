@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { UpdatePositionInstance } from "../../definitions/UpdatePositionInstance";
 
 export function updatePositionInstance(reader: BufferReader): UpdatePositionInstance {

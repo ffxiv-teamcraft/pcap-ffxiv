@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { CFRegisterDuty } from "../../definitions/CFRegisterDuty";
 
 export function cFRegisterDuty(reader: BufferReader): CFRegisterDuty {

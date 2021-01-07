@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { PlayTime } from "../../definitions/PlayTime";
 
 export function playTime(reader: BufferReader): PlayTime {

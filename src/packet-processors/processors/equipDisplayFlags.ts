@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { EquipDisplayFlags } from "../../definitions/EquipDisplayFlags";
 
 export function equipDisplayFlags(reader: BufferReader): EquipDisplayFlags {

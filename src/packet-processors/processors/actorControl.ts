@@ -1,5 +1,5 @@
 import { ActorControl } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function actorControl(reader: BufferReader): ActorControl {
 	return {

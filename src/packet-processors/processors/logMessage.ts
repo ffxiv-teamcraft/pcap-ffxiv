@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { LogMessage } from "../../definitions/LogMessage";
 
 export function logMessage(reader: BufferReader): LogMessage {

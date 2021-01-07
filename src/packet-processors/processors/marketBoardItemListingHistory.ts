@@ -1,5 +1,5 @@
 import { MarketBoardItemListingHistory } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function marketBoardItemListingHistory(reader: BufferReader): MarketBoardItemListingHistory {
 	return {

@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { InventoryModifyHandler } from "../../definitions/InventoryModifyHandler";
 import { ConstantsList } from "../../models";
 

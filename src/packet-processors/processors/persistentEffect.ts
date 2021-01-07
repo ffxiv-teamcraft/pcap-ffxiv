@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { PersistentEffect } from "../../definitions/PersistentEffect";
 
 export function persistentEffect(reader: BufferReader): PersistentEffect {

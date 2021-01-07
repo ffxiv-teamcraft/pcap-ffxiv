@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ActorControlSelf } from "../../definitions/ActorControlSelf";
 
 export function actorControlSelf(reader: BufferReader): ActorControlSelf {

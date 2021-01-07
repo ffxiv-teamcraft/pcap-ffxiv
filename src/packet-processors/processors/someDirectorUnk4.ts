@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { SomeDirectorUnk4 } from "../../definitions/SomeDirectorUnk4";
 
 export function someDirectorUnk4(reader: BufferReader): SomeDirectorUnk4 {

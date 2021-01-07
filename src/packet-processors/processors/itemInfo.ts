@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ItemInfo } from "../../definitions";
 
 export function itemInfo(reader: BufferReader): ItemInfo {

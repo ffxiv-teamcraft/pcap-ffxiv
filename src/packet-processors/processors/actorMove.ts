@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ActorMove } from "../../definitions/ActorMove";
 
 export function actorMove(reader: BufferReader): ActorMove {

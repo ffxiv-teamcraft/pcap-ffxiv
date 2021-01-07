@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ReductionResult } from "../../definitions/ReductionResult";
 
 export function reductionResult(reader: BufferReader): ReductionResult {

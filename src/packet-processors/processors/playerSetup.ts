@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { PlayerSetup } from "../../definitions";
 
 export function playerSetup(reader: BufferReader): PlayerSetup {

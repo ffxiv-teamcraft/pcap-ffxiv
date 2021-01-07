@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ActorOwner } from "../../definitions/ActorOwner";
 
 export function actorOwner(reader: BufferReader): ActorOwner {

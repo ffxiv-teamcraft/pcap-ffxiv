@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { UseMooch } from "../../definitions/UseMooch";
 
 export function useMooch(reader: BufferReader): UseMooch {

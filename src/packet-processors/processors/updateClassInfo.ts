@@ -1,5 +1,5 @@
 import { UpdateClassInfo } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function updateClassInfo(reader: BufferReader): UpdateClassInfo {
 	return {

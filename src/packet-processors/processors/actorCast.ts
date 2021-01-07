@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ActorCast } from "../../definitions/ActorCast";
 
 export function actorCast(reader: BufferReader): ActorCast {

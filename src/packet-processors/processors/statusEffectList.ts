@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { StatusEffectList } from "../../definitions/StatusEffectList";
 
 export function statusEffectList(reader: BufferReader): StatusEffectList {

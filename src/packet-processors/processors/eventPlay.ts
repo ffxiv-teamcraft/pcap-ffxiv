@@ -1,5 +1,5 @@
 import { EventPlay } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function eventPlay(reader: BufferReader): EventPlay {
 	return {

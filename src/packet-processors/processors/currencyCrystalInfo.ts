@@ -1,5 +1,5 @@
 import { CurrencyCrystalInfo } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function currencyCrystalInfo(reader: BufferReader): CurrencyCrystalInfo {
 	return {

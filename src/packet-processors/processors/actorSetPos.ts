@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ActorSetPos } from "../../definitions/ActorSetPos";
 
 export function actorSetPos(reader: BufferReader): ActorSetPos {

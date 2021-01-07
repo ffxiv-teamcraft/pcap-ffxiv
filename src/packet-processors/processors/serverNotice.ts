@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ServerNotice } from "../../definitions/ServerNotice";
 
 const displayFlags = {

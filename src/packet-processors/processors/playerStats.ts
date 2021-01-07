@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { PlayerStats } from "../../definitions";
 
 export function playerStats(reader: BufferReader): PlayerStats {

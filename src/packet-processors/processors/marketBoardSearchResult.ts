@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { MarketBoardSearchResult } from "../../definitions";
 
 export function marketBoardSearchResult(reader: BufferReader): MarketBoardSearchResult {

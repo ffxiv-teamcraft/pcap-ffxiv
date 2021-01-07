@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { EventPlay8 } from "../../definitions/EventPlay8";
 import { eventPlayN } from "./eventPlayN";
 

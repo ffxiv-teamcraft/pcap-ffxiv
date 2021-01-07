@@ -1,5 +1,5 @@
 import { InventoryTransaction } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function inventoryTransaction(reader: BufferReader): InventoryTransaction {
 	return {

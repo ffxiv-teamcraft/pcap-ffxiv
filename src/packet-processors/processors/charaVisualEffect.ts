@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { CharaVisualEffect } from "../../definitions/CharaVisualEffect";
 
 export function charaVisualEffect(reader: BufferReader): CharaVisualEffect {

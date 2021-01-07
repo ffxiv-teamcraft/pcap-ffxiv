@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { ObjectSpawn } from "../../definitions";
 
 export function objectSpawn(reader: BufferReader): ObjectSpawn {

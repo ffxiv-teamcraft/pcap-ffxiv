@@ -1,5 +1,5 @@
 import { MarketBoardItemListingCount } from "../../definitions";
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 
 export function marketBoardItemListingCount(reader: BufferReader): MarketBoardItemListingCount {
 	return {

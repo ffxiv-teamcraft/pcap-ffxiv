@@ -1,4 +1,4 @@
-import { BufferReader } from "../../buffer-reader";
+import { BufferReader } from "../../BufferReader";
 import { WeatherChange } from "../../definitions/WeatherChange";
 
 export function weatherChange(reader: BufferReader): WeatherChange {
