@@ -11,12 +11,21 @@ export class QueueBuffer extends Buffer {
 		this._end += buf.length;
 	}
 
-	pop(size: number): Buffer {
+	pop(size: number): QueueBuffer {
 		const bytesToCopy = Math.min(this._end, size);
 		const buf = Buffer.allocUnsafe(bytesToCopy);
 		this.copy(buf);
 		this.set(this.slice(bytesToCopy));
 		this._end -= bytesToCopy;
-		return buf;
+		return QueueBuffer.fromBuffer(buf);
+	}
+
+	popUntil(fn: (buf: Buffer) => boolean): QueueBuffer {
+		for (let i = 0; i < this.length; i++) {
+			if (fn(this.slice(i))) {
+				return this.pop(i);
+			}
+		}
+		return this.pop(this.length);
 	}
 }

@@ -117,20 +117,18 @@ export class CaptureInterface extends EventEmitter {
 		return (this._bufTable[port] ||= QueueBuffer.fromBuffer(Buffer.alloc(BUFFER_SIZE)));
 	}
 
-	private _discardUntilValid(buf: Buffer): number {
-		for (let i = 0; i < buf.length - FRAME_HEADER_SIZE; i++) {
-			const fh = parseFrameHeader(buf.slice(i));
-			if (isMagical(fh)) {
-				return i;
-			}
-		}
-		return buf.length;
-	}
-
 	private _tryGetFrameHeader(buf: QueueBuffer): FrameHeader | null {
 		let frameHeader: FrameHeader | null = null;
-		const skip = this._discardUntilValid(buf); // Skip to the beginning of the next frame.
-		buf.pop(skip);
+		// Skip to the beginning of the next frame.
+		buf.popUntil((b) => {
+			try {
+				const fh = parseFrameHeader(b);
+				return isMagical(fh);
+			} catch (err) {
+				return false;
+			}
+		});
+
 		try {
 			frameHeader = parseFrameHeader(buf);
 		} catch (err) {
@@ -140,6 +138,7 @@ export class CaptureInterface extends EventEmitter {
 
 			this.emit("error", err);
 		}
+
 		return frameHeader;
 	}
 
