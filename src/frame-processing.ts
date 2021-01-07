@@ -5,7 +5,7 @@ import { BufferReader } from "./BufferReader";
 export function isMagical(header: FrameHeader): boolean {
 	return (
 		(header.magic1.toString() === "16304822851840528978" && header.magic2.toString() === "8486076352731294335") ||
-		(header.magic1 === BigInt(0) && header.magic2 === BigInt(0) && header.size === 64)
+		(header.magic1 === BigInt(0) && header.magic2 === BigInt(0) && header.size <= 65535 && header.size > 0)
 	);
 }
 
