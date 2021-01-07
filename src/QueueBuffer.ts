@@ -13,8 +13,8 @@ export class QueueBuffer {
 	}
 
 	pop(size: number): Buffer {
-		const buf = Buffer.alloc(size);
 		const bytesToCopy = size > this._end ? this._end : size;
+		const buf = Buffer.allocUnsafe(bytesToCopy);
 		this.buffer.copy(buf, 0, 0, bytesToCopy);
 		this.buffer.set(this.buffer.slice(bytesToCopy), 0);
 		this._end -= bytesToCopy;
