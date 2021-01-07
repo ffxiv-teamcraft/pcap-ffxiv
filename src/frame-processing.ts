@@ -1,12 +1,28 @@
 import { ConnectionType, FrameHeader, SegmentHeader, SegmentType } from "./models";
 import { IpcHeader } from "./models/IpcHeader";
 import { BufferReader } from "./BufferReader";
+import { FRAME_HEADER_SIZE } from "./constants";
+import { QueueBuffer } from "./QueueBuffer";
 
 export function isMagical(header: FrameHeader): boolean {
 	return (
 		(header.magic1.toString() === "16304822851840528978" && header.magic2.toString() === "8486076352731294335") ||
 		(header.magic1 === BigInt(0) && header.magic2 === BigInt(0) && header.size <= 65535 && header.size > 0)
 	);
+}
+
+export function tryGetFrameHeader(buf: QueueBuffer): FrameHeader {
+	// Skip to the beginning of the next frame.
+	buf.popUntil(
+		(b) => {
+			const fh = parseFrameHeader(b);
+			return isMagical(fh);
+		},
+		0,
+		buf.end - FRAME_HEADER_SIZE,
+	);
+
+	return parseFrameHeader(buf);
 }
 
 export function parseFrameHeader(buf: Buffer): FrameHeader {

@@ -1,6 +1,6 @@
 import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
-import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader } from "./frame-processing";
+import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader, tryGetFrameHeader } from "./frame-processing";
 import {
 	ConstantsList,
 	DiagnosticInfo,
@@ -18,23 +18,20 @@ import { performance } from "perf_hooks";
 import { loadPacketProcessors } from "./packet-processors/load-packet-processors";
 import { BufferReader } from "./BufferReader";
 import { QueueBuffer } from "./QueueBuffer";
+import {
+	BUFFER_SIZE,
+	MEGABYTE,
+	ETH_HEADER_SIZE,
+	IPV4_HEADER_SIZE,
+	TCP_HEADER_SIZE,
+	FRAME_HEADER_SIZE,
+	SEG_HEADER_SIZE,
+	IPC_HEADER_SIZE,
+} from "./constants";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
 	"tcp portrange 54992-54994 or tcp portrange 55006-55007 or tcp portrange 55021-55040 or tcp portrange 55296-55551";
-
-const BYTE = 1;
-const KILOBYTE = 1024 * BYTE;
-const MEGABYTE = 1024 * KILOBYTE;
-
-const BUFFER_SIZE = 65535;
-
-const ETH_HEADER_SIZE = 24;
-const IPV4_HEADER_SIZE = 20;
-const TCP_HEADER_SIZE = 20;
-const FRAME_HEADER_SIZE = 40;
-const SEG_HEADER_SIZE = 16;
-const IPC_HEADER_SIZE = 16;
 
 export class CaptureInterface extends EventEmitter {
 	private readonly _cap: Cap;
@@ -117,20 +114,6 @@ export class CaptureInterface extends EventEmitter {
 		return (this._bufTable[port] ||= QueueBuffer.fromBuffer(Buffer.alloc(BUFFER_SIZE)));
 	}
 
-	private _tryGetFrameHeader(buf: QueueBuffer): FrameHeader {
-		// Skip to the beginning of the next frame.
-		buf.popUntil(
-			(b) => {
-				const fh = parseFrameHeader(b);
-				return isMagical(fh);
-			},
-			0,
-			buf.end - FRAME_HEADER_SIZE,
-		);
-
-		return parseFrameHeader(buf);
-	}
-
 	private _registerInternalHandlers() {
 		this._cap.on("packet", (nBytes: number) => {
 			// The total buffer is way bigger than the relevant data, so we trim that first.
@@ -156,7 +139,7 @@ export class CaptureInterface extends EventEmitter {
 			buf.push(childFramePayload);
 
 			let frameHeader: FrameHeader;
-			while ((frameHeader = this._tryGetFrameHeader(buf)) && isMagical(frameHeader)) {
+			while ((frameHeader = tryGetFrameHeader(buf)) && isMagical(frameHeader)) {
 				this._processFrame(
 					frameHeader,
 					buf.pop(frameHeader.size),
