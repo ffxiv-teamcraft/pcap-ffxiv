@@ -10,7 +10,7 @@ export function statusEffectList(reader: BufferReader): StatusEffectList {
 		maxHp: reader.nextUInt32(),
 		currentMp: reader.nextUInt16(),
 		maxMp: reader.nextUInt16(),
-		currentTP: reader.nextUInt16(),
+		currentTp: reader.nextUInt16(),
 		effects: Array(30).map(() => {
 			return {
 				effectId: reader.nextUInt16(),

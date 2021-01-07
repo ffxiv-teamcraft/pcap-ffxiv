@@ -6,7 +6,7 @@ export interface StatusEffectList {
 	maxHp: number;
 	currentMp: number;
 	maxMp: number;
-	currentTP: number;
+	currentTp: number;
 	effects: {
 		effectId: number;
 		unknown1: number;
