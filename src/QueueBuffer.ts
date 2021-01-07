@@ -14,9 +14,11 @@ export class QueueBuffer extends Buffer {
 	pop(size: number): QueueBuffer {
 		const bytesToCopy = Math.min(this._end, size);
 		const buf = Buffer.allocUnsafe(bytesToCopy);
-		this.copy(buf);
-		this.set(this.slice(bytesToCopy));
-		this._end -= bytesToCopy;
+		if (bytesToCopy > 0) {
+			this.copy(buf);
+			this.set(this.slice(bytesToCopy));
+			this._end -= bytesToCopy;
+		}
 		return QueueBuffer.fromBuffer(buf);
 	}
 
