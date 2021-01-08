@@ -139,7 +139,7 @@ export class CaptureInterface extends EventEmitter {
 			buf.push(childFramePayload);
 
 			let frameHeader: FrameHeader;
-			while ((frameHeader = tryGetFrameHeader(buf)) && isMagical(frameHeader)) {
+			while ((frameHeader = tryGetFrameHeader(buf)) && isMagical(frameHeader) && buf.size() >= frameHeader.size) {
 				this._processFrame(
 					frameHeader,
 					buf.pop(frameHeader.size),
