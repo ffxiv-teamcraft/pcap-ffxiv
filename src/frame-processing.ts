@@ -4,6 +4,8 @@ import { BufferReader } from "./BufferReader";
 import { FRAME_HEADER_SIZE } from "./constants";
 import { QueueBuffer } from "./QueueBuffer";
 
+// A header is considered "magical" if its magic1 is 16304822851840528978 and its magic2 is 8486076352731294335.
+// An exception is made for non-IPC packets, which instead have zeroes in both of those fields, and a valid size.
 export function isMagical(header: FrameHeader): boolean {
 	return (
 		(header.magic1.toString() === "16304822851840528978" && header.magic2.toString() === "8486076352731294335") ||
@@ -11,8 +13,8 @@ export function isMagical(header: FrameHeader): boolean {
 	);
 }
 
+// Try to skip to the beginning of the next frame.
 export function tryGetFrameHeader(buf: QueueBuffer): FrameHeader {
-	// Skip to the beginning of the next frame.
 	buf.popUntil(
 		(b) => {
 			const fh = parseFrameHeader(b);
