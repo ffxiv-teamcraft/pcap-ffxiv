@@ -21,7 +21,7 @@ export function tryGetFrameHeader(buf: QueueBuffer): FrameHeader {
 			return isMagical(fh);
 		},
 		0,
-		buf.end - FRAME_HEADER_SIZE,
+		buf.size() - FRAME_HEADER_SIZE,
 	);
 
 	return parseFrameHeader(buf);
