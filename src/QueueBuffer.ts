@@ -1,3 +1,5 @@
+import { roundToNextPowerOf2 } from "./memory";
+
 export class QueueBuffer extends Buffer {
 	private _end: number = 0;
 
@@ -17,7 +19,7 @@ export class QueueBuffer extends Buffer {
 
 	pop(size: number): Buffer {
 		const bytesToCopy = Math.max(0, Math.min(this._end, size));
-		const buf = Buffer.allocUnsafe(bytesToCopy);
+		const buf = Buffer.allocUnsafe(roundToNextPowerOf2(bytesToCopy));
 		if (bytesToCopy > 0) {
 			this.copy(buf);
 			this.set(this.slice(bytesToCopy));

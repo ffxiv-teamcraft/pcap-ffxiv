@@ -28,6 +28,7 @@ import {
 	SEG_HEADER_SIZE,
 	IPC_HEADER_SIZE,
 } from "./constants";
+import { roundToNextPowerOf2 } from "./memory";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -209,7 +210,7 @@ export class CaptureInterface extends EventEmitter {
 				 * We can use allocUnsafe here because we're copying the existing data right
 				 * over the uninitialized memory.
 				 */
-				ipcData = Buffer.allocUnsafe(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE);
+				ipcData = Buffer.allocUnsafe(roundToNextPowerOf2(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE));
 				ipcPayload.copy(ipcData, 0, IPC_HEADER_SIZE);
 			}
 
