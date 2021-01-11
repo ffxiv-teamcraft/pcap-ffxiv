@@ -2,7 +2,7 @@ export const BYTE = 1;
 export const KILOBYTE = 1024 * BYTE;
 export const MEGABYTE = 1024 * KILOBYTE;
 
-export const BUFFER_SIZE = 65535;
+export const BUFFER_SIZE = 65536;
 
 export const ETH_HEADER_SIZE = 24;
 export const IPV4_HEADER_SIZE = 20;
