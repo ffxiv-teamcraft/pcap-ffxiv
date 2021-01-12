@@ -1,16 +1,15 @@
 import { Position3 } from "./definitions/Position3";
 
-type BufferFnProperties = Pick<
-	Buffer,
+type BufferFnProperties = Pick<Buffer,
 	{
 		[K in keyof Buffer]: Buffer[K] extends Function ? K : never;
-	}[keyof Buffer]
->;
+	}[keyof Buffer]>;
 
 export class BufferReader {
 	private offset = 0;
 
-	constructor(private buf: Buffer) {}
+	constructor(private buf: Buffer) {
+	}
 
 	reset(): BufferReader {
 		this.offset = 0;
@@ -47,6 +46,17 @@ export class BufferReader {
 	nextBuffer(length: number, asReader?: false): Buffer;
 	nextBuffer(length: number, asReader: true): BufferReader;
 	nextBuffer(length: number, asReader?: boolean): Buffer | BufferReader {
+		const buf = this.buf.slice(this.offset, this.offset + length);
+		if (asReader) {
+			return new BufferReader(buf);
+		}
+		return buf;
+	}
+
+	restAsBuffer(asReader?: false): Buffer;
+	restAsBuffer(asReader: true): BufferReader;
+	restAsBuffer(asReader?: boolean): Buffer | BufferReader {
+		const length = this.buf.length - this.offset;
 		const buf = this.buf.slice(this.offset, this.offset + length);
 		if (asReader) {
 			return new BufferReader(buf);

@@ -1,6 +1,6 @@
 import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
-import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader, tryGetFrameHeader } from "./frame-processing";
+import { parseIpcHeader, parseSegmentHeader, tryGetFrameHeader } from "./frame-processing";
 import {
 	ConstantsList,
 	DiagnosticInfo,
@@ -20,15 +20,17 @@ import { BufferReader } from "./BufferReader";
 import { QueueBuffer } from "./QueueBuffer";
 import {
 	BUFFER_SIZE,
-	MEGABYTE,
 	ETH_HEADER_SIZE,
-	IPV4_HEADER_SIZE,
-	TCP_HEADER_SIZE,
 	FRAME_HEADER_SIZE,
-	SEG_HEADER_SIZE,
 	IPC_HEADER_SIZE,
+	IPV4_HEADER_SIZE,
+	MEGABYTE,
+	SEG_HEADER_SIZE,
+	TCP_HEADER_SIZE,
 } from "./constants";
 import { roundToNextPowerOf2 } from "./memory";
+import { TCPDecoder } from "./tcp/TCPDecoder";
+import { TcpFrame } from "./tcp/tcp-frame";
 
 const PROTOCOL = decoders.PROTOCOL;
 const FILTER =
@@ -46,6 +48,8 @@ export class CaptureInterface extends EventEmitter {
 	private _packetDefs: Record<string, (reader: BufferReader, constants: ConstantsList) => any>;
 	private _region: Region;
 	private _opcodes: Record<number, string> = {};
+
+	private _inputDecoder = new TCPDecoder();
 
 	public get constants(): ConstantsList | undefined {
 		return this._constants ? this._constants[this._region] : undefined;
@@ -90,7 +94,7 @@ export class CaptureInterface extends EventEmitter {
 		const device = Cap.findDevice(deviceIdentifier);
 		this._cap.open(device, FILTER, 10 * MEGABYTE, this._buf);
 		this._cap.setMinBytes &&
-			this._cap.setMinBytes(ETH_HEADER_SIZE + IPV4_HEADER_SIZE + TCP_HEADER_SIZE + FRAME_HEADER_SIZE + SEG_HEADER_SIZE);
+		this._cap.setMinBytes(ETH_HEADER_SIZE + IPV4_HEADER_SIZE + TCP_HEADER_SIZE + FRAME_HEADER_SIZE + SEG_HEADER_SIZE);
 		this._registerInternalHandlers();
 	}
 
@@ -130,34 +134,24 @@ export class CaptureInterface extends EventEmitter {
 
 			if (ret.info.protocol !== PROTOCOL.IP.TCP) return;
 			let datalen = ret.info.totallen - ret.hdrlen;
-			ret = decoders.TCP(payload, ret.offset);
-			datalen -= ret.hdrlen;
-
-			if ((ret.info.flags & 8) === 0) return; // Only TCP PSH has actual data.
-
-			const childFramePayload = payload.slice(payload.length - datalen);
-			const buf = this._getBuffer(ret.info.dstport);
-			buf.push(childFramePayload);
-
-			let frameHeader: FrameHeader;
-			while ((frameHeader = tryGetFrameHeader(buf)) && isMagical(frameHeader) && buf.size() >= frameHeader.size) {
-				this._processFrame(
-					frameHeader,
-					buf.pop(frameHeader.size),
-					srcAddr,
-					dstAddr,
-					ret.info.srcport,
-					ret.info.dstport,
-				);
-			}
+			this._inputDecoder.filterAndStoreData(payload.slice(payload.length - datalen));
 		});
+
+		this._inputDecoder.on('frame', frame => {
+			const buf = QueueBuffer.fromBuffer(frame.raw);
+			const frameHeader = tryGetFrameHeader(buf);
+			this._processFrame(
+				frameHeader,
+				buf.pop(frameHeader.size),
+				frame.source,
+				frame.destination,
+			);
+		})
 	}
 
 	private _processFrame(
 		frameHeader: FrameHeader,
 		buf: Buffer,
-		srcAddr: string,
-		dstAddr: string,
 		srcPort: number,
 		dstPort: number,
 	) {
@@ -165,11 +159,11 @@ export class CaptureInterface extends EventEmitter {
 
 		const packet: Packet = {
 			source: {
-				address: srcAddr,
+				address: "srcAddr",
 				port: srcPort,
 			},
 			destination: {
-				address: dstAddr,
+				address: "dstAddr",
 				port: dstPort,
 			},
 			childFrame: {

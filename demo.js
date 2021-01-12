@@ -1,10 +1,10 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
 const ci = new CaptureInterface();
+let packets = 0;
 
-ci.on("message", (type, message) => {
-	console.log(type);
-	console.log(message.parsedIpcData);
+ci.on("packet", (type, message) => {
+	console.log(++packets);
 }).on("error", console.error);
 
 // Get the first device with an IPv4 address.
