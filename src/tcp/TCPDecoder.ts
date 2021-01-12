@@ -2,6 +2,7 @@ import { TCP_HEADER_SIZE } from "../constants";
 import { BufferReader } from "../BufferReader";
 import { TcpFrame } from "./tcp-frame";
 import { EventEmitter } from "events";
+import { roundToNextPowerOf2 } from "../memory";
 
 /**
  * Big props to ravahn for his help,
@@ -100,11 +101,11 @@ export class TCPDecoder extends EventEmitter {
 				}
 
 				if (buffer.length === 0) {
-					buffer = Buffer.alloc(frame.raw.length - frame.dataOffset - frameOffset);
+					buffer = Buffer.alloc(roundToNextPowerOf2(frame.raw.length - frame.dataOffset - frameOffset));
 					frame.raw.copy(buffer, 0, frame.dataOffset + frameOffset, frame.raw.length - frame.dataOffset - frameOffset);
 				} else {
 					let oldSize = buffer.length;
-					const newBuffer = Buffer.alloc(buffer.length + (frame.raw.length - frame.dataOffset - frameOffset));
+					const newBuffer = Buffer.alloc(roundToNextPowerOf2(buffer.length + (frame.raw.length - frame.dataOffset - frameOffset)));
 					buffer.copy(newBuffer);
 					frame.raw.copy(newBuffer, oldSize, frame.dataOffset + frameOffset, frame.raw.length - frame.dataOffset - frameOffset);
 				}
