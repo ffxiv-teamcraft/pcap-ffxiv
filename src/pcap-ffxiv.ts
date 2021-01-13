@@ -202,15 +202,7 @@ export class CaptureInterface extends EventEmitter {
 			if (segmentHeader.segmentType === SegmentType.Ipc) {
 				const ipcPayload = remainder.slice(offset + SEG_HEADER_SIZE);
 				ipcHeader = parseIpcHeader(ipcPayload);
-
-				/* Copy the IPC data to a new Buffer, so that it's not removed from under us.
-				 * All of the buffers we used previously can potentially be views of the packet
-				 * buffer itself, which is subject to change after this callback.
-				 *
-				 * We can use allocUnsafe here because we're copying the existing data right
-				 * over the uninitialized memory.
-				 */
-				ipcData = Buffer.allocUnsafe(roundToNextPowerOf2(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE));
+				ipcData = Buffer.alloc(roundToNextPowerOf2(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE));
 				ipcPayload.copy(ipcData, 0, IPC_HEADER_SIZE);
 			}
 
