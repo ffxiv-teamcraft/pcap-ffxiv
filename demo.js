@@ -3,7 +3,7 @@ const { CaptureInterface } = require("./lib/pcap-ffxiv");
 const ci = new CaptureInterface();
 let packets = 0;
 
-ci.on("packet", (type, message) => {
+ci.on("message", (type, message) => {
 	console.log(++packets);
 }).on("error", console.error);
 

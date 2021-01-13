@@ -1,7 +1,7 @@
 import { TCP_HEADER_SIZE } from "../constants";
-import { BufferReader } from "../BufferReader";
 import { TcpFrame } from "./tcp-frame";
 import { EventEmitter } from "events";
+import { decoders } from "cap";
 import { roundToNextPowerOf2 } from "../memory";
 
 /**
@@ -30,24 +30,7 @@ export class TCPDecoder extends EventEmitter {
 			return;
 		}
 
-		const reader = new BufferReader(data);
-
-		const frame: TcpFrame = {
-			source: reader.nextUInt16(),
-			destination: reader.nextUInt16(),
-			sequence: reader.nextUInt32(),
-			acknowledgment: reader.nextUInt32(),
-			dataOffset: reader.nextUInt8(),
-			reserved: reader.nextBuffer(3),
-			flags: reader.nextUInt32(),
-			window: reader.nextUInt16(),
-			checksum: reader.nextUInt16(),
-			urgentPointer: reader.nextUInt16(),
-			options: reader.nextBuffer(6),
-			padding: reader.nextUInt8(),
-			data: reader.restAsBuffer(),
-			raw: data.slice(),
-		};
+		const frame: TcpFrame = this.parseFrame(data);
 
 		// TODO filter based on source and destination port?
 		if (data.length === frame.dataOffset && (frame.flags & SYN_FLAG) === 0) {
@@ -57,6 +40,24 @@ export class TCPDecoder extends EventEmitter {
 
 		this.queue.push(frame);
 		this.processData();
+	}
+
+	private parseFrame(data: Buffer): TcpFrame {
+		const tcp = decoders.TCP(data);
+		return {
+			source: tcp.info.srcport,
+			destination: tcp.info.dstport,
+			sequence: tcp.info.seqno,
+			acknowledgment: tcp.info.ackno,
+			dataOffset: tcp.offset,
+			flags: tcp.info.flags,
+			window: tcp.info.window,
+			checksum: tcp.info.checksum,
+			urgentPointer: tcp.info.urgentptr,
+			options: tcp.info.options,
+			data: data.slice(tcp.offset),
+			raw: data.slice(),
+		};
 	}
 
 	private processData(): void {
@@ -134,23 +135,8 @@ export class TCPDecoder extends EventEmitter {
 			}
 		}
 
-		const reader = new BufferReader(buffer);
-
-		this.emit("frame", {
-			source: reader.nextUInt16(),
-			destination: reader.nextUInt16(),
-			sequence: reader.nextUInt32(),
-			acknowledgment: reader.nextUInt32(),
-			dataOffset: reader.nextUInt8(),
-			reserved: reader.nextBuffer(3),
-			flags: reader.nextUInt32(),
-			window: reader.nextUInt16(),
-			checksum: reader.nextUInt16(),
-			urgentPointer: reader.nextUInt16(),
-			options: reader.nextBuffer(6),
-			padding: reader.nextUInt8(),
-			data: reader.restAsBuffer(),
-			raw: buffer.slice(),
-		});
+		if (buffer.length > 0) {
+			this.emit("frame", this.parseFrame(buffer));
+		}
 	}
 }
