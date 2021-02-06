@@ -13,7 +13,7 @@ export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: Record<keyof Region, ConstantsList> | undefined;
 	private _packetDefs: Record<string, (reader: BufferReader, constants: ConstantsList) => any>;
-	private _opcodes: { C: Record<number, string>, S: Record<number, string> } = {
+	private _opcodes: { C: Record<number, string>; S: Record<number, string> } = {
 		C: {},
 		S: {},
 	};
@@ -36,7 +36,7 @@ export class CaptureInterface extends EventEmitter {
 			monitorType: "WinPCap",
 			port: 13346,
 			filter: () => true,
-			logger: payload => console[payload.type](payload.message),
+			logger: (payload) => console[payload.type](payload.message),
 			winePrefix: "$HOME/.Wine",
 			hasWine: false,
 		};
@@ -90,9 +90,12 @@ export class CaptureInterface extends EventEmitter {
 
 	private spawnMachina(): void {
 		const args: string[] = [
-			"--MonitorType", this._options.monitorType,
-			"--Region", this._options.region,
-			"--Port", this._options.port.toString(),
+			"--MonitorType",
+			this._options.monitorType,
+			"--Region",
+			this._options.region,
+			"--Port",
+			this._options.port.toString(),
 		];
 		if (this._options.pid) args.push("--ProcessID", this._options.pid.toString());
 
@@ -110,7 +113,7 @@ export class CaptureInterface extends EventEmitter {
 
 	stop(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this._monitor?.stdin.write("kill", (writeErr) => {
+			this._monitor?.stdin.write("kill\n", (writeErr) => {
 				this._httpServer?.close((err) => {
 					delete this._httpServer;
 					if (err || writeErr) {
@@ -128,16 +131,13 @@ export class CaptureInterface extends EventEmitter {
 		this.updateOpcodesCache();
 	}
 
-	private static opcodesToRegistry(opcodes: { name: string, opcode: number }[]): Record<number, string> {
-		return opcodes.reduce(
-			(acc, entry) => {
-				return {
-					...acc,
-					[entry.opcode]: entry.name,
-				};
-			},
-			{},
-		) as Record<number, string>;
+	private static opcodesToRegistry(opcodes: { name: string; opcode: number }[]): Record<number, string> {
+		return opcodes.reduce((acc, entry) => {
+			return {
+				...acc,
+				[entry.opcode]: entry.name,
+			};
+		}, {}) as Record<number, string>;
 	}
 
 	updateOpcodesCache(): void {
