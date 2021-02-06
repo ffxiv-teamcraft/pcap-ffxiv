@@ -4,7 +4,7 @@ export interface Options {
 	region: Region;
 	exePath: string;
 	monitorType: "WinPCap" | "RawSocket";
-	logger: (payload: { type: "info" | "log" | "warn" | "error", message: string }) => void;
+	logger: (payload: { type: "info" | "log" | "warn" | "error"; message: string }) => void;
 	port: number;
 	hasWine: boolean;
 	winePrefix: string;

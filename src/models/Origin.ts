@@ -1,5 +1,5 @@
 export enum Origin {
 	Unknown,
 	Client,
-	Server
+	Server,
 }
