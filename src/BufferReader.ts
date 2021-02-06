@@ -54,6 +54,17 @@ export class BufferReader {
 		return buf;
 	}
 
+	restAsBuffer(asReader?: false): Buffer;
+	restAsBuffer(asReader: true): BufferReader;
+	restAsBuffer(asReader?: boolean): Buffer | BufferReader {
+		const length = this.buf.length - this.offset;
+		const buf = this.buf.slice(this.offset, this.offset + length);
+		if (asReader) {
+			return new BufferReader(buf);
+		}
+		return buf;
+	}
+
 	nextInt8(fallback = 0): number {
 		return this.tryNext("readInt8", 1, fallback);
 	}

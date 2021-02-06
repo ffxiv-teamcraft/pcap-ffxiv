@@ -1,64 +1,55 @@
-import { Cap, decoders } from "cap";
 import { EventEmitter } from "events";
-import { isMagical, parseFrameHeader, parseIpcHeader, parseSegmentHeader, tryGetFrameHeader } from "./frame-processing";
-import {
-	ConstantsList,
-	DiagnosticInfo,
-	FrameHeader,
-	IpcHeader,
-	OpcodeList,
-	Packet,
-	Region,
-	Segment,
-	SegmentType,
-} from "./models";
-import pako from "pako";
+import { ConstantsList, OpcodeList, Region, Segment, SegmentHeader, SegmentType } from "./models";
 import { downloadJson } from "./json-downloader";
-import { performance } from "perf_hooks";
 import { loadPacketProcessors } from "./packet-processors/load-packet-processors";
 import { BufferReader } from "./BufferReader";
-import { QueueBuffer } from "./QueueBuffer";
-import {
-	BUFFER_SIZE,
-	MEGABYTE,
-	ETH_HEADER_SIZE,
-	IPV4_HEADER_SIZE,
-	TCP_HEADER_SIZE,
-	FRAME_HEADER_SIZE,
-	SEG_HEADER_SIZE,
-	IPC_HEADER_SIZE,
-} from "./constants";
-import { roundToNextPowerOf2 } from "./memory";
-
-const PROTOCOL = decoders.PROTOCOL;
-const FILTER =
-	"tcp portrange 54992-54994 or tcp portrange 55006-55007 or tcp portrange 55021-55040 or tcp portrange 55296-55551";
+import { createServer as createHttpServer, Server } from "http";
+import { ChildProcessWithoutNullStreams, spawn } from "child_process";
+import { join } from "path";
+import { Options } from "./options";
+import { existsSync } from "fs";
 
 export class CaptureInterface extends EventEmitter {
-	private readonly _cap: Cap;
-	private readonly _buf: Buffer;
-
-	// We use the destination port as the key.
-	private readonly _bufTable: Record<number, QueueBuffer>;
-
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: Record<keyof Region, ConstantsList> | undefined;
 	private _packetDefs: Record<string, (reader: BufferReader, constants: ConstantsList) => any>;
-	private _region: Region;
-	private _opcodes: Record<number, string> = {};
+	private _opcodes: { C: Record<number, string>; S: Record<number, string> } = {
+		C: {},
+		S: {},
+	};
+
+	private _httpServer: Server | undefined = undefined;
+	private _monitor: ChildProcessWithoutNullStreams | undefined;
+
+	private readonly _options: Options;
 
 	public get constants(): ConstantsList | undefined {
-		return this._constants ? this._constants[this._region] : undefined;
+		return this._constants ? this._constants[this._options.region] : undefined;
 	}
 
-	constructor(region: Region = "Global") {
+	constructor(options: Partial<Options>) {
 		super();
 
-		this._cap = new Cap();
-		this._buf = Buffer.alloc(BUFFER_SIZE);
-		this._bufTable = {};
+		const defaultOptions: Options = {
+			region: "Global",
+			exePath: join(__dirname, "./MachinaWrapper/MachinaWrapper.exe"),
+			monitorType: "WinPCap",
+			port: 13346,
+			filter: () => true,
+			logger: (payload) => console[payload.type](payload.message),
+			winePrefix: "$HOME/.Wine",
+			hasWine: false,
+		};
 
-		this._region = region;
+		this._options = {
+			...defaultOptions,
+			...options,
+		};
+
+		if (!existsSync(this._options.exePath)) {
+			throw new Error(`MachinaWrapper not found in ${this._options.exePath}`);
+		}
+
 		this._packetDefs = loadPacketProcessors();
 
 		this._loadOpcodes().then(async () => {
@@ -67,196 +58,155 @@ export class CaptureInterface extends EventEmitter {
 		});
 	}
 
+	start(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			try {
+				this.spawnMachina();
+				this._httpServer = createHttpServer((req, res) => {
+					let data: any[] = [];
+					req.on("data", (chunk) => {
+						data.push(chunk);
+					});
+					req.on("end", () => {
+						this._processSegment(Buffer.concat(data));
+					});
+					res.writeHead(200);
+					res.end();
+				}).listen(this._options.port, "localhost");
+				setTimeout(() => {
+					this._monitor?.stdin.write("start\n", (err) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve();
+						}
+					});
+				}, 200);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+
+	private spawnMachina(): void {
+		const args: string[] = [
+			"--MonitorType",
+			this._options.monitorType,
+			"--Region",
+			this._options.region,
+			"--Port",
+			this._options.port.toString(),
+		];
+		if (this._options.pid) args.push("--ProcessID", this._options.pid.toString());
+
+		if (this._options.hasWine) {
+			this._monitor = spawn(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.exePath}`, args);
+		} else {
+			this._monitor = spawn(this._options.exePath, args);
+		}
+
+		this._options.logger({
+			type: "info",
+			message: `MachinaWrapper started with args: ${args.join(" ")}`,
+		});
+	}
+
+	stop(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this._monitor?.stdin.write("kill\n", (writeErr) => {
+				this._httpServer?.close((err) => {
+					delete this._httpServer;
+					if (err || writeErr) {
+						reject(err || writeErr);
+					} else {
+						resolve();
+					}
+				});
+			});
+		});
+	}
+
 	setRegion(region: Region) {
-		this._region = region;
+		this._options.region = region;
 		this.updateOpcodesCache();
 	}
 
+	private static opcodesToRegistry(opcodes: { name: string; opcode: number }[]): Record<number, string> {
+		return opcodes.reduce((acc, entry) => {
+			return {
+				...acc,
+				[entry.opcode]: entry.name,
+			};
+		}, {}) as Record<number, string>;
+	}
+
 	updateOpcodesCache(): void {
-		const regionOpcodes = this._opcodeLists?.find((ol) => ol.region === this._region);
-
-		this._opcodes = regionOpcodes?.lists.ServerZoneIpcType.concat(regionOpcodes?.lists.ClientZoneIpcType).reduce(
-			(acc, entry) => {
-				return {
-					...acc,
-					[entry.opcode]: entry.name,
-				};
-			},
-			{},
-		) as Record<number, string>;
-	}
-
-	open(deviceIdentifier: string) {
-		const device = Cap.findDevice(deviceIdentifier);
-		this._cap.open(device, FILTER, 10 * MEGABYTE, this._buf);
-		this._cap.setMinBytes &&
-			this._cap.setMinBytes(ETH_HEADER_SIZE + IPV4_HEADER_SIZE + TCP_HEADER_SIZE + FRAME_HEADER_SIZE + SEG_HEADER_SIZE);
-		this._registerInternalHandlers();
-	}
-
-	close() {
-		this._cap.close();
+		const regionOpcodes = this._opcodeLists?.find((ol) => ol.region === this._options.region);
+		this._opcodes = {
+			C: CaptureInterface.opcodesToRegistry(regionOpcodes?.lists.ClientZoneIpcType || []),
+			S: CaptureInterface.opcodesToRegistry(regionOpcodes?.lists.ServerZoneIpcType || []),
+		};
 	}
 
 	private async _loadOpcodes() {
 		this._opcodeLists = await downloadJson(
-			"https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/opcodes.min.json",
+			"https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/opcodes.min.json",
 		);
 		this.updateOpcodesCache();
 	}
 
 	private async _loadConstants() {
 		this._constants = await downloadJson(
-			"https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/constants.min.json",
+			"https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/constants.min.json",
 		);
 	}
 
-	private _getBuffer(port: number): QueueBuffer {
-		return (this._bufTable[port] ||= QueueBuffer.fromBuffer(Buffer.alloc(BUFFER_SIZE)));
-	}
-
-	private _registerInternalHandlers() {
-		this._cap.on("packet", (nBytes: number) => {
-			// The total buffer is way bigger than the relevant data, so we trim that first.
-			const payload = this._buf.slice(0, nBytes);
-
-			let ret = decoders.Ethernet(payload);
-			if (ret.info.type !== PROTOCOL.ETHERNET.IPV4) return;
-			ret = decoders.IPV4(payload, ret.offset);
-
-			// The info object is destroyed once we decode the TCP data from the packet payload.
-			const srcAddr = ret.info.srcaddr;
-			const dstAddr = ret.info.dstaddr;
-
-			if (ret.info.protocol !== PROTOCOL.IP.TCP) return;
-			let datalen = ret.info.totallen - ret.hdrlen;
-			ret = decoders.TCP(payload, ret.offset);
-			datalen -= ret.hdrlen;
-
-			if ((ret.info.flags & 8) === 0) return; // Only TCP PSH has actual data.
-
-			const childFramePayload = payload.slice(payload.length - datalen);
-			const buf = this._getBuffer(ret.info.dstport);
-			buf.push(childFramePayload);
-
-			let frameHeader: FrameHeader;
-			while ((frameHeader = tryGetFrameHeader(buf)) && isMagical(frameHeader) && buf.size() >= frameHeader.size) {
-				this._processFrame(
-					frameHeader,
-					buf.pop(frameHeader.size),
-					srcAddr,
-					dstAddr,
-					ret.info.srcport,
-					ret.info.dstport,
-				);
-			}
-		});
-	}
-
-	private _processFrame(
-		frameHeader: FrameHeader,
-		buf: Buffer,
-		srcAddr: string,
-		dstAddr: string,
-		srcPort: number,
-		dstPort: number,
-	) {
-		const start = performance.now();
-
-		const packet: Packet = {
-			source: {
-				address: srcAddr,
-				port: srcPort,
-			},
-			destination: {
-				address: dstAddr,
-				port: dstPort,
-			},
-			childFrame: {
-				header: frameHeader,
-				segments: [],
-			},
-		};
-
-		// Decompress the segments, if necessary.
-		let remainder = buf.slice(FRAME_HEADER_SIZE);
-		if (frameHeader.isCompressed) {
-			try {
-				const decompressed = pako.inflate(remainder);
-				remainder = Buffer.from(decompressed.buffer);
-			} catch (err) {
-				// This will happen if the packet contents are encrypted.
-				if (err === "incorrect header check") {
-					return;
-				}
-			}
+	private _processSegment(data: Buffer): void {
+		const dataReader = new BufferReader(data);
+		const originIndex = dataReader.nextUInt8();
+		const origin = [null, "C", "S"][originIndex];
+		if (!origin) {
+			this._options.logger({
+				type: "error",
+				message: `Received a packet with origin ${originIndex}, should be 1 or 2.`,
+			});
+			return;
 		}
-
-		let offset = 0;
-		for (let i = 0; i < frameHeader.segmentCount; i++) {
-			const segmentPayload = remainder.slice(offset);
-			const segmentHeader = parseSegmentHeader(segmentPayload);
-
-			let ipcHeader: IpcHeader | undefined;
-			let ipcData: Buffer | undefined;
-			if (segmentHeader.segmentType === SegmentType.Ipc) {
-				const ipcPayload = remainder.slice(offset + SEG_HEADER_SIZE);
-				ipcHeader = parseIpcHeader(ipcPayload);
-				ipcData = Buffer.alloc(roundToNextPowerOf2(segmentHeader.size - SEG_HEADER_SIZE - IPC_HEADER_SIZE));
-				ipcPayload.copy(ipcData, 0, IPC_HEADER_SIZE);
-			}
-
+		const reader = dataReader.restAsBuffer(true);
+		const header: SegmentHeader = {
+			size: reader.nextUInt32(),
+			sourceActor: reader.nextUInt32(),
+			targetActor: reader.nextUInt32(),
+			segmentType: reader.nextUInt32(),
+		};
+		if (header.segmentType === SegmentType.Ipc) {
+			const opcode = reader.skip(2).nextUInt16();
+			const ipcData = reader.skip(12).restAsBuffer();
 			const segment: Segment<any> = {
-				header: segmentHeader,
-				ipcHeader,
-				ipcData,
+				header: header,
+				ipcData: ipcData,
 			};
-			packet.childFrame.segments.push(segment);
 
-			// If the segment is an IPC segment, get the known name of the contained message and fire an event.
-			if (ipcHeader != null) {
-				let typeName = this._opcodes[ipcHeader?.type] || "unknown";
-				typeName = typeName[0].toLowerCase() + typeName.slice(1);
+			let typeName = this._opcodes[origin][opcode] || "unknown";
+			typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
+			if (this._options.filter(header, typeName)) {
 				// Unmarshal the data, if possible.
 				if (this._packetDefs[typeName] && this._constants) {
-					const reader = new BufferReader(ipcData!);
-					segment.parsedIpcData = this._packetDefs[typeName](reader, this._constants[this._region]);
+					const ipcDataReader = new BufferReader(ipcData);
+					segment.parsedIpcData = this._packetDefs[typeName](ipcDataReader, this._constants[this._options.region]);
 				}
 
 				this.emit("message", typeName, segment);
 			}
-
-			this.emit("segment", segment);
-
-			offset += segmentHeader.size;
 		}
-
-		this.emit("packet", packet);
-
-		const end = performance.now();
-		this.emit("diagnostics", {
-			lastProcessingTimeMs: end - start,
-		});
-	}
-
-	static getDevices(): {
-		name: string;
-		description?: string;
-		addresses: { addr: string; netmask: string; broadaddr?: string }[];
-		flags?: string;
-	}[] {
-		return Cap.deviceList();
 	}
 }
 
 interface CaptureInterfaceEvents {
 	ready: () => void;
 	error: (err: Error) => void;
-	packet: (packet: Packet) => void;
-	segment: (segment: Segment<any>) => void;
 	message: (type: string, message: Segment<any>) => void;
-	diagnostics: (diagInfo: DiagnosticInfo) => void;
 }
 
 export declare interface CaptureInterface {
