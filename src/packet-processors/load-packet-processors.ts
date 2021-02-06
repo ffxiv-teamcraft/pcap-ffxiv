@@ -34,7 +34,6 @@ import { logMessage } from "./processors/logMessage";
 import { marketBoardItemListingCount } from "./processors/marketBoardItemListingCount";
 import { marketBoardItemListingHistory } from "./processors/marketBoardItemListingHistory";
 import { marketBoardSearchResult } from "./processors/marketBoardSearchResult";
-import { marketTaxRates } from "./processors/marketTaxRates";
 import { mount } from "./processors/mount";
 import { npcSpawn } from "./processors/npcSpawn";
 import { objectSpawn } from "./processors/objectSpawn";
@@ -44,7 +43,7 @@ import { playerSpawn } from "./processors/playerSpawn";
 import { playerStats } from "./processors/playerStats";
 import { playTime } from "./processors/playTime";
 import { prepareZoning } from "./processors/prepareZoning";
-import { reductionResult } from "./processors/reductionResult";
+import { resultDialog } from "./processors/resultDialog";
 import { retainerInformation } from "./processors/retainerInformation";
 import { serverNotice } from "./processors/serverNotice";
 import { someDirectorUnk4 } from "./processors/someDirectorUnk4";
@@ -94,7 +93,6 @@ export function loadPacketProcessors(): Record<string, PacketProcessor> {
 		marketBoardItemListingCount,
 		marketBoardItemListingHistory,
 		marketBoardSearchResult,
-		marketTaxRates,
 		mount,
 		npcSpawn,
 		objectSpawn,
@@ -104,7 +102,7 @@ export function loadPacketProcessors(): Record<string, PacketProcessor> {
 		playerStats,
 		playTime,
 		prepareZoning,
-		reductionResult,
+		resultDialog,
 		retainerInformation,
 		serverNotice,
 		someDirectorUnk4,
