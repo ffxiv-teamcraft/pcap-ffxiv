@@ -7,9 +7,10 @@
 	"author": "karashiiro <49822414+karashiiro@users.noreply.github.com>",
 	"license": "MIT",
 	"scripts": {
-		"build": "yarn copyfiles && tsc",
-		"build:watch": "yarn copyfiles && tsc -w",
-		"prepublish": "npm run format && npm run build",
+		"prebuild": "yarn copyfiles && node prebuild.js",
+		"build": "yarn prebuild && tsc",
+		"build:watch": "yarn prebuild && tsc -w",
+		"prepublish": "yarn format && yarn build",
 		"format": "prettier . --write",
 		"copyfiles": "copyfiles ./MachinaWrapper/* ./lib",
 		"pcap-types:generate": "barrel-generator --sourceFolder=./src/definitions --barrelFileLocation=./src/definitions --barrelFileName=index.ts --includeFile=.ts"
