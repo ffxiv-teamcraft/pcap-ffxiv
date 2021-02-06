@@ -1,8 +1,9 @@
-import { BufferReader } from "../../BufferReader";
-import { ReductionResult } from "../../definitions/ReductionResult";
+import { ReductionResult, ResultDialog } from "../../../definitions";
+import { BufferReader } from "../../../BufferReader";
 
-export function reductionResult(reader: BufferReader): ReductionResult {
+export function reductionResult(packet: ResultDialog, reader: BufferReader): ReductionResult {
 	return {
+		...packet,
 		unknown0: reader.nextUInt32(),
 		unknown1: reader.nextUInt32(),
 		itemId: reader.nextUInt32() % 500000,

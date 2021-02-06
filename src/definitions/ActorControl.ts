@@ -1,5 +1,6 @@
-export interface ActorControl {
-	category: number;
+import { SuperPacket } from "../models/SuperPacket";
+
+export interface ActorControl extends SuperPacket {
 	padding: number;
 	param1: number;
 	param2: number;

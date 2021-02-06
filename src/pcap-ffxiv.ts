@@ -8,11 +8,19 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { join } from "path";
 import { Options } from "./options";
 import { existsSync } from "fs";
+import { SuperPacketProcessor } from "./models/SuperPacketProcessor";
+import { PacketProcessor } from "./models/PacketProcessor";
+import { loadActorControlPacketProcessors } from "./packet-processors/load-actor-control-packet-processors";
+import { loadResultDialogPacketProcessors } from "./packet-processors/load-result-dialog-packet-processors";
+import { ActorControlType } from "./models/ActorControlType";
+import { ResultDialogType } from "./models/ResultDialogType";
+import { SuperPacket } from "./models/SuperPacket";
 
 export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: Record<keyof Region, ConstantsList> | undefined;
-	private _packetDefs: Record<string, (reader: BufferReader, constants: ConstantsList) => any>;
+	private readonly _packetDefs: Record<string, PacketProcessor>;
+	private readonly _superPacketDefs: Record<string, Record<string, SuperPacketProcessor<any>>>;
 	private _opcodes: { C: Record<number, string>; S: Record<number, string> } = {
 		C: {},
 		S: {},
@@ -51,6 +59,10 @@ export class CaptureInterface extends EventEmitter {
 		}
 
 		this._packetDefs = loadPacketProcessors();
+		this._superPacketDefs = {
+			actorControl: loadActorControlPacketProcessors(),
+			resultDialog: loadResultDialogPacketProcessors(),
+		};
 
 		this._loadOpcodes().then(async () => {
 			await this._loadConstants();
@@ -161,6 +173,43 @@ export class CaptureInterface extends EventEmitter {
 		);
 	}
 
+	private _processSuperPacket<T extends SuperPacket>(typeName: string, segment: Segment<T>, reader: BufferReader): Segment<T> {
+		let subTypesEnum: Record<string | number, string | number>;
+		// Let's get the corresponding enum
+		switch (typeName) {
+			case "actorControl":
+				subTypesEnum = ActorControlType;
+				break;
+			case "resultDialog":
+				subTypesEnum = ResultDialogType;
+				break;
+			default:
+				this._options.logger({
+					type: "error",
+					message: `Got super packet of type ${typeName} with super processors but no type enum.`,
+				});
+				return segment;
+		}
+
+		let subTypeName = subTypesEnum[(segment.parsedIpcData as T).category] as string;
+		subTypeName = subTypeName[0].toLowerCase() + subTypeName.slice(1);
+		if (!subTypeName) {
+			segment.subType = "unknown";
+			// Unknown subtype, return packet as-is
+			return segment;
+		}
+
+		segment.subType = subTypeName;
+		const superProcessor = this._superPacketDefs[typeName][subTypeName];
+		if (!superProcessor) {
+			// No processor for this sub packet, return packet as-is
+			return segment;
+		}
+
+		segment.parsedIpcData = superProcessor(segment.parsedIpcData, reader, this.constants as ConstantsList);
+		return segment;
+	}
+
 	private _processSegment(data: Buffer): void {
 		const dataReader = new BufferReader(data);
 		const originIndex = dataReader.nextUInt8();
@@ -182,19 +231,25 @@ export class CaptureInterface extends EventEmitter {
 		if (header.segmentType === SegmentType.Ipc) {
 			const opcode = reader.skip(2).nextUInt16();
 			const ipcData = reader.skip(12).restAsBuffer();
-			const segment: Segment<any> = {
-				header: header,
-				ipcData: ipcData,
-			};
-
 			let typeName = this._opcodes[origin][opcode] || "unknown";
 			typeName = typeName[0].toLowerCase() + typeName.slice(1);
+
+			let segment: Segment<any> = {
+				header: header,
+				ipcData: ipcData,
+				type: typeName,
+			};
 
 			if (this._options.filter(header, typeName)) {
 				// Unmarshal the data, if possible.
 				if (this._packetDefs[typeName] && this._constants) {
 					const ipcDataReader = new BufferReader(ipcData);
 					segment.parsedIpcData = this._packetDefs[typeName](ipcDataReader, this._constants[this._options.region]);
+
+					// If this is a super packet
+					if (this._superPacketDefs[typeName]) {
+						segment = this._processSuperPacket(typeName, segment, ipcDataReader.reset());
+					}
 				}
 
 				this.emit("message", typeName, segment);

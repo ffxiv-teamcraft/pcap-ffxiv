@@ -7,13 +7,13 @@
 	"author": "karashiiro <49822414+karashiiro@users.noreply.github.com>",
 	"license": "MIT",
 	"scripts": {
-		"prebuild": "yarn copyfiles && node prebuild.js",
+		"prebuild": "yarn pcap-types:generate && yarn copyfiles && node prebuild.js",
 		"build": "yarn prebuild && tsc",
 		"build:watch": "yarn prebuild && tsc -w",
 		"prepublish": "yarn format && yarn build",
 		"format": "prettier . --write",
 		"copyfiles": "copyfiles ./MachinaWrapper/* ./lib",
-		"pcap-types:generate": "barrel-generator --sourceFolder=./src/definitions --barrelFileLocation=./src/definitions --barrelFileName=index.ts --includeFile=.ts"
+		"pcap-types:generate": "barrelsby -D -d ./src/definitions"
 	},
 	"files": [
 		"lib/"
@@ -36,11 +36,11 @@
 	},
 	"devDependencies": {
 		"@types/node": "^14.14.19",
-		"barrel-generator": "^1.0.9",
+		"barrelsby": "^2.2.0",
+		"copyfiles": "^2.4.1",
 		"eslint": "^7.17.0",
 		"eslint-config-prettier": "^7.1.0",
 		"prettier": "^2.2.1",
-		"typescript": "^4.1.3",
-		"copyfiles": "^2.4.1"
+		"typescript": "^4.1.3"
 	}
 }

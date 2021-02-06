@@ -1,11 +1,11 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
 const ci = new CaptureInterface({
-	filter: (header, type) => type === "updatePositionHandler",
+	filter: (header, typeName) => typeName === "resultDialog",
 });
 
 ci.on("message", (type, message) => {
-	console.log(type);
+	console.log(message);
 }).on("error", console.error);
 
 ci.once("ready", () => {
