@@ -1,0 +1,13 @@
+import { Region, SegmentHeader } from "./models";
+
+export interface Options {
+	region: Region;
+	exePath: string;
+	monitorType: "WinPCap" | "RawSocket";
+	logger: (payload: { type: "info" | "log" | "warn" | "error", message: string }) => void;
+	port: number;
+	hasWine: boolean;
+	winePrefix: string;
+	filter: (header: SegmentHeader, typeName: string) => boolean;
+	pid?: number;
+}
