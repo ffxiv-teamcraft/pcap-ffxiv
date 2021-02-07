@@ -29,5 +29,5 @@ export interface AirshipExplorationResult {
 		loot2IsHq: boolean;
 
 		unknown3: number;
-	}[]
+	}[];
 }

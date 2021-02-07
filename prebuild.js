@@ -1,15 +1,11 @@
 const path = require("path");
 const fs = require("fs");
 
-function createProcessorsLoader(filename, functionName, folder, processorType, processorTypeName, additionalImports) {
+function generateImportsAndProcessors(folder) {
 	const processorFiles = fs.readdirSync(path.join(__dirname, "./src/packet-processors/", folder));
 
 	const imports = [];
 	const processors = [];
-
-	if (additionalImports) {
-		imports.push(...additionalImports);
-	}
 
 	processorFiles.forEach((file) => {
 		if (!file.endsWith(".ts")) {
@@ -20,30 +16,46 @@ function createProcessorsLoader(filename, functionName, folder, processorType, p
 		processors.push(processorName);
 	});
 
+	return { imports, processors };
+}
+
+function createProcessorsLoader(
+	filename,
+	propertyName,
+	folder,
+	processorType,
+	processorTypeName,
+	registryTypeName,
+	additionalImports,
+) {
+	const { imports, processors } = generateImportsAndProcessors(folder);
+
+	if (additionalImports) {
+		imports.push(...additionalImports);
+	}
+
 	const loader = `import { ${processorTypeName} } from "../models/${processorTypeName}";
 ${imports.join("\n")}
 
-export function ${functionName}(): Record<string, ${processorType}> {
-	return { 
-		${processors.join(",\n\t\t")}, 
-	};
-}
+/**
+* THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
+*
+* To update it, restart the build process.
+*/
+
+export const ${propertyName}: Record<string, ${processorType}> = { 
+	${processors.join(",\n\t")}, 
+};
 `;
 
 	fs.writeFileSync(`./src/packet-processors/${filename}.ts`, loader);
 }
 
-createProcessorsLoader(
-	"load-packet-processors",
-	"loadPacketProcessors",
-	"processors",
-	"PacketProcessor",
-	"PacketProcessor",
-);
+createProcessorsLoader("packet-processors", "packetProcessors", "processors", "PacketProcessor", "PacketProcessor");
 
 createProcessorsLoader(
-	"load-actor-control-packet-processors",
-	"loadActorControlPacketProcessors",
+	"actor-control-packet-processors",
+	"actorControlPacketProcessors",
 	"processors/actor-control",
 	"SuperPacketProcessor<ActorControl>",
 	"SuperPacketProcessor",
@@ -51,8 +63,8 @@ createProcessorsLoader(
 );
 
 createProcessorsLoader(
-	"load-result-dialog-packet-processors",
-	"loadResultDialogPacketProcessors",
+	"result-dialog-packet-processors",
+	"resultDialogPacketProcessors",
 	"processors/result-dialog",
 	"SuperPacketProcessor<ResultDialog>",
 	"SuperPacketProcessor",

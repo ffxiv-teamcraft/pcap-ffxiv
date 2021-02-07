@@ -1,11 +1,9 @@
 import { SuperPacketProcessor } from "../models/SuperPacketProcessor";
-import { ResultDialog } from "../definitions";
 import { marketTaxRates } from "./processors/result-dialog/marketTaxRates";
 import { reductionResult } from "./processors/result-dialog/reductionResult";
+import { ResultDialog } from "../definitions";
 
-export function loadResultDialogPacketProcessors(): Record<string, SuperPacketProcessor<ResultDialog>> {
-	return { 
-		marketTaxRates,
-		reductionResult, 
-	};
-}
+export const resultDialogPacketProcessors: Record<string, SuperPacketProcessor<ResultDialog>> = {
+	marketTaxRates,
+	reductionResult,
+};

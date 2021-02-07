@@ -3,6 +3,6 @@ import { ResultDialog } from "../../definitions";
 
 export function resultDialog(reader: BufferReader): ResultDialog {
 	return {
-		category: reader.nextUInt32()
+		category: reader.nextUInt32(),
 	};
 }
