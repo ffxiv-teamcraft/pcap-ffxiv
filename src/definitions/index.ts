@@ -34,6 +34,7 @@ export * from "./EventPlay32";
 export * from "./EventPlay4";
 export * from "./EventPlay8";
 export * from "./EventPlayN";
+export * from "./FreeCompanyInfo";
 export * from "./FreeCompanyUpdateShortMessage";
 export * from "./InitZone";
 export * from "./InventoryModifyHandler";

@@ -29,6 +29,7 @@ import { eventPlay32 } from "./processors/eventPlay32";
 import { eventPlay4 } from "./processors/eventPlay4";
 import { eventPlay8 } from "./processors/eventPlay8";
 import { eventPlayN } from "./processors/eventPlayN";
+import { freeCompanyInfo } from "./processors/freeCompanyInfo";
 import { freeCompanyUpdateShortMessage } from "./processors/freeCompanyUpdateShortMessage";
 import { initZone } from "./processors/initZone";
 import { inventoryModifyHandler } from "./processors/inventoryModifyHandler";
@@ -96,6 +97,7 @@ export function loadPacketProcessors(): Record<string, PacketProcessor> {
 		eventPlay4,
 		eventPlay8,
 		eventPlayN,
+		freeCompanyInfo,
 		freeCompanyUpdateShortMessage,
 		initZone,
 		inventoryModifyHandler,
