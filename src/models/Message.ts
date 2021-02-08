@@ -64,12 +64,22 @@ import { UpdatePositionHandler } from "../definitions";
 import { UpdatePositionInstance } from "../definitions";
 import { UseMooch } from "../definitions";
 import { WeatherChange } from "../definitions";
+import { ActionStart } from "../definitions";
+import { AutoAttack } from "../definitions";
+import { DailyQuestSeed } from "../definitions";
+import { EObjSetState } from "../definitions";
+import { FishingBaitMsg } from "../definitions";
+import { SetMountSpeed } from "../definitions";
+import { ToggleWeapon } from "../definitions";
+import { UpdateRestedExp } from "../definitions";
+import { MarketTaxRates } from "../definitions";
+import { ReductionResult } from "../definitions";
 
 /**
-* THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
-*
-* To update it, restart the build process.
-*/
+ * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
+ *
+ * To update it, restart the build process.
+ */
 export interface ActorCastMessage extends GenericMessage<ActorCast> {
 	type: "actorCast";
 }
@@ -330,6 +340,46 @@ export interface WeatherChangeMessage extends GenericMessage<WeatherChange> {
 	type: "weatherChange";
 }
 
+export interface ActorControlActionStartMessage extends GenericMessage<ActionStart> {
+	subType: "actionStart";
+}
+
+export interface ActorControlAutoAttackMessage extends GenericMessage<AutoAttack> {
+	subType: "autoAttack";
+}
+
+export interface ActorControlDailyQuestSeedMessage extends GenericMessage<DailyQuestSeed> {
+	subType: "dailyQuestSeed";
+}
+
+export interface ActorControlEObjSetStateMessage extends GenericMessage<EObjSetState> {
+	subType: "eObjSetState";
+}
+
+export interface ActorControlFishingBaitMsgMessage extends GenericMessage<FishingBaitMsg> {
+	subType: "fishingBaitMsg";
+}
+
+export interface ActorControlSetMountSpeedMessage extends GenericMessage<SetMountSpeed> {
+	subType: "setMountSpeed";
+}
+
+export interface ActorControlToggleWeaponMessage extends GenericMessage<ToggleWeapon> {
+	subType: "toggleWeapon";
+}
+
+export interface ActorControlUpdateRestedExpMessage extends GenericMessage<UpdateRestedExp> {
+	subType: "updateRestedExp";
+}
+
+export interface ResultDialogMarketTaxRatesMessage extends GenericMessage<MarketTaxRates> {
+	subType: "marketTaxRates";
+}
+
+export interface ResultDialogReductionResultMessage extends GenericMessage<ReductionResult> {
+	subType: "reductionResult";
+}
+
 export type Message =
 	| ActorCastMessage
 	| ActorControlMessage
@@ -395,4 +445,14 @@ export type Message =
 	| UpdatePositionHandlerMessage
 	| UpdatePositionInstanceMessage
 	| UseMoochMessage
-	| WeatherChangeMessage;
+	| WeatherChangeMessage
+	| ActorControlActionStartMessage
+	| ActorControlAutoAttackMessage
+	| ActorControlDailyQuestSeedMessage
+	| ActorControlEObjSetStateMessage
+	| ActorControlFishingBaitMsgMessage
+	| ActorControlSetMountSpeedMessage
+	| ActorControlToggleWeaponMessage
+	| ActorControlUpdateRestedExpMessage
+	| ResultDialogMarketTaxRatesMessage
+	| ResultDialogReductionResultMessage;

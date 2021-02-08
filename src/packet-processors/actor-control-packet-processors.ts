@@ -10,12 +10,12 @@ import { updateRestedExp } from "./processors/actor-control/updateRestedExp";
 import { ActorControl } from "../definitions";
 
 /**
- * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
- *
- * To update it, restart the build process.
- */
+* THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
+*
+* To update it, restart the build process.
+*/
 
-export const actorControlPacketProcessors: Record<string, SuperPacketProcessor<ActorControl>> = {
+export const actorControlPacketProcessors: Record<string, SuperPacketProcessor<ActorControl>> = { 
 	actionStart,
 	autoAttack,
 	dailyQuestSeed,
@@ -23,5 +23,5 @@ export const actorControlPacketProcessors: Record<string, SuperPacketProcessor<A
 	fishingBaitMsg,
 	setMountSpeed,
 	toggleWeapon,
-	updateRestedExp,
+	updateRestedExp, 
 };

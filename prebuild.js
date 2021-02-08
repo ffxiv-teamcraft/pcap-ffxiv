@@ -43,34 +43,49 @@ export const ${propertyName}: Record<string, ${processorType}> = {
 	fs.writeFileSync(`./src/packet-processors/${filename}.ts`, loader);
 }
 
-function createMessageType() {
-	const { processors } = generateImportsAndProcessors("processors");
+function generateInterfaces(processors, parentModelName) {
+	const entries = [];
 
-	const imports = [];
-	const interfaces = [];
-	const interfaceNames = [];
+	parentModelName = parentModelName || "";
 
+	// Then actorControl packets
 	processors.forEach((processor) => {
 		const modelName = processor[0].toUpperCase() + processor.slice(1);
-		interfaceNames.push(`${modelName}Message`);
-		interfaces.push(`export interface ${modelName}Message extends GenericMessage<${modelName}> {
-	type: "${processor}";
-}`);
-		imports.push(`import { ${modelName} } from "../definitions";`);
+		entries.push({
+			name: `${parentModelName}${modelName}Message`,
+			importString: `import { ${modelName} } from "../definitions";`,
+			interfaceString: `export interface ${parentModelName}${modelName}Message extends GenericMessage<${modelName}> {
+	${parentModelName ? "subType" : "type"}: "${processor}";
+}`,
+		});
 	});
 
+	return entries;
+}
+
+function createMessageType() {
+	const { processors } = generateImportsAndProcessors("processors");
+	const actorControlProcessors = generateImportsAndProcessors("processors/actor-control").processors;
+	const resultDialogProcessors = generateImportsAndProcessors("processors/result-dialog").processors;
+
+	const entries = [
+		...generateInterfaces(processors),
+		...generateInterfaces(actorControlProcessors, "ActorControl"),
+		...generateInterfaces(resultDialogProcessors, "ResultDialog"),
+	];
+
 	const fileContent = `import { GenericMessage } from "./GenericMessage";
-${imports.join("\n")}
+${entries.map((e) => e.importString).join("\n")}
 
 /**
 * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
 *
 * To update it, restart the build process.
 */
-${interfaces.join("\n\n")}
+${entries.map((e) => e.interfaceString).join("\n\n")}
 
 export type Message =
-	| ${interfaceNames.join("\n\t| ")};
+	| ${entries.map((e) => e.name).join("\n\t| ")};
 `;
 
 	fs.writeFileSync(`./src/models/Message.ts`, fileContent);
