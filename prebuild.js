@@ -19,15 +19,7 @@ function generateImportsAndProcessors(folder) {
 	return { imports, processors };
 }
 
-function createProcessorsLoader(
-	filename,
-	propertyName,
-	folder,
-	processorType,
-	processorTypeName,
-	registryTypeName,
-	additionalImports,
-) {
+function createProcessorsLoader(filename, propertyName, folder, processorType, processorTypeName, additionalImports) {
 	const { imports, processors } = generateImportsAndProcessors(folder);
 
 	if (additionalImports) {
