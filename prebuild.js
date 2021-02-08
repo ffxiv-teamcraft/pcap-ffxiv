@@ -51,6 +51,39 @@ export const ${propertyName}: Record<string, ${processorType}> = {
 	fs.writeFileSync(`./src/packet-processors/${filename}.ts`, loader);
 }
 
+function createMessageType() {
+	const { processors } = generateImportsAndProcessors("processors");
+
+	const imports = [];
+	const interfaces = [];
+	const interfaceNames = [];
+
+	processors.forEach((processor) => {
+		const modelName = processor[0].toUpperCase() + processor.slice(1);
+		interfaceNames.push(`${modelName}Message`);
+		interfaces.push(`export interface ${modelName}Message extends GenericMessage<${modelName}> {
+	type: "${processor}";
+}`);
+		imports.push(`import { ${modelName} } from "../definitions";`);
+	});
+
+	const fileContent = `import { GenericMessage } from "./GenericMessage";
+${imports.join("\n")}
+
+/**
+* THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
+*
+* To update it, restart the build process.
+*/
+${interfaces.join("\n\n")}
+
+export type Message =
+	| ${interfaceNames.join("\n\t| ")};
+`;
+
+	fs.writeFileSync(`./src/models/Message.ts`, fileContent);
+}
+
 createProcessorsLoader("packet-processors", "packetProcessors", "processors", "PacketProcessor", "PacketProcessor");
 
 createProcessorsLoader(
@@ -70,3 +103,5 @@ createProcessorsLoader(
 	"SuperPacketProcessor",
 	[`import { ResultDialog } from "../definitions";`],
 );
+
+createMessageType();

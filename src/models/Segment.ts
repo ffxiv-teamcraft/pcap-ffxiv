@@ -1,9 +1,6 @@
 import { SegmentHeader } from "./SegmentHeader";
 
-export interface Segment<T = unknown> {
+export interface Segment {
 	header: SegmentHeader;
-	type: string;
-	subType?: string;
-	ipcData?: Buffer;
-	parsedIpcData?: T;
+	data?: Buffer;
 }

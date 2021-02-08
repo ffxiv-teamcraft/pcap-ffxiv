@@ -13,7 +13,7 @@
 		"prepublish": "yarn format && yarn build",
 		"format": "prettier . --write",
 		"copyfiles": "copyfiles ./MachinaWrapper/* ./lib",
-		"pcap-types:generate": "barrelsby -D -d ./src/definitions"
+		"pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/rxjs"
 	},
 	"files": [
 		"lib/"
