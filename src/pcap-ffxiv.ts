@@ -1,21 +1,27 @@
 import { EventEmitter } from "events";
-import { ConstantsList, OpcodeList, Region, SegmentHeader, SegmentType } from "./models";
+import {
+	ActorControlType,
+	ConstantsList,
+	Message,
+	OpcodeList,
+	PacketProcessor,
+	Region,
+	ResultDialogType,
+	SegmentHeader,
+	SegmentType,
+	SuperPacket,
+	SuperPacketProcessor,
+} from "./models";
 import { downloadJson } from "./json-downloader";
 import { packetProcessors } from "./packet-processors/packet-processors";
 import { BufferReader } from "./BufferReader";
 import { createServer as createHttpServer, Server } from "http";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { join } from "path";
-import { Options } from "./options";
 import { existsSync } from "fs";
-import { SuperPacketProcessor } from "./models/SuperPacketProcessor";
-import { PacketProcessor } from "./models/PacketProcessor";
 import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
-import { ActorControlType } from "./models/ActorControlType";
-import { ResultDialogType } from "./models/ResultDialogType";
-import { SuperPacket } from "./models/SuperPacket";
-import { Message } from "./models/Message";
+import { CaptureInterfaceOptions } from "./capture-interface-options";
 
 export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
@@ -30,16 +36,16 @@ export class CaptureInterface extends EventEmitter {
 	private _httpServer: Server | undefined = undefined;
 	private _monitor: ChildProcessWithoutNullStreams | undefined;
 
-	private readonly _options: Options;
+	private readonly _options: CaptureInterfaceOptions;
 
 	public get constants(): ConstantsList | undefined {
 		return this._constants ? this._constants[this._options.region] : undefined;
 	}
 
-	constructor(options: Partial<Options>) {
+	constructor(options: Partial<CaptureInterfaceOptions>) {
 		super();
 
-		const defaultOptions: Options = {
+		const defaultOptions: CaptureInterfaceOptions = {
 			region: "Global",
 			exePath: join(__dirname, "./MachinaWrapper/MachinaWrapper.exe"),
 			monitorType: "WinPCap",
@@ -226,12 +232,14 @@ export class CaptureInterface extends EventEmitter {
 			});
 			return;
 		}
+		const operation = { C: "send", S: "receive" }[origin];
 		const reader = dataReader.restAsBuffer(true);
 		const header: SegmentHeader = {
 			size: reader.nextUInt32(),
 			sourceActor: reader.nextUInt32(),
 			targetActor: reader.nextUInt32(),
 			segmentType: reader.nextUInt32(),
+			operation: operation,
 		};
 		if (header.segmentType === SegmentType.Ipc) {
 			const opcode = reader.skip(2).nextUInt16();

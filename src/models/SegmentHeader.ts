@@ -5,4 +5,5 @@ export interface SegmentHeader {
 	sourceActor: number;
 	targetActor: number;
 	segmentType: SegmentType;
+	operation: "send" | "receive";
 }
