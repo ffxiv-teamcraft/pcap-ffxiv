@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { FreeCompanyUpdateShortMessage } from "../../definitions/FreeCompanyUpdateShortMessage";
+import { FreeCompanyUpdateShortMessage } from "../../definitions";
 
 export function freeCompanyUpdateShortMessage(reader: BufferReader): FreeCompanyUpdateShortMessage {
 	return {

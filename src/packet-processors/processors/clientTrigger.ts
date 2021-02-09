@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { ClientTrigger } from "../../definitions/ClientTrigger";
+import { ClientTrigger } from "../../definitions";
 
 export function clientTrigger(reader: BufferReader): ClientTrigger {
 	return {

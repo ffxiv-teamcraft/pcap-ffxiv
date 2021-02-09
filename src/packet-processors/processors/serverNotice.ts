@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { ServerNotice } from "../../definitions/ServerNotice";
+import { ServerNotice } from "../../definitions";
 
 const displayFlags = {
 	0: "chatLog",

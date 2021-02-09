@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { BlackList } from "../../definitions/BlackList";
+import { BlackList } from "../../definitions";
 
 export function blackList(reader: BufferReader): BlackList {
 	return {

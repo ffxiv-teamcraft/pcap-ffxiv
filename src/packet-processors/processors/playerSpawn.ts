@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { PlayerSpawn } from "../../definitions/PlayerSpawn";
+import { PlayerSpawn } from "../../definitions";
 
 export function playerSpawn(reader: BufferReader): PlayerSpawn {
 	return {

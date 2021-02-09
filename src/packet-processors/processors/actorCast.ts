@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { ActorCast } from "../../definitions/ActorCast";
+import { ActorCast } from "../../definitions";
 
 export function actorCast(reader: BufferReader): ActorCast {
 	return {

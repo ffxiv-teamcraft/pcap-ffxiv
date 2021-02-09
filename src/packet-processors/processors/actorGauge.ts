@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { ActorGauge } from "../../definitions/ActorGauge";
+import { ActorGauge } from "../../definitions";
 
 export function actorGauge(reader: BufferReader): ActorGauge {
 	return {

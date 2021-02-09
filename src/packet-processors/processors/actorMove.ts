@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { ActorMove } from "../../definitions/ActorMove";
+import { ActorMove } from "../../definitions";
 
 export function actorMove(reader: BufferReader): ActorMove {
 	return {

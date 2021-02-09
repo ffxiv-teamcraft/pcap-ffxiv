@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { LogMessage } from "../../definitions/LogMessage";
+import { LogMessage } from "../../definitions";
 
 export function logMessage(reader: BufferReader): LogMessage {
 	return {

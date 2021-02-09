@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { UpdateHpMpTp } from "../../definitions/UpdateHpMpTp";
+import { UpdateHpMpTp } from "../../definitions";
 
 export function updateHpMpTp(reader: BufferReader): UpdateHpMpTp {
 	return {

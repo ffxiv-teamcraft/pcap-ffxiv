@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { CFPlayerInNeed } from "../../definitions/CFPlayerInNeed";
+import { CFPlayerInNeed } from "../../definitions";
 
 export function cFPlayerInNeed(reader: BufferReader): CFPlayerInNeed {
 	return {

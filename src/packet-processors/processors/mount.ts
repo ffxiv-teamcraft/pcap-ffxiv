@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { Mount } from "../../definitions/Mount";
+import { Mount } from "../../definitions";
 
 export function mount(reader: BufferReader): Mount {
 	return {

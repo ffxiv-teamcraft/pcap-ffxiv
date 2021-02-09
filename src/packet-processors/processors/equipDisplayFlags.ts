@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { EquipDisplayFlags } from "../../definitions/EquipDisplayFlags";
+import { EquipDisplayFlags } from "../../definitions";
 
 export function equipDisplayFlags(reader: BufferReader): EquipDisplayFlags {
 	return {

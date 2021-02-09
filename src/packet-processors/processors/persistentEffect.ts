@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { PersistentEffect } from "../../definitions/PersistentEffect";
+import { PersistentEffect } from "../../definitions";
 
 export function persistentEffect(reader: BufferReader): PersistentEffect {
 	return {

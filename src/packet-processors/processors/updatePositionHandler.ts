@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { UpdatePositionHandler } from "../../definitions/UpdatePositionHandler";
+import { UpdatePositionHandler } from "../../definitions";
 
 export function updatePositionHandler(reader: BufferReader): UpdatePositionHandler {
 	return {

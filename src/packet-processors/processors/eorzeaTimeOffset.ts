@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { EorzeaTimeOffset } from "../../definitions/EorzeaTimeOffset";
+import { EorzeaTimeOffset } from "../../definitions";
 
 export function eorzeaTimeOffset(reader: BufferReader): EorzeaTimeOffset {
 	return {

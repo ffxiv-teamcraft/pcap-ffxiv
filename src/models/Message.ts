@@ -8,6 +8,7 @@ import { ActorGauge } from "../definitions";
 import { ActorMove } from "../definitions";
 import { ActorOwner } from "../definitions";
 import { ActorSetPos } from "../definitions";
+import { AddStatusEffect } from "../definitions";
 import { AirshipExplorationResult } from "../definitions";
 import { AirshipStatus } from "../definitions";
 import { AirshipStatusList } from "../definitions";
@@ -24,11 +25,13 @@ import { DesynthResult } from "../definitions";
 import { EffectResult } from "../definitions";
 import { EorzeaTimeOffset } from "../definitions";
 import { EquipDisplayFlags } from "../definitions";
+import { EventFinish } from "../definitions";
 import { EventPlay } from "../definitions";
 import { EventPlay32 } from "../definitions";
 import { EventPlay4 } from "../definitions";
 import { EventPlay8 } from "../definitions";
 import { EventPlayN } from "../definitions";
+import { EventStart } from "../definitions";
 import { FreeCompanyInfo } from "../definitions";
 import { FreeCompanyUpdateShortMessage } from "../definitions";
 import { InitZone } from "../definitions";
@@ -36,6 +39,7 @@ import { InventoryModifyHandler } from "../definitions";
 import { InventoryTransaction } from "../definitions";
 import { ItemInfo } from "../definitions";
 import { LogMessage } from "../definitions";
+import { Logout } from "../definitions";
 import { MarketBoardItemListingCount } from "../definitions";
 import { MarketBoardItemListingHistory } from "../definitions";
 import { MarketBoardSearchResult } from "../definitions";
@@ -115,6 +119,10 @@ export interface ActorSetPosMessage extends GenericMessage<ActorSetPos> {
 	type: "actorSetPos";
 }
 
+export interface AddStatusEffectMessage extends GenericMessage<AddStatusEffect> {
+	type: "addStatusEffect";
+}
+
 export interface AirshipExplorationResultMessage extends GenericMessage<AirshipExplorationResult> {
 	type: "airshipExplorationResult";
 }
@@ -179,6 +187,10 @@ export interface EquipDisplayFlagsMessage extends GenericMessage<EquipDisplayFla
 	type: "equipDisplayFlags";
 }
 
+export interface EventFinishMessage extends GenericMessage<EventFinish> {
+	type: "eventFinish";
+}
+
 export interface EventPlayMessage extends GenericMessage<EventPlay> {
 	type: "eventPlay";
 }
@@ -197,6 +209,10 @@ export interface EventPlay8Message extends GenericMessage<EventPlay8> {
 
 export interface EventPlayNMessage extends GenericMessage<EventPlayN> {
 	type: "eventPlayN";
+}
+
+export interface EventStartMessage extends GenericMessage<EventStart> {
+	type: "eventStart";
 }
 
 export interface FreeCompanyInfoMessage extends GenericMessage<FreeCompanyInfo> {
@@ -225,6 +241,10 @@ export interface ItemInfoMessage extends GenericMessage<ItemInfo> {
 
 export interface LogMessageMessage extends GenericMessage<LogMessage> {
 	type: "logMessage";
+}
+
+export interface LogoutMessage extends GenericMessage<Logout> {
+	type: "logout";
 }
 
 export interface MarketBoardItemListingCountMessage extends GenericMessage<MarketBoardItemListingCount> {
@@ -385,6 +405,7 @@ export type Message =
 	| ActorMoveMessage
 	| ActorOwnerMessage
 	| ActorSetPosMessage
+	| AddStatusEffectMessage
 	| AirshipExplorationResultMessage
 	| AirshipStatusMessage
 	| AirshipStatusListMessage
@@ -401,11 +422,13 @@ export type Message =
 	| EffectResultMessage
 	| EorzeaTimeOffsetMessage
 	| EquipDisplayFlagsMessage
+	| EventFinishMessage
 	| EventPlayMessage
 	| EventPlay32Message
 	| EventPlay4Message
 	| EventPlay8Message
 	| EventPlayNMessage
+	| EventStartMessage
 	| FreeCompanyInfoMessage
 	| FreeCompanyUpdateShortMessageMessage
 	| InitZoneMessage
@@ -413,6 +436,7 @@ export type Message =
 	| InventoryTransactionMessage
 	| ItemInfoMessage
 	| LogMessageMessage
+	| LogoutMessage
 	| MarketBoardItemListingCountMessage
 	| MarketBoardItemListingHistoryMessage
 	| MarketBoardSearchResultMessage

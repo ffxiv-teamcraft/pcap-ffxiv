@@ -1,4 +1,4 @@
-import { Position3 } from "./definitions/Position3";
+import { Position3 } from "./definitions";
 
 type BufferFnProperties = Pick<
 	Buffer,

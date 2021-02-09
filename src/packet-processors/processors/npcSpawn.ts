@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { NpcSpawn } from "../../definitions/NpcSpawn";
+import { NpcSpawn } from "../../definitions";
 
 export function npcSpawn(reader: BufferReader): NpcSpawn {
 	return {

@@ -8,6 +8,7 @@ import { actorGauge } from "./processors/actorGauge";
 import { actorMove } from "./processors/actorMove";
 import { actorOwner } from "./processors/actorOwner";
 import { actorSetPos } from "./processors/actorSetPos";
+import { addStatusEffect } from "./processors/addStatusEffect";
 import { airshipExplorationResult } from "./processors/airshipExplorationResult";
 import { airshipStatus } from "./processors/airshipStatus";
 import { airshipStatusList } from "./processors/airshipStatusList";
@@ -24,11 +25,13 @@ import { desynthResult } from "./processors/desynthResult";
 import { effectResult } from "./processors/effectResult";
 import { eorzeaTimeOffset } from "./processors/eorzeaTimeOffset";
 import { equipDisplayFlags } from "./processors/equipDisplayFlags";
+import { eventFinish } from "./processors/eventFinish";
 import { eventPlay } from "./processors/eventPlay";
 import { eventPlay32 } from "./processors/eventPlay32";
 import { eventPlay4 } from "./processors/eventPlay4";
 import { eventPlay8 } from "./processors/eventPlay8";
 import { eventPlayN } from "./processors/eventPlayN";
+import { eventStart } from "./processors/eventStart";
 import { freeCompanyInfo } from "./processors/freeCompanyInfo";
 import { freeCompanyUpdateShortMessage } from "./processors/freeCompanyUpdateShortMessage";
 import { initZone } from "./processors/initZone";
@@ -36,6 +39,7 @@ import { inventoryModifyHandler } from "./processors/inventoryModifyHandler";
 import { inventoryTransaction } from "./processors/inventoryTransaction";
 import { itemInfo } from "./processors/itemInfo";
 import { logMessage } from "./processors/logMessage";
+import { logout } from "./processors/logout";
 import { marketBoardItemListingCount } from "./processors/marketBoardItemListingCount";
 import { marketBoardItemListingHistory } from "./processors/marketBoardItemListingHistory";
 import { marketBoardSearchResult } from "./processors/marketBoardSearchResult";
@@ -80,6 +84,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	actorMove,
 	actorOwner,
 	actorSetPos,
+	addStatusEffect,
 	airshipExplorationResult,
 	airshipStatus,
 	airshipStatusList,
@@ -96,11 +101,13 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	effectResult,
 	eorzeaTimeOffset,
 	equipDisplayFlags,
+	eventFinish,
 	eventPlay,
 	eventPlay32,
 	eventPlay4,
 	eventPlay8,
 	eventPlayN,
+	eventStart,
 	freeCompanyInfo,
 	freeCompanyUpdateShortMessage,
 	initZone,
@@ -108,6 +115,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	inventoryTransaction,
 	itemInfo,
 	logMessage,
+	logout,
 	marketBoardItemListingCount,
 	marketBoardItemListingHistory,
 	marketBoardSearchResult,

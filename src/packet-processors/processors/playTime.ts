@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { PlayTime } from "../../definitions/PlayTime";
+import { PlayTime } from "../../definitions";
 
 export function playTime(reader: BufferReader): PlayTime {
 	const playtime = reader.nextUInt32();

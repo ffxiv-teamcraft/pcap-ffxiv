@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { CharaVisualEffect } from "../../definitions/CharaVisualEffect";
+import { CharaVisualEffect } from "../../definitions";
 
 export function charaVisualEffect(reader: BufferReader): CharaVisualEffect {
 	return {

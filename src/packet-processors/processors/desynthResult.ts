@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { DesynthResult } from "../../definitions/DesynthResult";
+import { DesynthResult } from "../../definitions";
 
 export function desynthResult(reader: BufferReader): DesynthResult {
 	return {

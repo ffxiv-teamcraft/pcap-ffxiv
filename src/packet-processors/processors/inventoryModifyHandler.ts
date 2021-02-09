@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { InventoryModifyHandler } from "../../definitions/InventoryModifyHandler";
+import { InventoryModifyHandler } from "../../definitions";
 import { ConstantsList } from "../../models";
 
 function inventoryOperation(action: number, offset: number): string {
