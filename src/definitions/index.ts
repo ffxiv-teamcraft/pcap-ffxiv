@@ -82,6 +82,7 @@ export * from "./actor-control/DailyQuestSeed";
 export * from "./actor-control/EObjSetState";
 export * from "./actor-control/FishingBaitMsg";
 export * from "./actor-control/SetMountSpeed";
+export * from "./actor-control/StatusEffectLose";
 export * from "./actor-control/ToggleWeapon";
 export * from "./actor-control/UpdateRestedExp";
 export * from "./result-dialog/MarketTaxRates";

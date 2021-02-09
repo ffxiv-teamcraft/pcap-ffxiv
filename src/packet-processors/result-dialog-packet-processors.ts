@@ -1,4 +1,4 @@
-import { SuperPacketProcessor } from "../models/SuperPacketProcessor";
+import { SuperPacketProcessor } from "../models";
 import { marketTaxRates } from "./processors/result-dialog/marketTaxRates";
 import { reductionResult } from "./processors/result-dialog/reductionResult";
 import { ResultDialog } from "../definitions";

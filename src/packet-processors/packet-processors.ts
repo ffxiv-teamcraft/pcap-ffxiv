@@ -1,4 +1,4 @@
-import { PacketProcessor } from "../models/PacketProcessor";
+import { PacketProcessor } from "../models";
 import { actorCast } from "./processors/actorCast";
 import { actorControl } from "./processors/actorControl";
 import { actorControlSelf } from "./processors/actorControlSelf";

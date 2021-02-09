@@ -4,7 +4,7 @@ export interface InventoryTransaction {
 	padding1: number;
 	ownerId: number;
 	containerId: number;
-	slotId: number;
+	slot: number;
 	padding2: number;
 	quantity: number;
 	catalogId: number;

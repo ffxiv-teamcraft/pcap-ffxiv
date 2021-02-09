@@ -73,6 +73,7 @@ import { DailyQuestSeed } from "../definitions";
 import { EObjSetState } from "../definitions";
 import { FishingBaitMsg } from "../definitions";
 import { SetMountSpeed } from "../definitions";
+import { StatusEffectLose } from "../definitions";
 import { ToggleWeapon } from "../definitions";
 import { UpdateRestedExp } from "../definitions";
 import { MarketTaxRates } from "../definitions";
@@ -385,6 +386,11 @@ export interface ActorControlSetMountSpeedMessage extends GenericMessage<SetMoun
 	subType: "setMountSpeed";
 }
 
+export interface ActorControlStatusEffectLoseMessage extends GenericMessage<StatusEffectLose> {
+	type: "actorControl";
+	subType: "statusEffectLose";
+}
+
 export interface ActorControlToggleWeaponMessage extends GenericMessage<ToggleWeapon> {
 	type: "actorControl";
 	subType: "toggleWeapon";
@@ -480,6 +486,7 @@ export type Message =
 	| ActorControlEObjSetStateMessage
 	| ActorControlFishingBaitMsgMessage
 	| ActorControlSetMountSpeedMessage
+	| ActorControlStatusEffectLoseMessage
 	| ActorControlToggleWeaponMessage
 	| ActorControlUpdateRestedExpMessage
 	| ResultDialogMarketTaxRatesMessage

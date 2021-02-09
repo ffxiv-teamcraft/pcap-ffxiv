@@ -26,7 +26,7 @@ function createProcessorsLoader(filename, propertyName, folder, processorType, p
 		imports.push(...additionalImports);
 	}
 
-	const loader = `import { ${processorTypeName} } from "../models/${processorTypeName}";
+	const loader = `import { ${processorTypeName} } from "../models";
 ${imports.join("\n")}
 
 /**

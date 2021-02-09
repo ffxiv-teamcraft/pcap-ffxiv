@@ -8,7 +8,7 @@ export function inventoryTransaction(reader: BufferReader): InventoryTransaction
 		padding1: reader.nextUInt16(),
 		ownerId: reader.nextUInt32(),
 		containerId: reader.nextUInt32(),
-		slotId: reader.nextUInt16(),
+		slot: reader.nextUInt16(),
 		padding2: reader.nextUInt16(),
 		quantity: reader.nextUInt32(),
 		catalogId: reader.nextUInt32(),
