@@ -62,6 +62,7 @@ export * from "./ServerNotice";
 export * from "./SomeDirectorUnk4";
 export * from "./StatusEffectList";
 export * from "./SubmarineExplorationResult";
+export * from "./SubmarineProgressionStatus";
 export * from "./SubmarineStatusList";
 export * from "./SubmarineTimers";
 export * from "./UpdateClassInfo";

@@ -1,7 +1,7 @@
 import { EventEmitter } from "events";
-import { ConstantsList, OpcodeList, Region, Segment, SegmentHeader, SegmentType } from "./models";
+import { ConstantsList, OpcodeList, Region, SegmentHeader, SegmentType } from "./models";
 import { downloadJson } from "./json-downloader";
-import { loadPacketProcessors } from "./packet-processors/load-packet-processors";
+import { packetProcessors } from "./packet-processors/packet-processors";
 import { BufferReader } from "./BufferReader";
 import { createServer as createHttpServer, Server } from "http";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
@@ -10,17 +10,18 @@ import { Options } from "./options";
 import { existsSync } from "fs";
 import { SuperPacketProcessor } from "./models/SuperPacketProcessor";
 import { PacketProcessor } from "./models/PacketProcessor";
-import { loadActorControlPacketProcessors } from "./packet-processors/load-actor-control-packet-processors";
-import { loadResultDialogPacketProcessors } from "./packet-processors/load-result-dialog-packet-processors";
+import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
+import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { ActorControlType } from "./models/ActorControlType";
 import { ResultDialogType } from "./models/ResultDialogType";
 import { SuperPacket } from "./models/SuperPacket";
+import { Message } from "./models/Message";
 
 export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
 	private _constants: Record<keyof Region, ConstantsList> | undefined;
 	private readonly _packetDefs: Record<string, PacketProcessor>;
-	private readonly _superPacketDefs: Record<string, Record<string, SuperPacketProcessor<any>>>;
+	private readonly _superPacketDefs: Record<keyof typeof packetProcessors, Record<string, SuperPacketProcessor<any>>>;
 	private _opcodes: { C: Record<number, string>; S: Record<number, string> } = {
 		C: {},
 		S: {},
@@ -58,10 +59,10 @@ export class CaptureInterface extends EventEmitter {
 			throw new Error(`MachinaWrapper not found in ${this._options.exePath}`);
 		}
 
-		this._packetDefs = loadPacketProcessors();
+		this._packetDefs = packetProcessors;
 		this._superPacketDefs = {
-			actorControl: loadActorControlPacketProcessors(),
-			resultDialog: loadResultDialogPacketProcessors(),
+			actorControl: actorControlPacketProcessors,
+			resultDialog: resultDialogPacketProcessors,
 		};
 
 		this._loadOpcodes().then(async () => {
@@ -173,7 +174,11 @@ export class CaptureInterface extends EventEmitter {
 		);
 	}
 
-	private _processSuperPacket<T extends SuperPacket>(typeName: string, segment: Segment<T>, reader: BufferReader): Segment<T> {
+	private _processSuperPacket<T extends SuperPacket>(
+		typeName: string,
+		message: Message,
+		reader: BufferReader,
+	): Message {
 		let subTypesEnum: Record<string | number, string | number>;
 		// Let's get the corresponding enum
 		switch (typeName) {
@@ -188,26 +193,26 @@ export class CaptureInterface extends EventEmitter {
 					type: "error",
 					message: `Got super packet of type ${typeName} with super processors but no type enum.`,
 				});
-				return segment;
+				return message;
 		}
 
-		let subTypeName = subTypesEnum[(segment.parsedIpcData as T).category] as string;
+		let subTypeName = subTypesEnum[(message.parsedIpcData as SuperPacket).category] as string;
 		subTypeName = subTypeName[0].toLowerCase() + subTypeName.slice(1);
 		if (!subTypeName) {
-			segment.subType = "unknown";
+			message.subType = "unknown";
 			// Unknown subtype, return packet as-is
-			return segment;
+			return message;
 		}
 
-		segment.subType = subTypeName;
+		message.subType = subTypeName;
 		const superProcessor = this._superPacketDefs[typeName][subTypeName];
 		if (!superProcessor) {
 			// No processor for this sub packet, return packet as-is
-			return segment;
+			return message;
 		}
 
-		segment.parsedIpcData = superProcessor(segment.parsedIpcData, reader, this.constants as ConstantsList);
-		return segment;
+		message.parsedIpcData = superProcessor(message.parsedIpcData, reader, this.constants as ConstantsList);
+		return message;
 	}
 
 	private _processSegment(data: Buffer): void {
@@ -234,25 +239,26 @@ export class CaptureInterface extends EventEmitter {
 			let typeName = this._opcodes[origin][opcode] || "unknown";
 			typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
-			let segment: Segment<any> = {
+			let message: Message = {
 				header: header,
-				ipcData: ipcData,
 				type: typeName,
 			};
 
 			if (this._options.filter(header, typeName)) {
 				// Unmarshal the data, if possible.
 				if (this._packetDefs[typeName] && this._constants) {
+					const processorName: keyof typeof packetProcessors = typeName;
 					const ipcDataReader = new BufferReader(ipcData);
-					segment.parsedIpcData = this._packetDefs[typeName](ipcDataReader, this._constants[this._options.region]);
+					const processor = this._packetDefs[processorName];
+					message.parsedIpcData = processor(ipcDataReader, this._constants[this._options.region]);
 
 					// If this is a super packet
 					if (this._superPacketDefs[typeName]) {
-						segment = this._processSuperPacket(typeName, segment, ipcDataReader.reset());
+						message = this._processSuperPacket(typeName, message, ipcDataReader.reset());
 					}
 				}
 
-				this.emit("message", typeName, segment);
+				this.emit("message", message);
 			}
 		}
 	}
@@ -261,7 +267,7 @@ export class CaptureInterface extends EventEmitter {
 interface CaptureInterfaceEvents {
 	ready: () => void;
 	error: (err: Error) => void;
-	message: (type: string, message: Segment<any>) => void;
+	message: (message: Message) => void;
 }
 
 export declare interface CaptureInterface {

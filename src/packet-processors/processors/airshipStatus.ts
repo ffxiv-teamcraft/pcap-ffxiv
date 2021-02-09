@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { AirshipStatus } from "../../definitions/AirshipStatus";
+import { AirshipStatus } from "../../definitions";
 
 const SECTORS_DATA_LENGTH = 4;
 const MASK = 0x1;

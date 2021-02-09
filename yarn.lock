@@ -132,11 +132,6 @@ balanced-match@^1.0.0:
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-1.0.0.tgz#89b4d199ab2bee49de164ea02b89ce462d71b767"
   integrity sha1-ibTRmasr7kneFk6gK4nORi1xt2c=
 
-barrel-generator@^1.0.9:
-  version "1.0.9"
-  resolved "https://registry.yarnpkg.com/barrel-generator/-/barrel-generator-1.0.9.tgz#439fadad8225392886542d510790ebd98f67c153"
-  integrity sha512-Wj8prTx/oRv2wSGOy50qzNdWpymqIZta69Rs9vY5TOaQrfk6DFCg1YW7thUYylVhUiY9xQqfi3t31poKWFHIoA==
-
 barrelsby@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/barrelsby/-/barrelsby-2.2.0.tgz#df5ae16539bc7fdbe196e50f36e50a0c3cae07a4"

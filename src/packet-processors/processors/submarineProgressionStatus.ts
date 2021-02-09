@@ -1,5 +1,5 @@
 import { BufferReader } from "../../BufferReader";
-import { SubmarineProgressionStatus } from "../../definitions/SubmarineProgressionStatus";
+import { SubmarineProgressionStatus } from "../../definitions";
 
 const SECTORS_DATA_LENGTH = 10;
 const MASK = 0x1;
@@ -15,10 +15,11 @@ function getProgression(buffer: BufferReader) {
 	}
 	return progression;
 }
+
 export function submarineProgressionStatus(buffer: BufferReader): SubmarineProgressionStatus {
 	return {
 		unlockedSubmarineCount: buffer.nextUInt8(),
 		unlockedSectors: getProgression(buffer),
 		exploredSectors: getProgression(buffer),
-	}
+	};
 }

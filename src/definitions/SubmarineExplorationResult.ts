@@ -29,6 +29,6 @@ export interface SubmarineExplorationResult {
 		loot2RetrievalResult: number;
 		loot1ItemDiscoveryDescription: number;
 		loot2ItemDiscoveryDescription: number;
-	}[]
+	}[];
 	unknown3: number;
 }
