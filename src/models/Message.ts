@@ -62,7 +62,6 @@ import { UpdateHpMpTp } from "../definitions";
 import { UpdateInventorySlot } from "../definitions";
 import { UpdatePositionHandler } from "../definitions";
 import { UpdatePositionInstance } from "../definitions";
-import { UseMooch } from "../definitions";
 import { WeatherChange } from "../definitions";
 import { ActionStart } from "../definitions";
 import { AutoAttack } from "../definitions";
@@ -76,10 +75,10 @@ import { MarketTaxRates } from "../definitions";
 import { ReductionResult } from "../definitions";
 
 /**
- * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
- *
- * To update it, restart the build process.
- */
+* THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
+*
+* To update it, restart the build process.
+*/
 export interface ActorCastMessage extends GenericMessage<ActorCast> {
 	type: "actorCast";
 }
@@ -332,10 +331,6 @@ export interface UpdatePositionInstanceMessage extends GenericMessage<UpdatePosi
 	type: "updatePositionInstance";
 }
 
-export interface UseMoochMessage extends GenericMessage<UseMooch> {
-	type: "useMooch";
-}
-
 export interface WeatherChangeMessage extends GenericMessage<WeatherChange> {
 	type: "weatherChange";
 }
@@ -444,7 +439,6 @@ export type Message =
 	| UpdateInventorySlotMessage
 	| UpdatePositionHandlerMessage
 	| UpdatePositionInstanceMessage
-	| UseMoochMessage
 	| WeatherChangeMessage
 	| ActorControlActionStartMessage
 	| ActorControlAutoAttackMessage

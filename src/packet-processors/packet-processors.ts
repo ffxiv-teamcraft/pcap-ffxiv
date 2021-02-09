@@ -62,7 +62,6 @@ import { updateHpMpTp } from "./processors/updateHpMpTp";
 import { updateInventorySlot } from "./processors/updateInventorySlot";
 import { updatePositionHandler } from "./processors/updatePositionHandler";
 import { updatePositionInstance } from "./processors/updatePositionInstance";
-import { useMooch } from "./processors/useMooch";
 import { weatherChange } from "./processors/weatherChange";
 
 /**
@@ -135,6 +134,5 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	updateInventorySlot,
 	updatePositionHandler,
 	updatePositionInstance,
-	useMooch,
 	weatherChange, 
 };
