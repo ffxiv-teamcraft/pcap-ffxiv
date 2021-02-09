@@ -1,4 +1,4 @@
-import { SuperPacket } from "../models/SuperPacket";
+import { SuperPacket } from "../models";
 
 export interface ActorControl extends SuperPacket {
 	padding: number;

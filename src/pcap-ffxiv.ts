@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import {
 	ActorControlType,
 	ConstantsList,
+	GenericMessage,
 	Message,
 	OpcodeList,
 	PacketProcessor,

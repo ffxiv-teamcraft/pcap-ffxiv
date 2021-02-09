@@ -356,42 +356,52 @@ export interface WeatherChangeMessage extends GenericMessage<WeatherChange> {
 }
 
 export interface ActorControlActionStartMessage extends GenericMessage<ActionStart> {
+	type: "actorControl";
 	subType: "actionStart";
 }
 
 export interface ActorControlAutoAttackMessage extends GenericMessage<AutoAttack> {
+	type: "actorControl";
 	subType: "autoAttack";
 }
 
 export interface ActorControlDailyQuestSeedMessage extends GenericMessage<DailyQuestSeed> {
+	type: "actorControl";
 	subType: "dailyQuestSeed";
 }
 
 export interface ActorControlEObjSetStateMessage extends GenericMessage<EObjSetState> {
+	type: "actorControl";
 	subType: "eObjSetState";
 }
 
 export interface ActorControlFishingBaitMsgMessage extends GenericMessage<FishingBaitMsg> {
+	type: "actorControl";
 	subType: "fishingBaitMsg";
 }
 
 export interface ActorControlSetMountSpeedMessage extends GenericMessage<SetMountSpeed> {
+	type: "actorControl";
 	subType: "setMountSpeed";
 }
 
 export interface ActorControlToggleWeaponMessage extends GenericMessage<ToggleWeapon> {
+	type: "actorControl";
 	subType: "toggleWeapon";
 }
 
 export interface ActorControlUpdateRestedExpMessage extends GenericMessage<UpdateRestedExp> {
+	type: "actorControl";
 	subType: "updateRestedExp";
 }
 
 export interface ResultDialogMarketTaxRatesMessage extends GenericMessage<MarketTaxRates> {
+	type: "resultDialog";
 	subType: "marketTaxRates";
 }
 
 export interface ResultDialogReductionResultMessage extends GenericMessage<ReductionResult> {
+	type: "resultDialog";
 	subType: "reductionResult";
 }
 

@@ -43,19 +43,23 @@ export const ${propertyName}: Record<string, ${processorType}> = {
 	fs.writeFileSync(`./src/packet-processors/${filename}.ts`, loader);
 }
 
-function generateInterfaces(processors, parentModelName) {
+function generateInterfaces(processors, parentInterfaceName) {
 	const entries = [];
 
-	parentModelName = parentModelName || "";
+	parentInterfaceName = parentInterfaceName || "";
+	const parentProcessorName = parentInterfaceName
+		? parentInterfaceName[0].toLowerCase() + parentInterfaceName.slice(1)
+		: null;
 
 	// Then actorControl packets
 	processors.forEach((processor) => {
 		const modelName = processor[0].toUpperCase() + processor.slice(1);
+		const subTypeField = parentProcessorName ? `\n\tsubType: "${processor}";` : "";
 		entries.push({
-			name: `${parentModelName}${modelName}Message`,
+			name: `${parentInterfaceName}${modelName}Message`,
 			importString: `import { ${modelName} } from "../definitions";`,
-			interfaceString: `export interface ${parentModelName}${modelName}Message extends GenericMessage<${modelName}> {
-	${parentModelName ? "subType" : "type"}: "${processor}";
+			interfaceString: `export interface ${parentInterfaceName}${modelName}Message extends GenericMessage<${modelName}> {
+	type: "${parentProcessorName || processor}";${subTypeField}
 }`,
 		});
 	});
