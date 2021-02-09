@@ -1,6 +1,6 @@
 import { Region, SegmentHeader } from "./models";
 
-export interface Options {
+export interface CaptureInterfaceOptions {
 	region: Region;
 	exePath: string;
 	monitorType: "WinPCap" | "RawSocket";
