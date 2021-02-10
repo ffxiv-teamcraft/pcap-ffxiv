@@ -4,4 +4,4 @@ A library for capturing FFXIV game packets in JS/TS. Requires an installed pcap 
 
 ## Installation
 
-`npm i pcap-ffxiv`
+`npm i @ffxiv-teamcraft/pcap-ffxiv`
