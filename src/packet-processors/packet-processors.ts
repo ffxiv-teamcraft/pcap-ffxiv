@@ -70,12 +70,12 @@ import { updatePositionInstance } from "./processors/updatePositionInstance";
 import { weatherChange } from "./processors/weatherChange";
 
 /**
- * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
- *
- * To update it, restart the build process.
- */
+* THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
+*
+* To update it, restart the build process.
+*/
 
-export const packetProcessors: Record<string, PacketProcessor> = {
+export const packetProcessors: Record<string, PacketProcessor> = { 
 	actorCast,
 	actorControl,
 	actorControlSelf,
@@ -144,5 +144,5 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	updateInventorySlot,
 	updatePositionHandler,
 	updatePositionInstance,
-	weatherChange,
+	weatherChange, 
 };
