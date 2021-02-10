@@ -67,18 +67,24 @@ export function playerSpawn(reader: BufferReader): PlayerSpawn {
 		//element,
 		elementData: reader.nextUInt16(),
 
-		effects: Array(30).map(() => {
-			return {
-				id: reader.nextUInt16(),
-				param: reader.nextUInt16(),
-				duration: reader.nextFloat(),
-				sourceActorId: reader.nextUInt32(),
-			};
-		}),
+		effects: Array(30)
+			.fill(null)
+			.map(() => {
+				return {
+					id: reader.nextUInt16(),
+					param: reader.nextUInt16(),
+					duration: reader.nextFloat(),
+					sourceActorId: reader.nextUInt32(),
+				};
+			}),
 		pos: reader.nextPosition3(),
-		models: Array(10).map(() => reader.nextUInt32()),
+		models: Array(10)
+			.fill(null)
+			.map(() => reader.nextUInt32()),
 		name: reader.nextString(32),
-		look: Array(26).map(() => reader.nextUInt8()),
+		look: Array(26)
+			.fill(null)
+			.map(() => reader.nextUInt8()),
 		fcTag: reader.nextString(6),
 		unk30: reader.nextUInt32(),
 	};

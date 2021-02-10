@@ -40,6 +40,7 @@ import { InventoryTransaction } from "../definitions";
 import { ItemInfo } from "../definitions";
 import { LogMessage } from "../definitions";
 import { Logout } from "../definitions";
+import { MarketBoardItemListing } from "../definitions";
 import { MarketBoardItemListingCount } from "../definitions";
 import { MarketBoardItemListingHistory } from "../definitions";
 import { MarketBoardSearchResult } from "../definitions";
@@ -248,6 +249,10 @@ export interface LogoutMessage extends GenericMessage<Logout> {
 	type: "logout";
 }
 
+export interface MarketBoardItemListingMessage extends GenericMessage<MarketBoardItemListing> {
+	type: "marketBoardItemListing";
+}
+
 export interface MarketBoardItemListingCountMessage extends GenericMessage<MarketBoardItemListingCount> {
 	type: "marketBoardItemListingCount";
 }
@@ -453,6 +458,7 @@ export type Message =
 	| ItemInfoMessage
 	| LogMessageMessage
 	| LogoutMessage
+	| MarketBoardItemListingMessage
 	| MarketBoardItemListingCountMessage
 	| MarketBoardItemListingHistoryMessage
 	| MarketBoardSearchResultMessage

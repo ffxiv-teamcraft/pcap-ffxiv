@@ -40,6 +40,7 @@ import { inventoryTransaction } from "./processors/inventoryTransaction";
 import { itemInfo } from "./processors/itemInfo";
 import { logMessage } from "./processors/logMessage";
 import { logout } from "./processors/logout";
+import { marketBoardItemListing } from "./processors/marketBoardItemListing";
 import { marketBoardItemListingCount } from "./processors/marketBoardItemListingCount";
 import { marketBoardItemListingHistory } from "./processors/marketBoardItemListingHistory";
 import { marketBoardSearchResult } from "./processors/marketBoardSearchResult";
@@ -69,12 +70,12 @@ import { updatePositionInstance } from "./processors/updatePositionInstance";
 import { weatherChange } from "./processors/weatherChange";
 
 /**
-* THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
-*
-* To update it, restart the build process.
-*/
+ * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
+ *
+ * To update it, restart the build process.
+ */
 
-export const packetProcessors: Record<string, PacketProcessor> = { 
+export const packetProcessors: Record<string, PacketProcessor> = {
 	actorCast,
 	actorControl,
 	actorControlSelf,
@@ -116,6 +117,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	itemInfo,
 	logMessage,
 	logout,
+	marketBoardItemListing,
 	marketBoardItemListingCount,
 	marketBoardItemListingHistory,
 	marketBoardSearchResult,
@@ -142,5 +144,5 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	updateInventorySlot,
 	updatePositionHandler,
 	updatePositionInstance,
-	weatherChange, 
+	weatherChange,
 };

@@ -60,21 +60,27 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		elementalLevel: reader.nextUInt16(),
 		element: reader.nextUInt16(),
 		u30b: reader.nextUInt32(),
-		effects: Array(30).map(() => {
-			return {
-				id: reader.nextUInt16(),
-				sourceActorId: reader.nextUInt32(),
-			};
-		}),
+		effects: Array(30)
+			.fill(null)
+			.map(() => {
+				return {
+					id: reader.nextUInt16(),
+					sourceActorId: reader.nextUInt32(),
+				};
+			}),
 		effect_id: reader.nextUInt16(),
 		sourceActorId: reader.nextUInt32(),
 		pos: reader.nextPosition3(),
-		models: Array(1).map(() => {
-			return reader.nextUInt32();
-		}),
-		looks: Array(26).map(() => {
-			return reader.nextUInt8();
-		}),
+		models: Array(1)
+			.fill(null)
+			.map(() => {
+				return reader.nextUInt32();
+			}),
+		looks: Array(26)
+			.fill(null)
+			.map(() => {
+				return reader.nextUInt8();
+			}),
 		name: reader.nextString(),
 		fcTag: reader.nextString(),
 		bNpcPartSlot: reader.nextUInt8(),

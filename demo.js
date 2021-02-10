@@ -1,11 +1,11 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
 const ci = new CaptureInterface({
-	filter: (header, typeName) => typeName === "resultDialog",
+	filter: (header, typeName) => typeName === "marketBoardItemListing",
 });
 
-ci.on("message", (type, message) => {
-	console.log(message);
+ci.on("message", (message) => {
+	console.log(message.parsedIpcData.listings);
 }).on("error", console.error);
 
 ci.once("ready", () => {

@@ -1,3 +1,8 @@
+export interface MateriaEntry {
+	materiaId: number;
+	index: number;
+}
+
 export interface MarketBoardItemListing {
 	listings: {
 		listingId: BigInt;
@@ -7,9 +12,10 @@ export interface MarketBoardItemListing {
 		pricePerUnit: number;
 		totalTax: number;
 		quantity: number;
+		itemId: number;
 		lastReviewTime: number;
 		containerId: number;
-		slotId: number;
+		slot: number;
 		durability: number;
 		spiritbond: number;
 		/**
@@ -17,27 +23,17 @@ export interface MarketBoardItemListing {
 		 * auto index = i & 0xF;
 		 * auto leftover = i >> 8;
 		 */
-		materia: [number, number, number, number, number];
+		materia: [MateriaEntry, MateriaEntry, MateriaEntry, MateriaEntry, MateriaEntry];
 		padding1: number;
 		padding2: number;
 		retainerName: string;
 		playerName: string;
 		hq: boolean;
 		materiaCount: number;
-		onMannequin: number;
-		city: StringConstructor;
+		onMannequin: boolean;
+		city: string;
 		dyeId: number;
 		padding3: number;
 		padding4: number;
 	}[];
-	listingIndexEnd: number;
-	listingIndexStart: number;
-	requestId: number;
-	padding7: string;
-	unknown13: number;
-	padding8: number;
-	unknown14: number;
-	padding9: BigInt;
-	unknown15: number;
-	padding10: number;
 }
