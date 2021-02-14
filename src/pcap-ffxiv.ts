@@ -204,13 +204,13 @@ export class CaptureInterface extends EventEmitter {
 		}
 
 		let subTypeName = subTypesEnum[(message.parsedIpcData as SuperPacket).category] as string;
-		subTypeName = subTypeName[0].toLowerCase() + subTypeName.slice(1);
 		if (!subTypeName) {
-			message.subType = "unknown";
+			message.subType = `unknown${(message.parsedIpcData as SuperPacket).category}`;
 			// Unknown subtype, return packet as-is
 			return message;
 		}
 
+		subTypeName = subTypeName[0].toLowerCase() + subTypeName.slice(1);
 		message.subType = subTypeName;
 		const superProcessor = this._superPacketDefs[typeName][subTypeName];
 		if (!superProcessor) {
