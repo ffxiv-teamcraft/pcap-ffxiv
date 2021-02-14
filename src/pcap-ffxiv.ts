@@ -69,6 +69,8 @@ export class CaptureInterface extends EventEmitter {
 		this._packetDefs = packetProcessors;
 		this._superPacketDefs = {
 			actorControl: actorControlPacketProcessors,
+			actorControlSelf: actorControlPacketProcessors,
+			actorControlTarget: actorControlPacketProcessors,
 			resultDialog: resultDialogPacketProcessors,
 		};
 
@@ -190,6 +192,8 @@ export class CaptureInterface extends EventEmitter {
 		// Let's get the corresponding enum
 		switch (typeName) {
 			case "actorControl":
+			case "actorControlSelf":
+			case "actorControlTarget":
 				subTypesEnum = ActorControlType;
 				break;
 			case "resultDialog":
