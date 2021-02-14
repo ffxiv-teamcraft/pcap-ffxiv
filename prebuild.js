@@ -43,7 +43,7 @@ export const ${propertyName}: Record<string, ${processorType}> = {
 	fs.writeFileSync(`./src/packet-processors/${filename}.ts`, loader);
 }
 
-function generateInterfaces(processors, parentInterfaceName) {
+function generateInterfaces(processors, parentInterfaceName, excludeImports) {
 	const entries = [];
 
 	parentInterfaceName = parentInterfaceName || "";
@@ -55,13 +55,17 @@ function generateInterfaces(processors, parentInterfaceName) {
 	processors.forEach((processor) => {
 		const modelName = processor[0].toUpperCase() + processor.slice(1);
 		const subTypeField = parentProcessorName ? `\n\tsubType: "${processor}";` : "";
-		entries.push({
+		const entry = {
 			name: `${parentInterfaceName}${modelName}Message`,
 			importString: `import { ${modelName} } from "../definitions";`,
 			interfaceString: `export interface ${parentInterfaceName}${modelName}Message extends GenericMessage<${modelName}> {
 	type: "${parentProcessorName || processor}";${subTypeField}
 }`,
-		});
+		};
+		if (excludeImports) {
+			delete entry.importString;
+		}
+		entries.push(entry);
 	});
 
 	return entries;
@@ -75,11 +79,16 @@ function createMessageType() {
 	const entries = [
 		...generateInterfaces(processors),
 		...generateInterfaces(actorControlProcessors, "ActorControl"),
+		...generateInterfaces(actorControlProcessors, "ActorControlSelf", true),
+		...generateInterfaces(actorControlProcessors, "ActorControlTarget", true),
 		...generateInterfaces(resultDialogProcessors, "ResultDialog"),
 	];
 
 	const fileContent = `import { GenericMessage } from "./GenericMessage";
-${entries.map((e) => e.importString).join("\n")}
+${entries
+	.filter((e) => e.importString)
+	.map((e) => e.importString)
+	.join("\n")}
 
 /**
 * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.

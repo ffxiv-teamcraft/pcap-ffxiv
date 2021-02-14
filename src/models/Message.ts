@@ -406,6 +406,96 @@ export interface ActorControlUpdateRestedExpMessage extends GenericMessage<Updat
 	subType: "updateRestedExp";
 }
 
+export interface ActorControlSelfActionStartMessage extends GenericMessage<ActionStart> {
+	type: "actorControlSelf";
+	subType: "actionStart";
+}
+
+export interface ActorControlSelfAutoAttackMessage extends GenericMessage<AutoAttack> {
+	type: "actorControlSelf";
+	subType: "autoAttack";
+}
+
+export interface ActorControlSelfDailyQuestSeedMessage extends GenericMessage<DailyQuestSeed> {
+	type: "actorControlSelf";
+	subType: "dailyQuestSeed";
+}
+
+export interface ActorControlSelfEObjSetStateMessage extends GenericMessage<EObjSetState> {
+	type: "actorControlSelf";
+	subType: "eObjSetState";
+}
+
+export interface ActorControlSelfFishingBaitMsgMessage extends GenericMessage<FishingBaitMsg> {
+	type: "actorControlSelf";
+	subType: "fishingBaitMsg";
+}
+
+export interface ActorControlSelfSetMountSpeedMessage extends GenericMessage<SetMountSpeed> {
+	type: "actorControlSelf";
+	subType: "setMountSpeed";
+}
+
+export interface ActorControlSelfStatusEffectLoseMessage extends GenericMessage<StatusEffectLose> {
+	type: "actorControlSelf";
+	subType: "statusEffectLose";
+}
+
+export interface ActorControlSelfToggleWeaponMessage extends GenericMessage<ToggleWeapon> {
+	type: "actorControlSelf";
+	subType: "toggleWeapon";
+}
+
+export interface ActorControlSelfUpdateRestedExpMessage extends GenericMessage<UpdateRestedExp> {
+	type: "actorControlSelf";
+	subType: "updateRestedExp";
+}
+
+export interface ActorControlTargetActionStartMessage extends GenericMessage<ActionStart> {
+	type: "actorControlTarget";
+	subType: "actionStart";
+}
+
+export interface ActorControlTargetAutoAttackMessage extends GenericMessage<AutoAttack> {
+	type: "actorControlTarget";
+	subType: "autoAttack";
+}
+
+export interface ActorControlTargetDailyQuestSeedMessage extends GenericMessage<DailyQuestSeed> {
+	type: "actorControlTarget";
+	subType: "dailyQuestSeed";
+}
+
+export interface ActorControlTargetEObjSetStateMessage extends GenericMessage<EObjSetState> {
+	type: "actorControlTarget";
+	subType: "eObjSetState";
+}
+
+export interface ActorControlTargetFishingBaitMsgMessage extends GenericMessage<FishingBaitMsg> {
+	type: "actorControlTarget";
+	subType: "fishingBaitMsg";
+}
+
+export interface ActorControlTargetSetMountSpeedMessage extends GenericMessage<SetMountSpeed> {
+	type: "actorControlTarget";
+	subType: "setMountSpeed";
+}
+
+export interface ActorControlTargetStatusEffectLoseMessage extends GenericMessage<StatusEffectLose> {
+	type: "actorControlTarget";
+	subType: "statusEffectLose";
+}
+
+export interface ActorControlTargetToggleWeaponMessage extends GenericMessage<ToggleWeapon> {
+	type: "actorControlTarget";
+	subType: "toggleWeapon";
+}
+
+export interface ActorControlTargetUpdateRestedExpMessage extends GenericMessage<UpdateRestedExp> {
+	type: "actorControlTarget";
+	subType: "updateRestedExp";
+}
+
 export interface ResultDialogMarketTaxRatesMessage extends GenericMessage<MarketTaxRates> {
 	type: "resultDialog";
 	subType: "marketTaxRates";
@@ -495,5 +585,23 @@ export type Message =
 	| ActorControlStatusEffectLoseMessage
 	| ActorControlToggleWeaponMessage
 	| ActorControlUpdateRestedExpMessage
+	| ActorControlSelfActionStartMessage
+	| ActorControlSelfAutoAttackMessage
+	| ActorControlSelfDailyQuestSeedMessage
+	| ActorControlSelfEObjSetStateMessage
+	| ActorControlSelfFishingBaitMsgMessage
+	| ActorControlSelfSetMountSpeedMessage
+	| ActorControlSelfStatusEffectLoseMessage
+	| ActorControlSelfToggleWeaponMessage
+	| ActorControlSelfUpdateRestedExpMessage
+	| ActorControlTargetActionStartMessage
+	| ActorControlTargetAutoAttackMessage
+	| ActorControlTargetDailyQuestSeedMessage
+	| ActorControlTargetEObjSetStateMessage
+	| ActorControlTargetFishingBaitMsgMessage
+	| ActorControlTargetSetMountSpeedMessage
+	| ActorControlTargetStatusEffectLoseMessage
+	| ActorControlTargetToggleWeaponMessage
+	| ActorControlTargetUpdateRestedExpMessage
 	| ResultDialogMarketTaxRatesMessage
 	| ResultDialogReductionResultMessage;
