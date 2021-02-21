@@ -48,6 +48,8 @@ export * from "./Logout";
 export * from "./MarketBoardItemListing";
 export * from "./MarketBoardItemListingCount";
 export * from "./MarketBoardItemListingHistory";
+export * from "./MarketBoardPurchase";
+export * from "./MarketBoardPurchaseHandler";
 export * from "./MarketBoardSearchResult";
 export * from "./Mount";
 export * from "./NpcSpawn";

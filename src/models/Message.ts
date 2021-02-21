@@ -43,6 +43,8 @@ import { Logout } from "../definitions";
 import { MarketBoardItemListing } from "../definitions";
 import { MarketBoardItemListingCount } from "../definitions";
 import { MarketBoardItemListingHistory } from "../definitions";
+import { MarketBoardPurchase } from "../definitions";
+import { MarketBoardPurchaseHandler } from "../definitions";
 import { MarketBoardSearchResult } from "../definitions";
 import { Mount } from "../definitions";
 import { NpcSpawn } from "../definitions";
@@ -259,6 +261,14 @@ export interface MarketBoardItemListingCountMessage extends GenericMessage<Marke
 
 export interface MarketBoardItemListingHistoryMessage extends GenericMessage<MarketBoardItemListingHistory> {
 	type: "marketBoardItemListingHistory";
+}
+
+export interface MarketBoardPurchaseMessage extends GenericMessage<MarketBoardPurchase> {
+	type: "marketBoardPurchase";
+}
+
+export interface MarketBoardPurchaseHandlerMessage extends GenericMessage<MarketBoardPurchaseHandler> {
+	type: "marketBoardPurchaseHandler";
 }
 
 export interface MarketBoardSearchResultMessage extends GenericMessage<MarketBoardSearchResult> {
@@ -551,6 +561,8 @@ export type Message =
 	| MarketBoardItemListingMessage
 	| MarketBoardItemListingCountMessage
 	| MarketBoardItemListingHistoryMessage
+	| MarketBoardPurchaseMessage
+	| MarketBoardPurchaseHandlerMessage
 	| MarketBoardSearchResultMessage
 	| MountMessage
 	| NpcSpawnMessage

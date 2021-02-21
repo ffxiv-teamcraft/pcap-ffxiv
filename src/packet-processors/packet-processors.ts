@@ -43,6 +43,8 @@ import { logout } from "./processors/logout";
 import { marketBoardItemListing } from "./processors/marketBoardItemListing";
 import { marketBoardItemListingCount } from "./processors/marketBoardItemListingCount";
 import { marketBoardItemListingHistory } from "./processors/marketBoardItemListingHistory";
+import { marketBoardPurchase } from "./processors/marketBoardPurchase";
+import { marketBoardPurchaseHandler } from "./processors/marketBoardPurchaseHandler";
 import { marketBoardSearchResult } from "./processors/marketBoardSearchResult";
 import { mount } from "./processors/mount";
 import { npcSpawn } from "./processors/npcSpawn";
@@ -120,6 +122,8 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	marketBoardItemListing,
 	marketBoardItemListingCount,
 	marketBoardItemListingHistory,
+	marketBoardPurchase,
+	marketBoardPurchaseHandler,
 	marketBoardSearchResult,
 	mount,
 	npcSpawn,
