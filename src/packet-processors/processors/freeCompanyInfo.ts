@@ -3,7 +3,7 @@ import { FreeCompanyInfo } from "../../definitions";
 
 export function freeCompanyInfo(buffer: BufferReader): FreeCompanyInfo {
 	return {
-		freeCompanyId: buffer.nextUInt64().toString(),
+		freeCompanyId: buffer.nextUInt64(),
 		unknown0: Array(37)
 			.fill(null)
 			.map(() => {

@@ -1,5 +1,5 @@
 export interface FreeCompanyInfo {
-	freeCompanyId: string;
+	freeCompanyId: bigint;
 	unknown0: number[];
 	rank: number;
 	unknown1: number[];
