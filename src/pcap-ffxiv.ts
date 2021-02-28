@@ -2,7 +2,6 @@ import { EventEmitter } from "events";
 import {
 	ActorControlType,
 	ConstantsList,
-	GenericMessage,
 	Message,
 	OpcodeList,
 	PacketProcessor,
@@ -38,6 +37,9 @@ export class CaptureInterface extends EventEmitter {
 	private _monitor: ChildProcessWithoutNullStreams | undefined;
 
 	private readonly _options: CaptureInterfaceOptions;
+
+	private counter = 0;
+	private parsingCounter = 0;
 
 	public get constants(): ConstantsList | undefined {
 		return this._constants ? this._constants[this._options.region] : undefined;
@@ -90,7 +92,12 @@ export class CaptureInterface extends EventEmitter {
 						data.push(chunk);
 					});
 					req.on("end", () => {
-						this._processSegment(Buffer.concat(data));
+						const buffer = Buffer.concat(data);
+						if (buffer.readUInt16LE(0x13) === 0x175) {
+							this.counter++;
+							console.log("ItemInfo before parsing", this.counter);
+						}
+						this._processSegment(buffer);
 					});
 					res.writeHead(200);
 					res.end();
@@ -227,8 +234,8 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	private _processSegment(data: Buffer): void {
-		const dataReader = new BufferReader(data);
-		const originIndex = dataReader.nextUInt8();
+		const reader = new BufferReader(data);
+		const originIndex = reader.nextUInt8();
 		const origin = [null, "C", "S"][originIndex];
 		if (!origin) {
 			this._options.logger({
@@ -238,7 +245,6 @@ export class CaptureInterface extends EventEmitter {
 			return;
 		}
 		const operation = { C: "send", S: "receive" }[origin];
-		const reader = dataReader.restAsBuffer(true);
 		const header: SegmentHeader = {
 			size: reader.nextUInt32(),
 			sourceActor: reader.nextUInt32(),
@@ -260,6 +266,10 @@ export class CaptureInterface extends EventEmitter {
 			if (this._options.filter(header, typeName)) {
 				// Unmarshal the data, if possible.
 				if (this._packetDefs[typeName] && this._constants) {
+					if (typeName === "itemInfo") {
+						this.parsingCounter++;
+						console.log("Start Parsing for ItemInfo", this.parsingCounter);
+					}
 					const processorName: keyof typeof packetProcessors = typeName;
 					const ipcDataReader = new BufferReader(ipcData);
 					const processor = this._packetDefs[processorName];
