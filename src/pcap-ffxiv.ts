@@ -38,9 +38,6 @@ export class CaptureInterface extends EventEmitter {
 
 	private readonly _options: CaptureInterfaceOptions;
 
-	private counter = 0;
-	private parsingCounter = 0;
-
 	public get constants(): ConstantsList | undefined {
 		return this._constants ? this._constants[this._options.region] : undefined;
 	}
@@ -92,12 +89,7 @@ export class CaptureInterface extends EventEmitter {
 						data.push(chunk);
 					});
 					req.on("end", () => {
-						const buffer = Buffer.concat(data);
-						if (buffer.readUInt16LE(0x13) === 0x175) {
-							this.counter++;
-							console.log("ItemInfo before parsing", this.counter);
-						}
-						this._processSegment(buffer);
+						this._processSegment(Buffer.concat(data));
 					});
 					res.writeHead(200);
 					res.end();
@@ -249,11 +241,11 @@ export class CaptureInterface extends EventEmitter {
 			size: reader.nextUInt32(),
 			sourceActor: reader.nextUInt32(),
 			targetActor: reader.nextUInt32(),
-			segmentType: reader.nextUInt32(),
+			segmentType: reader.nextUInt16(),
 			operation: operation,
 		};
 		if (header.segmentType === SegmentType.Ipc) {
-			const opcode = reader.skip(2).nextUInt16();
+			const opcode = reader.skip(4).nextUInt16();
 			const ipcData = reader.skip(12).restAsBuffer();
 			let typeName = this._opcodes[origin][opcode] || "unknown";
 			typeName = typeName[0].toLowerCase() + typeName.slice(1);
@@ -266,10 +258,6 @@ export class CaptureInterface extends EventEmitter {
 			if (this._options.filter(header, typeName)) {
 				// Unmarshal the data, if possible.
 				if (this._packetDefs[typeName] && this._constants) {
-					if (typeName === "itemInfo") {
-						this.parsingCounter++;
-						console.log("Start Parsing for ItemInfo", this.parsingCounter);
-					}
 					const processorName: keyof typeof packetProcessors = typeName;
 					const ipcDataReader = new BufferReader(ipcData);
 					const processor = this._packetDefs[processorName];
