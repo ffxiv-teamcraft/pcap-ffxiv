@@ -10,6 +10,10 @@ type BufferFnProperties = Pick<
 export class BufferReader {
 	private offset = 0;
 
+	public get buffer(): Buffer {
+		return this.buf;
+	}
+
 	constructor(private buf: Buffer) {}
 
 	reset(): BufferReader {
