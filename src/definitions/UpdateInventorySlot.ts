@@ -8,6 +8,7 @@ export interface UpdateInventorySlot {
 	reservedFlag: number;
 	signatureId: BigInt;
 	hqFlag: boolean;
+	unknown2: number;
 	condition: number;
 	spiritBond: number;
 	color: number;
