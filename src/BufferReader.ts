@@ -1,9 +1,11 @@
 import { Position3 } from "./definitions";
 
-type BufferFnProperties = Pick<Buffer,
+type BufferFnProperties = Pick<
+	Buffer,
 	{
 		[K in keyof Buffer]: Buffer[K] extends Function ? K : never;
-	}[keyof Buffer]>;
+	}[keyof Buffer]
+>;
 
 export class BufferReader {
 	private offset = 0;
@@ -12,8 +14,7 @@ export class BufferReader {
 		return this.buf;
 	}
 
-	constructor(private buf: Buffer) {
-	}
+	constructor(private buf: Buffer) {}
 
 	reset(): BufferReader {
 		this.offset = 0;
