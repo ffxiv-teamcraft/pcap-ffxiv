@@ -31,9 +31,8 @@ export interface NpcSpawn {
 	displayFlags: number;
 	fateId: number;
 	mPCurr: number;
-	tPCurr: number;
-	mPMax: number;
-	tPMax: number;
+	unknown1: number;
+	unknown2: number;
 	modelChara: number;
 	rotation: number;
 	activeMinion: number;
@@ -57,12 +56,9 @@ export interface NpcSpawn {
 	scale: number;
 	elementalLevel: number;
 	element: number;
-	u30b: number;
 	effects: { id: number; sourceActorId: number }[];
 	models: number[];
 	looks: number[];
-	effect_id: number;
-	sourceActorId: number;
 	pos: Position3;
 	name: string;
 	fcTag: string;
