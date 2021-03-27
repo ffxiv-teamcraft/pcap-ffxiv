@@ -33,9 +33,8 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		displayFlags: reader.nextUInt32(),
 		fateId: reader.nextUInt16(),
 		mPCurr: reader.nextUInt16(),
-		tPCurr: reader.nextUInt16(),
-		mPMax: reader.nextUInt16(),
-		tPMax: reader.nextUInt16(),
+		unknown1: reader.nextUInt16(),
+		unknown2: reader.nextUInt16(),
 		modelChara: reader.nextUInt16(),
 		rotation: reader.nextUInt16(),
 		activeMinion: reader.nextUInt16(),
@@ -59,30 +58,29 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 		scale: reader.nextUInt8(),
 		elementalLevel: reader.nextUInt16(),
 		element: reader.nextUInt16(),
-		u30b: reader.nextUInt32(),
 		effects: Array(30)
 			.fill(null)
 			.map(() => {
 				return {
 					id: reader.nextUInt16(),
+					param: reader.nextUInt16(),
+					duration: reader.nextFloat(),
 					sourceActorId: reader.nextUInt32(),
 				};
 			}),
-		effect_id: reader.nextUInt16(),
-		sourceActorId: reader.nextUInt32(),
 		pos: reader.nextPosition3(),
-		models: Array(1)
+		models: Array(10)
 			.fill(null)
 			.map(() => {
 				return reader.nextUInt32();
 			}),
+		name: reader.skip(2).nextString(32),
 		looks: Array(26)
 			.fill(null)
 			.map(() => {
 				return reader.nextUInt8();
 			}),
-		name: reader.nextString(),
-		fcTag: reader.nextString(),
-		bNpcPartSlot: reader.nextUInt8(),
+		fcTag: reader.nextString(6),
+		bNpcPartSlot: reader.skip(8).nextUInt8(),
 	};
 }
