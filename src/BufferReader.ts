@@ -41,7 +41,7 @@ export class BufferReader {
 		}
 		this.offset += length;
 		try {
-			return this.buf.toString("binary", this.offset - length, this.offset).replace(/\u0000/gim, "");
+			return this.buf.toString("binary", this.offset - length, this.offset).replace(/\u0000/gm, "");
 		} catch (e) {
 			return "";
 		}
