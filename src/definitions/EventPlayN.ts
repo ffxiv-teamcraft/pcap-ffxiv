@@ -8,4 +8,5 @@ export interface EventPlayN {
 	paramSize: number;
 	padding1: number;
 	padding2: number;
+	params: number[];
 }
