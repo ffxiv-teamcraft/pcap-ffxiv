@@ -226,8 +226,8 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	private _processSegment(data: Buffer): void {
-		const reader = new BufferReader(data);
-		const originIndex = reader.nextUInt8();
+		const dataReader = new BufferReader(data);
+		const originIndex = dataReader.nextUInt8();
 		const origin = [null, "C", "S"][originIndex];
 		if (!origin) {
 			this._options.logger({
@@ -237,15 +237,16 @@ export class CaptureInterface extends EventEmitter {
 			return;
 		}
 		const operation = { C: "send", S: "receive" }[origin];
+		const reader = dataReader.restAsBuffer(true);
 		const header: SegmentHeader = {
 			size: reader.nextUInt32(),
 			sourceActor: reader.nextUInt32(),
 			targetActor: reader.nextUInt32(),
-			segmentType: reader.nextUInt16(),
+			segmentType: reader.nextUInt32(),
 			operation: operation,
 		};
 		if (header.segmentType === SegmentType.Ipc) {
-			const opcode = reader.skip(4).nextUInt16();
+			const opcode = reader.skip(2).nextUInt16();
 			const ipcData = reader.skip(12).restAsBuffer();
 			let typeName = this._opcodes[origin][opcode] || "unknown";
 			typeName = typeName[0].toLowerCase() + typeName.slice(1);
