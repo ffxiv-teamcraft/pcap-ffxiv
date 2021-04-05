@@ -20,6 +20,7 @@ import { cFPlayerInNeed } from "./processors/cFPlayerInNeed";
 import { cFRegisterDuty } from "./processors/cFRegisterDuty";
 import { charaVisualEffect } from "./processors/charaVisualEffect";
 import { clientTrigger } from "./processors/clientTrigger";
+import { containerInfo } from "./processors/containerInfo";
 import { currencyCrystalInfo } from "./processors/currencyCrystalInfo";
 import { desynthResult } from "./processors/desynthResult";
 import { effectResult } from "./processors/effectResult";
@@ -99,6 +100,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	cFRegisterDuty,
 	charaVisualEffect,
 	clientTrigger,
+	containerInfo,
 	currencyCrystalInfo,
 	desynthResult,
 	effectResult,

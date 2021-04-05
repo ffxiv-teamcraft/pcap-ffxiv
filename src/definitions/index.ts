@@ -24,6 +24,7 @@ export * from "./CFPlayerInNeed";
 export * from "./CFRegisterDuty";
 export * from "./CharaVisualEffect";
 export * from "./ClientTrigger";
+export * from "./ContainerInfo";
 export * from "./CurrencyCrystalInfo";
 export * from "./DesynthOrReductionResult";
 export * from "./DesynthResult";

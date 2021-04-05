@@ -20,6 +20,7 @@ import { CFPlayerInNeed } from "../definitions";
 import { CFRegisterDuty } from "../definitions";
 import { CharaVisualEffect } from "../definitions";
 import { ClientTrigger } from "../definitions";
+import { ContainerInfo } from "../definitions";
 import { CurrencyCrystalInfo } from "../definitions";
 import { DesynthResult } from "../definitions";
 import { EffectResult } from "../definitions";
@@ -169,6 +170,10 @@ export interface CharaVisualEffectMessage extends GenericMessage<CharaVisualEffe
 
 export interface ClientTriggerMessage extends GenericMessage<ClientTrigger> {
 	type: "clientTrigger";
+}
+
+export interface ContainerInfoMessage extends GenericMessage<ContainerInfo> {
+	type: "containerInfo";
 }
 
 export interface CurrencyCrystalInfoMessage extends GenericMessage<CurrencyCrystalInfo> {
@@ -538,6 +543,7 @@ export type Message =
 	| CFRegisterDutyMessage
 	| CharaVisualEffectMessage
 	| ClientTriggerMessage
+	| ContainerInfoMessage
 	| CurrencyCrystalInfoMessage
 	| DesynthResultMessage
 	| EffectResultMessage
