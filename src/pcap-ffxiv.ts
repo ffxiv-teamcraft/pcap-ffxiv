@@ -170,16 +170,12 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	private async _loadOpcodes() {
-		this._opcodeLists = await downloadJson(
-			"https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/opcodes.min.json",
-		);
+		this._opcodeLists = await downloadJson("https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes/opcodes.min.json");
 		this.updateOpcodesCache();
 	}
 
 	private async _loadConstants() {
-		this._constants = await downloadJson(
-			"https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/constants.min.json",
-		);
+		this._constants = await downloadJson("https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes/constants.min.json");
 	}
 
 	private _processSuperPacket<T extends SuperPacket>(
