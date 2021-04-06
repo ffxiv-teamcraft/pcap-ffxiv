@@ -22,6 +22,12 @@ import { existsSync } from "fs";
 import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
+import Heap from "heap-js";
+
+interface SegmentQueueEntry {
+	reader: BufferReader;
+	index: bigint;
+}
 
 export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
@@ -32,11 +38,14 @@ export class CaptureInterface extends EventEmitter {
 		C: {},
 		S: {},
 	};
+	private _segmentQueue = new Heap<SegmentQueueEntry>((a, b) => Number(a.index - b.index));
 
 	private _httpServer: Server | undefined = undefined;
 	private _monitor: ChildProcessWithoutNullStreams | undefined;
 
 	private readonly _options: CaptureInterfaceOptions;
+
+	private expectedPacketIndex = BigInt(0);
 
 	public get constants(): ConstantsList | undefined {
 		return this._constants ? this._constants[this._options.region] : undefined;
@@ -89,7 +98,15 @@ export class CaptureInterface extends EventEmitter {
 						data.push(chunk);
 					});
 					req.on("end", () => {
-						this._processSegment(Buffer.concat(data));
+						const segmentBuffer = Buffer.concat(data);
+						const segmentReader = new BufferReader(segmentBuffer);
+						const index = segmentReader.skip(1).nextUInt64();
+						console.log(index);
+						this._segmentQueue.push({
+							index,
+							reader: segmentReader.reset(),
+						});
+						this._processNextSegment();
 					});
 					res.writeHead(200);
 					res.end();
@@ -107,6 +124,19 @@ export class CaptureInterface extends EventEmitter {
 				reject(e);
 			}
 		});
+	}
+
+	private _processNextSegment() {
+		if (this._segmentQueue.peek()?.index === this.expectedPacketIndex) {
+			const next = this._segmentQueue.pop();
+			// This is really just for the compiler because if we're here, there's something to pop.
+			if (next) {
+				this._processSegment(next.reader);
+				this.expectedPacketIndex++;
+			}
+		} else {
+			console.log(`Waiting for ${this.expectedPacketIndex}, got ${this._segmentQueue.peek()?.index}`);
+		}
 	}
 
 	private spawnMachina(): void {
@@ -221,8 +251,7 @@ export class CaptureInterface extends EventEmitter {
 		return message;
 	}
 
-	private _processSegment(data: Buffer): void {
-		const dataReader = new BufferReader(data);
+	private _processSegment(dataReader: BufferReader): void {
 		const originIndex = dataReader.nextUInt8();
 		const origin = [null, "C", "S"][originIndex];
 		if (!origin) {
