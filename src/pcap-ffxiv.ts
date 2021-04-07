@@ -47,6 +47,8 @@ export class CaptureInterface extends EventEmitter {
 
 	private expectedPacketIndex = BigInt(0);
 
+	private skippedPackets = 0;
+
 	public get constants(): ConstantsList | undefined {
 		return this._constants ? this._constants[this._options.region] : undefined;
 	}
@@ -101,7 +103,6 @@ export class CaptureInterface extends EventEmitter {
 						const segmentBuffer = Buffer.concat(data);
 						const segmentReader = new BufferReader(segmentBuffer);
 						const index = segmentReader.skip(1).nextUInt64();
-						console.log(index);
 						this._segmentQueue.push({
 							index,
 							reader: segmentReader.reset(),
@@ -127,7 +128,8 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	private _processNextSegment() {
-		if (this._segmentQueue.peek()?.index === this.expectedPacketIndex) {
+		const peek = this._segmentQueue.peek();
+		if (peek?.index === this.expectedPacketIndex) {
 			const next = this._segmentQueue.pop();
 			// This is really just for the compiler because if we're here, there's something to pop.
 			if (next) {
@@ -135,7 +137,16 @@ export class CaptureInterface extends EventEmitter {
 				this.expectedPacketIndex++;
 			}
 		} else {
-			console.log(`Waiting for ${this.expectedPacketIndex}, got ${this._segmentQueue.peek()?.index}`);
+			this.skippedPackets++;
+		}
+		// If we skipped more than 1000 packets, something isn't right, let's just bump to the next available index
+		if (this.skippedPackets > 1000 && peek) {
+			this._options.logger({
+				type: "warn",
+				message: `Waited for packet #${this.expectedPacketIndex} for too long, bumping to ${peek.index}.`,
+			});
+			this.expectedPacketIndex = peek.index;
+			this.skippedPackets = 0;
 		}
 	}
 
@@ -262,7 +273,7 @@ export class CaptureInterface extends EventEmitter {
 			return;
 		}
 		const operation = { C: "send", S: "receive" }[origin];
-		const reader = dataReader.restAsBuffer(true);
+		const reader = dataReader.skip(8).restAsBuffer(true);
 		const header: SegmentHeader = {
 			size: reader.nextUInt32(),
 			sourceActor: reader.nextUInt32(),
