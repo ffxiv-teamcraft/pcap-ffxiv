@@ -135,6 +135,7 @@ export class CaptureInterface extends EventEmitter {
 			if (next) {
 				this._processSegment(next.reader);
 				this.expectedPacketIndex++;
+				this._processNextSegment();
 			}
 		} else {
 			this.skippedPackets++;
