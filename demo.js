@@ -1,15 +1,17 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
 const ci = new CaptureInterface({
-	filter: (header, typeName) => ["freeCompanyInfo", "itemInfo"].includes(typeName),
+	filter: (header, typeName) => ["containerInfo", "itemInfo"].includes(typeName),
 });
 
 let counter = 0;
 
 ci.on("message", (message) => {
+	if (message.type === "containerInfo") {
+		console.log("------------- ContainerInfo", message.parsedIpcData.containerId);
+	}
 	if (message.type === "itemInfo") {
-		counter++;
-		console.log("ItemInfo messages emitted", counter);
+		console.log("ItemInfo", message.parsedIpcData.containerId);
 	}
 }).on("error", console.error);
 
