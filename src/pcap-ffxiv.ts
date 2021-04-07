@@ -129,7 +129,7 @@ export class CaptureInterface extends EventEmitter {
 
 	private _processNextSegment() {
 		const peek = this._segmentQueue.peek();
-		if (peek?.index === this.expectedPacketIndex) {
+		if (peek && peek.index <= this.expectedPacketIndex) {
 			const next = this._segmentQueue.pop();
 			// This is really just for the compiler because if we're here, there's something to pop.
 			if (next) {
