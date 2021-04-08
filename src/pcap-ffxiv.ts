@@ -88,6 +88,12 @@ export class CaptureInterface extends EventEmitter {
 			await this._loadConstants();
 			this.emit("ready");
 		});
+
+		process.on("exit", () => {
+			this.stop().then(() => {
+				process.exit();
+			});
+		});
 	}
 
 	start(): Promise<void> {
@@ -135,13 +141,14 @@ export class CaptureInterface extends EventEmitter {
 			if (next) {
 				this._processSegment(next.reader);
 				this.expectedPacketIndex++;
+				this.skippedPackets = 0;
 				this._processNextSegment();
 			}
 		} else {
 			this.skippedPackets++;
 		}
-		// If we skipped more than 1000 packets, something isn't right, let's just bump to the next available index
-		if (this.skippedPackets > 1000 && peek) {
+		// If we skipped more than 10 packets, something isn't right, let's just bump to the next available index
+		if (this.skippedPackets > 10 && peek) {
 			this._options.logger({
 				type: "warn",
 				message: `Waited for packet #${this.expectedPacketIndex} for too long, bumping to ${peek.index}.`,

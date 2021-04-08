@@ -1,10 +1,6 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
-const ci = new CaptureInterface({
-	filter: (header, typeName) => ["containerInfo", "itemInfo"].includes(typeName),
-});
-
-let counter = 0;
+const ci = new CaptureInterface();
 
 ci.on("message", (message) => {
 	if (message.type === "containerInfo") {
