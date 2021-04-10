@@ -114,9 +114,9 @@ export class CaptureInterface extends EventEmitter {
 							reader: segmentReader.reset(),
 						});
 						this._processNextSegment();
+						res.writeHead(200);
+						res.end();
 					});
-					res.writeHead(200);
-					res.end();
 				}).listen(this._options.port, "localhost");
 				setTimeout(() => {
 					this._monitor?.stdin.write("start\n", (err) => {
