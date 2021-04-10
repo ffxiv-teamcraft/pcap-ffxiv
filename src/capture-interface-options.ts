@@ -10,4 +10,5 @@ export interface CaptureInterfaceOptions {
 	winePrefix: string;
 	filter: (header: SegmentHeader, typeName: string) => boolean;
 	pid?: number;
+	localOpcodesPath?: string;
 }
