@@ -18,7 +18,7 @@ import { BufferReader } from "./BufferReader";
 import { createServer as createHttpServer, Server } from "http";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { join } from "path";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
@@ -218,13 +218,36 @@ export class CaptureInterface extends EventEmitter {
 		};
 	}
 
+	private async _fetchFFXIVOpcodes(file: string) {
+		const { localOpcodesPath } = this._options;
+		if (localOpcodesPath) {
+			try {
+				const content = readFileSync(join(localOpcodesPath, file), "utf-8");
+
+				this._options.logger({
+					type: "info",
+					message: `Loading ${file} from ${localOpcodesPath}`,
+				});
+
+				return JSON.parse(content);
+			} catch (e) {}
+		}
+
+		this._options.logger({
+			type: "info",
+			message: `Loading ${file} from jsdelivr`,
+		});
+
+		return downloadJson(`https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes/${file}`);
+	}
+
 	private async _loadOpcodes() {
-		this._opcodeLists = await downloadJson("https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes/opcodes.min.json");
+		this._opcodeLists = await this._fetchFFXIVOpcodes("opcodes.min.json");
 		this.updateOpcodesCache();
 	}
 
 	private async _loadConstants() {
-		this._constants = await downloadJson("https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes/constants.min.json");
+		this._constants = await this._fetchFFXIVOpcodes("constants.min.json");
 	}
 
 	private _processSuperPacket<T extends SuperPacket>(
