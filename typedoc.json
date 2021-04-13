@@ -1,5 +1,10 @@
 {
-    "entryPoints": ["src/pcap-ffxiv.ts", "src/capture-interface-options.ts", "src/models/index.ts", "src/definitions/index.ts"],
-    "out": "docs",
-    "theme": "minimal"
+	"entryPoints": [
+		"src/pcap-ffxiv.ts",
+		"src/capture-interface-options.ts",
+		"src/models/index.ts",
+		"src/definitions/index.ts"
+	],
+	"out": "docs",
+	"theme": "minimal"
 }
