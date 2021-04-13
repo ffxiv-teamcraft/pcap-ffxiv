@@ -289,7 +289,12 @@ export class CaptureInterface extends EventEmitter {
 			return message;
 		}
 
-		message.parsedIpcData = superProcessor(message.parsedIpcData, reader, this.constants as ConstantsList);
+		message.parsedIpcData = superProcessor(
+			message.parsedIpcData,
+			reader,
+			this.constants as ConstantsList,
+			this._options.region,
+		);
 		return message;
 	}
 
@@ -329,7 +334,7 @@ export class CaptureInterface extends EventEmitter {
 					const processorName: keyof typeof packetProcessors = typeName;
 					const ipcDataReader = new BufferReader(ipcData);
 					const processor = this._packetDefs[processorName];
-					message.parsedIpcData = processor(ipcDataReader, this._constants[this._options.region]);
+					message.parsedIpcData = processor(ipcDataReader, this._constants[this._options.region], this._options.region);
 
 					// If this is a super packet
 					if (this._superPacketDefs[typeName]) {
