@@ -238,7 +238,7 @@ export class CaptureInterface extends EventEmitter {
 			message: `Loading ${file} from jsdelivr`,
 		});
 
-		return downloadJson(`https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes/${file}`);
+		return downloadJson(`https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/${file}`);
 	}
 
 	private async _loadOpcodes() {
