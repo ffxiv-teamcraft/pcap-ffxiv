@@ -331,7 +331,8 @@ export class CaptureInterface extends EventEmitter {
 			typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
 			let message: Message = {
-				header: header,
+				header,
+				opcode,
 				type: typeName as any,
 			};
 
