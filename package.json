@@ -12,7 +12,7 @@
 		"build:watch": "yarn prebuild && tsc -w",
 		"docs:generate": "typedoc",
 		"docs:deploy": "yarn docs:generate && node gh-pages.js",
-		"prepublish": "yarn format && yarn build && docs:deploy && node gh-pages.js",
+		"prepublish": "yarn format && yarn build && yarn docs:deploy && node gh-pages.js",
 		"format": "prettier . --write",
 		"copyfiles": "copyfiles ./MachinaWrapper/* ./lib",
 		"pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/models"
