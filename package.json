@@ -10,7 +10,9 @@
 		"prebuild": "rimraf lib/* && yarn pcap-types:generate && yarn copyfiles && node prebuild.js",
 		"build": "yarn prebuild && tsc",
 		"build:watch": "yarn prebuild && tsc -w",
-		"prepublish": "yarn format && yarn build",
+		"docs:generate": "typedoc",
+		"docs:deploy": "yarn docs:generate && node gh-pages.js",
+		"prepublish": "yarn format && yarn build && yarn docs:deploy && node gh-pages.js",
 		"format": "prettier . --write",
 		"copyfiles": "copyfiles ./MachinaWrapper/* ./lib",
 		"pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/models"
@@ -40,8 +42,10 @@
 		"copyfiles": "^2.4.1",
 		"eslint": "^7.17.0",
 		"eslint-config-prettier": "^7.1.0",
+		"gh-pages": "^3.1.0",
 		"prettier": "^2.2.1",
 		"rimraf": "^3.0.2",
+		"typedoc": "^0.20.35",
 		"typescript": "^4.1.3"
 	},
 	"dependencies": {

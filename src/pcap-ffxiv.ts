@@ -298,9 +298,17 @@ export class CaptureInterface extends EventEmitter {
 		return message;
 	}
 
+	private _getOriginKey(originIndex: number): null | "C" | "S" {
+		return [null, "C", "S"][originIndex] as null | "C" | "S";
+	}
+
+	private _getOrigin(originKey: "C" | "S"): "send" | "receive" {
+		return { C: "send", S: "receive" }[originKey] as "send" | "receive";
+	}
+
 	private _processSegment(dataReader: BufferReader): void {
 		const originIndex = dataReader.nextUInt8();
-		const origin = [null, "C", "S"][originIndex];
+		const origin = this._getOriginKey(originIndex);
 		if (!origin) {
 			this._options.logger({
 				type: "error",
@@ -308,14 +316,13 @@ export class CaptureInterface extends EventEmitter {
 			});
 			return;
 		}
-		const operation = { C: "send", S: "receive" }[origin];
 		const reader = dataReader.skip(8).restAsBuffer(true);
 		const header: SegmentHeader = {
 			size: reader.nextUInt32(),
 			sourceActor: reader.nextUInt32(),
 			targetActor: reader.nextUInt32(),
 			segmentType: reader.nextUInt32(),
-			operation: operation,
+			operation: this._getOrigin(origin),
 		};
 		if (header.segmentType === SegmentType.Ipc) {
 			const opcode = reader.skip(2).nextUInt16();
@@ -324,8 +331,9 @@ export class CaptureInterface extends EventEmitter {
 			typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
 			let message: Message = {
-				header: header,
-				type: typeName,
+				header,
+				opcode,
+				type: typeName as any,
 			};
 
 			if (this._options.filter(header, typeName)) {
@@ -348,7 +356,7 @@ export class CaptureInterface extends EventEmitter {
 	}
 }
 
-interface CaptureInterfaceEvents {
+export interface CaptureInterfaceEvents {
 	ready: () => void;
 	error: (err: Error) => void;
 	message: (message: Message) => void;
