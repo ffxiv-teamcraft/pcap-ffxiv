@@ -356,7 +356,7 @@ export class CaptureInterface extends EventEmitter {
 	}
 }
 
-interface CaptureInterfaceEvents {
+export interface CaptureInterfaceEvents {
 	ready: () => void;
 	error: (err: Error) => void;
 	message: (message: Message) => void;
