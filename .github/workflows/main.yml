@@ -2,7 +2,7 @@
 
 name: CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
@@ -29,12 +29,12 @@ jobs:
         uses: actions/setup-node@v2.1.5
         with:
           version: 14.x
-      
+
       - name: Install Yarn
         run: npm install -g yarn
-      
+
       - name: Install dependencies
         run: yarn
-      
+
       - name: Build
         run: yarn build
