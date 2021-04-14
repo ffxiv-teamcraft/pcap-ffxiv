@@ -38,6 +38,7 @@ export * from "./EventPlay4";
 export * from "./EventPlay8";
 export * from "./EventPlayN";
 export * from "./EventStart";
+export * from "./FreeCompanyDialog";
 export * from "./FreeCompanyInfo";
 export * from "./FreeCompanyUpdateShortMessage";
 export * from "./InitZone";

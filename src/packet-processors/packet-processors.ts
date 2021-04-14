@@ -33,6 +33,7 @@ import { eventPlay4 } from "./processors/eventPlay4";
 import { eventPlay8 } from "./processors/eventPlay8";
 import { eventPlayN } from "./processors/eventPlayN";
 import { eventStart } from "./processors/eventStart";
+import { freeCompanyDialog } from "./processors/freeCompanyDialog";
 import { freeCompanyInfo } from "./processors/freeCompanyInfo";
 import { freeCompanyUpdateShortMessage } from "./processors/freeCompanyUpdateShortMessage";
 import { initZone } from "./processors/initZone";
@@ -113,6 +114,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	eventPlay8,
 	eventPlayN,
 	eventStart,
+	freeCompanyDialog,
 	freeCompanyInfo,
 	freeCompanyUpdateShortMessage,
 	initZone,
