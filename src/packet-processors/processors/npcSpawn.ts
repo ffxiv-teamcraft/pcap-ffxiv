@@ -1,8 +1,9 @@
 import { BufferReader } from "../../BufferReader";
 import { NpcSpawn } from "../../definitions";
+import { ConstantsList, Region } from "../../models";
 
-export function npcSpawn(reader: BufferReader): NpcSpawn {
-	return {
+export function npcSpawn(reader: BufferReader, constants: ConstantsList, region: Region): NpcSpawn {
+	const commonRegionPart = {
 		gimmickId: reader.nextUInt32(),
 		u2b: reader.nextUInt8(),
 		u2ab: reader.nextUInt8(),
@@ -74,7 +75,23 @@ export function npcSpawn(reader: BufferReader): NpcSpawn {
 			.map(() => {
 				return reader.nextUInt32();
 			}),
-		name: reader.skip(6).nextString(32),
+	};
+	if (region === "Global") {
+		return {
+			...commonRegionPart,
+			name: reader.skip(6).nextString(32),
+			looks: Array(26)
+				.fill(null)
+				.map(() => {
+					return reader.nextUInt8();
+				}),
+			fcTag: reader.nextString(6),
+			bNpcPartSlot: reader.skip(8).nextUInt8(),
+		};
+	}
+	return {
+		...commonRegionPart,
+		name: reader.skip(2).nextString(32),
 		looks: Array(26)
 			.fill(null)
 			.map(() => {
