@@ -2,7 +2,7 @@ import { BufferReader } from "../../BufferReader";
 import { NpcSpawn } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
-export function npcSpawn(reader: BufferReader, constants: ConstantsList, region: Region): NpcSpawn {
+export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?: Region): NpcSpawn {
 	const commonRegionPart = {
 		gimmickId: reader.nextUInt32(),
 		u2b: reader.nextUInt8(),
