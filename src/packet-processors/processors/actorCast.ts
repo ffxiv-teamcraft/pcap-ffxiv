@@ -8,7 +8,7 @@ export function actorCast(reader: BufferReader): ActorCast {
 			0x1: "Normal",
 			0x2: "ItemAction",
 			0xd: "MountSkill",
-		}[reader.nextUInt8()],
+		}[reader.nextUInt8()] as "Normal" | "ItemAction" | "MountSkill",
 		castTime: reader.skip(5).nextFloat(),
 		targetId: reader.nextUInt32(),
 		rotation: reader.nextFloat(),
