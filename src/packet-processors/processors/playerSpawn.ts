@@ -3,6 +3,7 @@ import { PlayerSpawn } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
 export function playerSpawn(reader: BufferReader, constants: ConstantsList, region?: Region): PlayerSpawn {
+	// todo: changed 5.5, comment for CN/KR
 	if (region === "Global") {
 		return {
 			title: reader.nextUInt16(),
