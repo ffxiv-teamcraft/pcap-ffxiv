@@ -2,7 +2,11 @@ import { BufferReader } from "../../BufferReader";
 import { RetainerInformation } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
-export function retainerInformation(reader: BufferReader, constants: ConstantsList, region?: Region): RetainerInformation {
+export function retainerInformation(
+	reader: BufferReader,
+	constants: ConstantsList,
+	region?: Region,
+): RetainerInformation {
 	const commonRegionPart = {
 		unknown0: reader.nextUInt64(),
 		retainerId: reader.nextUInt64(),
