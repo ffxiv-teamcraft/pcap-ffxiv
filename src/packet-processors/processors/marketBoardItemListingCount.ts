@@ -7,7 +7,6 @@ export function marketBoardItemListingCount(reader: BufferReader): MarketBoardIt
 		unknown1: reader.nextUInt32(),
 		requestId: reader.nextUInt16(),
 		unknown2: reader.nextUInt8(),
-		quantity: reader.nextUInt8(),
-		unknown3: reader.nextUInt32(),
+		quantity: reader.nextUInt16(),
 	};
 }

@@ -4,5 +4,4 @@ export interface MarketBoardItemListingCount {
 	requestId: number;
 	unknown2: number;
 	quantity: number;
-	unknown3: number;
 }
