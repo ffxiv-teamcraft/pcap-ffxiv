@@ -15,8 +15,8 @@ export function statusEffectList(reader: BufferReader): StatusEffectList {
 			.fill(null)
 			.map(() => {
 				return {
-					effectId: reader.nextUInt16(),
 					unknown1: reader.nextUInt16(),
+					effectId: reader.nextUInt16(),
 					duration: reader.nextFloat(),
 					sourceActorId: reader.nextUInt32(),
 				};
