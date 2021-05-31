@@ -14,7 +14,7 @@ export class BufferReader {
 		return this.buf;
 	}
 
-	constructor(private buf: Buffer) {}
+	constructor(private buf: Buffer) { }
 
 	reset(): BufferReader {
 		this.offset = 0;
@@ -52,6 +52,7 @@ export class BufferReader {
 	nextBuffer(length: number, asReader: true): BufferReader;
 	nextBuffer(length: number, asReader?: boolean): Buffer | BufferReader {
 		const buf = this.buf.slice(this.offset, this.offset + length);
+		this.offset += length
 		if (asReader) {
 			return new BufferReader(buf);
 		}
