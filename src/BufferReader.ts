@@ -14,7 +14,7 @@ export class BufferReader {
 		return this.buf;
 	}
 
-	constructor(private buf: Buffer) { }
+	constructor(private buf: Buffer) {}
 
 	reset(): BufferReader {
 		this.offset = 0;
