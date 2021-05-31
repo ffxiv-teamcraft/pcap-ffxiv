@@ -52,6 +52,7 @@ export class BufferReader {
 	nextBuffer(length: number, asReader: true): BufferReader;
 	nextBuffer(length: number, asReader?: boolean): Buffer | BufferReader {
 		const buf = this.buf.slice(this.offset, this.offset + length);
+		this.offset += length;
 		if (asReader) {
 			return new BufferReader(buf);
 		}
