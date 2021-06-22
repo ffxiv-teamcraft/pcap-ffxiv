@@ -235,10 +235,15 @@ export class CaptureInterface extends EventEmitter {
 
 		this._options.logger({
 			type: "info",
-			message: `Loading ${file} from jsdelivr`,
+			message: `Loading ${file} from ${this._options.region === "CN" ? "jsdelivr" : "github"}`,
 		});
 
-		return downloadJson(`https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/${file}`);
+		const baseUrl =
+			this._options.region === "CN"
+				? "https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/"
+				: "https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/";
+
+		return downloadJson(`${baseUrl}${file}`);
 	}
 
 	private async _loadOpcodes() {
