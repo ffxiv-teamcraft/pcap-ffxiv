@@ -1,6 +1,8 @@
+import { InventoryOperation } from "../models/InventoryOperation";
+
 export interface InventoryModifyHandler {
 	sequence: number;
-	action: "discard" | "move" | "swap" | "merge" | "split";
+	action: InventoryOperation;
 	fromContainer: number;
 	fromSlot: number;
 	toContainer: number;

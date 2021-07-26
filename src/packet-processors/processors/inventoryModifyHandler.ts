@@ -1,25 +1,33 @@
 import { BufferReader } from "../../BufferReader";
 import { InventoryModifyHandler } from "../../definitions";
 import { ConstantsList } from "../../models";
+import { InventoryOperation } from "../../models/InventoryOperation";
 
-function inventoryOperation(action: number, offset: number): string {
-	if (action === offset) return "discard";
-	if (action === offset + 1) return "move";
-	if (action === offset + 2) return "swap";
-	if (action === offset + 5) return "merge";
-	if (action === offset + 10 || action === offset + 3) return "split";
+function inventoryOperation(action: number, offset: number): InventoryOperation | string {
+	const value = action - offset;
+	switch (value) {
+		case 0:
+		case 1:
+			return "move";
+		case 2:
+			return "swap";
+		case 4:
+			return "transferCrystal";
+		case 5:
+			return "merge";
+		case 3:
+		case 10:
+			return "split";
+		case 18:
+			return "transferGil";
+	}
 	return `unknown${action}`;
 }
 
 export function inventoryModifyHandler(reader: BufferReader, constants: ConstantsList): InventoryModifyHandler {
 	return {
 		sequence: reader.nextUInt32(),
-		action: inventoryOperation(reader.nextUInt16(), constants.InventoryOperationBaseValue) as
-			| "discard"
-			| "move"
-			| "swap"
-			| "merge"
-			| "split",
+		action: inventoryOperation(reader.nextUInt16(), constants.InventoryOperationBaseValue) as InventoryOperation,
 		fromContainer: reader.skip(6).nextUInt16(),
 		fromSlot: reader.skip(2).nextUInt8(),
 		toContainer: reader.skip(15).nextUInt16(),

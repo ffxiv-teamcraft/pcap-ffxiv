@@ -3,8 +3,8 @@ const { CaptureInterface } = require("./lib/pcap-ffxiv");
 const ci = new CaptureInterface();
 
 ci.on("message", (message) => {
-	if (message.type === "containerInfo") {
-		console.log("------------- ContainerInfo", message.parsedIpcData.containerId);
+	if (message.type === "inventoryModifyHandler") {
+		console.log("------------- ContainerInfo", message.parsedIpcData);
 	}
 }).on("error", console.error);
 

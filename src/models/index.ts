@@ -5,6 +5,7 @@
 export * from "./ActorControlType";
 export * from "./ConstantsList";
 export * from "./GenericMessage";
+export * from "./InventoryOperation";
 export * from "./Message";
 export * from "./OpcodeList";
 export * from "./Origin";
