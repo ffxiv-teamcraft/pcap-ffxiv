@@ -18,6 +18,6 @@ export function playerSetup(reader: BufferReader): PlayerSetup {
 		pvpFrontlineOverallCampaigns: reader.nextUInt32(),
 		unknownTimestamp34: reader.nextUInt32(),
 		unknownTimestamp38: reader.nextUInt32(),
-		name: reader.slice(0x23a, 0x25a).toString("utf8"),
+		name: reader.slice(0x25f, 0x27f).toString("utf8"),
 	};
 }
