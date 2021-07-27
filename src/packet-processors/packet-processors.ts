@@ -21,6 +21,7 @@ import { cFRegisterDuty } from "./processors/cFRegisterDuty";
 import { charaVisualEffect } from "./processors/charaVisualEffect";
 import { clientTrigger } from "./processors/clientTrigger";
 import { containerInfo } from "./processors/containerInfo";
+import { craftingLog } from "./processors/craftingLog";
 import { currencyCrystalInfo } from "./processors/currencyCrystalInfo";
 import { desynthResult } from "./processors/desynthResult";
 import { effectResult } from "./processors/effectResult";
@@ -36,6 +37,7 @@ import { eventStart } from "./processors/eventStart";
 import { freeCompanyDialog } from "./processors/freeCompanyDialog";
 import { freeCompanyInfo } from "./processors/freeCompanyInfo";
 import { freeCompanyUpdateShortMessage } from "./processors/freeCompanyUpdateShortMessage";
+import { gatheringLog } from "./processors/gatheringLog";
 import { initZone } from "./processors/initZone";
 import { inventoryModifyHandler } from "./processors/inventoryModifyHandler";
 import { inventoryTransaction } from "./processors/inventoryTransaction";
@@ -102,6 +104,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	charaVisualEffect,
 	clientTrigger,
 	containerInfo,
+	craftingLog,
 	currencyCrystalInfo,
 	desynthResult,
 	effectResult,
@@ -117,6 +120,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	freeCompanyDialog,
 	freeCompanyInfo,
 	freeCompanyUpdateShortMessage,
+	gatheringLog,
 	initZone,
 	inventoryModifyHandler,
 	inventoryTransaction,

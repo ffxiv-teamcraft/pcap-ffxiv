@@ -21,6 +21,7 @@ import { CFRegisterDuty } from "../definitions";
 import { CharaVisualEffect } from "../definitions";
 import { ClientTrigger } from "../definitions";
 import { ContainerInfo } from "../definitions";
+import { CraftingLog } from "../definitions";
 import { CurrencyCrystalInfo } from "../definitions";
 import { DesynthResult } from "../definitions";
 import { EffectResult } from "../definitions";
@@ -36,6 +37,7 @@ import { EventStart } from "../definitions";
 import { FreeCompanyDialog } from "../definitions";
 import { FreeCompanyInfo } from "../definitions";
 import { FreeCompanyUpdateShortMessage } from "../definitions";
+import { GatheringLog } from "../definitions";
 import { InitZone } from "../definitions";
 import { InventoryModifyHandler } from "../definitions";
 import { InventoryTransaction } from "../definitions";
@@ -177,6 +179,10 @@ export interface ContainerInfoMessage extends GenericMessage<ContainerInfo> {
 	type: "containerInfo";
 }
 
+export interface CraftingLogMessage extends GenericMessage<CraftingLog> {
+	type: "craftingLog";
+}
+
 export interface CurrencyCrystalInfoMessage extends GenericMessage<CurrencyCrystalInfo> {
 	type: "currencyCrystalInfo";
 }
@@ -235,6 +241,10 @@ export interface FreeCompanyInfoMessage extends GenericMessage<FreeCompanyInfo> 
 
 export interface FreeCompanyUpdateShortMessageMessage extends GenericMessage<FreeCompanyUpdateShortMessage> {
 	type: "freeCompanyUpdateShortMessage";
+}
+
+export interface GatheringLogMessage extends GenericMessage<GatheringLog> {
+	type: "gatheringLog";
 }
 
 export interface InitZoneMessage extends GenericMessage<InitZone> {
@@ -549,6 +559,7 @@ export type Message =
 	| CharaVisualEffectMessage
 	| ClientTriggerMessage
 	| ContainerInfoMessage
+	| CraftingLogMessage
 	| CurrencyCrystalInfoMessage
 	| DesynthResultMessage
 	| EffectResultMessage
@@ -564,6 +575,7 @@ export type Message =
 	| FreeCompanyDialogMessage
 	| FreeCompanyInfoMessage
 	| FreeCompanyUpdateShortMessageMessage
+	| GatheringLogMessage
 	| InitZoneMessage
 	| InventoryModifyHandlerMessage
 	| InventoryTransactionMessage
