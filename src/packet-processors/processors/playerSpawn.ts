@@ -4,7 +4,7 @@ import { ConstantsList, Region } from "../../models";
 
 export function playerSpawn(reader: BufferReader, constants: ConstantsList, region?: Region): PlayerSpawn {
 	// todo: changed 5.5, comment for CN/KR
-	if (region === "Global") {
+	if (region === "Global" || region === 'CN') {
 		return {
 			title: reader.nextUInt16(),
 			u1b: reader.nextUInt16(),

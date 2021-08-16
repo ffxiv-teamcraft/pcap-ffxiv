@@ -77,7 +77,7 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 			}),
 	};
 	// todo: changed 5.5, comment for CN/KR
-	if (region === "Global") {
+	if (region === "Global" || region === 'CN') {
 		return {
 			...commonRegionPart,
 			name: reader.skip(6).nextString(32),
