@@ -43,7 +43,7 @@ export class CaptureInterface extends EventEmitter {
 	private _httpServer: Server | undefined = undefined;
 	private _monitor: ChildProcessWithoutNullStreams | undefined;
 
-	private readonly _options: CaptureInterfaceOptions;
+	readonly _options: CaptureInterfaceOptions;
 
 	private expectedPacketIndex = BigInt(0);
 
@@ -219,14 +219,15 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	private async _fetchFFXIVOpcodes(file: string) {
-		const { localOpcodesPath } = this._options;
-		if (localOpcodesPath) {
+		const { localOpcodesPath, localDataPath } = this._options;
+		const localPath = localOpcodesPath || localDataPath;
+		if (localPath) {
 			try {
-				const content = readFileSync(join(localOpcodesPath, file), "utf-8");
+				const content = readFileSync(join(localPath, file), "utf-8");
 
 				this._options.logger({
 					type: "info",
-					message: `Loading ${file} from ${localOpcodesPath}`,
+					message: `Loading ${file} from ${localPath}`,
 				});
 
 				return JSON.parse(content);
