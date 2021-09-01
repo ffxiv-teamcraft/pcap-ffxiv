@@ -10,5 +10,9 @@ export interface CaptureInterfaceOptions {
 	winePrefix: string;
 	filter: (header: SegmentHeader, typeName: string) => boolean;
 	pid?: number;
+	/**
+	 * @deprecated Use localDataPath instead.
+	 */
 	localOpcodesPath?: string;
+	localDataPath?: string;
 }
