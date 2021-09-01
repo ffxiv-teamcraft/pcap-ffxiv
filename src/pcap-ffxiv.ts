@@ -220,7 +220,7 @@ export class CaptureInterface extends EventEmitter {
 
 	private async _fetchFFXIVOpcodes(file: string) {
 		const { localOpcodesPath, localDataPath } = this._options;
-		const localPath = localOpcodesPath || localDataPath;
+		const localPath = localDataPath || localOpcodesPath;
 		if (localPath) {
 			try {
 				const content = readFileSync(join(localPath, file), "utf-8");
