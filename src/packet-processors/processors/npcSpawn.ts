@@ -3,7 +3,7 @@ import { NpcSpawn } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
 export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?: Region): NpcSpawn {
-	const commonRegionPart = {
+	return {
 		gimmickId: reader.nextUInt32(),
 		u2b: reader.nextUInt8(),
 		u2ab: reader.nextUInt8(),
@@ -84,5 +84,4 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 		fcTag: reader.nextString(6),
 		bNpcPartSlot: reader.skip(8).nextUInt8(),
 	};
-
 }
