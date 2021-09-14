@@ -75,24 +75,7 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 			.map(() => {
 				return reader.nextUInt32();
 			}),
-	};
-	// todo: changed 5.5, comment for CN/KR
-	if (region === "Global" || region === "CN") {
-		return {
-			...commonRegionPart,
-			name: reader.skip(6).nextString(32),
-			looks: Array(26)
-				.fill(null)
-				.map(() => {
-					return reader.nextUInt8();
-				}),
-			fcTag: reader.nextString(6),
-			bNpcPartSlot: reader.skip(8).nextUInt8(),
-		};
-	}
-	return {
-		...commonRegionPart,
-		name: reader.skip(2).nextString(32),
+		name: reader.skip(6).nextString(32),
 		looks: Array(26)
 			.fill(null)
 			.map(() => {
@@ -101,4 +84,5 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 		fcTag: reader.nextString(6),
 		bNpcPartSlot: reader.skip(8).nextUInt8(),
 	};
+
 }
