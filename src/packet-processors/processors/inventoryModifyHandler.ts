@@ -19,8 +19,10 @@ function inventoryOperation(action: number, offset: number): InventoryOperation 
 		case 3:
 		case 10:
 			return "split";
+		case 15:
+			return "transferItemPlayerRetainer";
 		case 16:
-			return "transferItem";
+			return "transferItemRetainerPlayer";
 		case 18:
 			return "transferGil";
 	}
