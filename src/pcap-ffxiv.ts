@@ -327,7 +327,8 @@ export class CaptureInterface extends EventEmitter {
 			size: reader.nextUInt32(),
 			sourceActor: reader.nextUInt32(),
 			targetActor: reader.nextUInt32(),
-			segmentType: reader.nextUInt32(),
+			segmentType: reader.nextUInt16(),
+			padding: reader.nextUInt16(),
 			operation: this._getOrigin(origin),
 		};
 		if (header.segmentType === SegmentType.Ipc) {
