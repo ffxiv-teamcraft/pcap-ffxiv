@@ -5,7 +5,7 @@ const ci = new CaptureInterface({
 });
 
 ci.on("message", (message) => {
-	if (message.type === "playerSetup") {
+	if (message.type === "effectResult") {
 		console.log(message.parsedIpcData);
 	}
 }).on("error", console.error);
