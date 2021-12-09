@@ -31,7 +31,7 @@ export interface MarketBoardItemListing {
 		hq: boolean;
 		materiaCount: number;
 		onMannequin: boolean;
-		city: string;
+		city: number;
 		dyeId: number;
 		padding3: number;
 		padding4: number;
