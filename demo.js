@@ -6,7 +6,7 @@ const ci = new CaptureInterface({
 
 ci.on("message", (message) => {
 	if (message.type === "npcSpawn") {
-		console.log(message.parsedIpcData.pos);
+		console.log(message.parsedIpcData.name);
 	}
 }).on("error", console.error);
 

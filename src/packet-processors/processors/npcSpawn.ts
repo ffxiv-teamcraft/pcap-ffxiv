@@ -75,7 +75,7 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 			.map(() => {
 				return reader.nextUInt32();
 			}),
-		name: reader.skip(6).nextString(32),
+		name: reader.nextString(32),
 		looks: Array(26)
 			.fill(null)
 			.map(() => {
