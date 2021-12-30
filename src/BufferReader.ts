@@ -1,11 +1,9 @@
 import { Position3 } from "./definitions";
 
-type BufferFnProperties = Pick<
-	Buffer,
+type BufferFnProperties = Pick<Buffer,
 	{
 		[K in keyof Buffer]: Buffer[K] extends Function ? K : never;
-	}[keyof Buffer]
->;
+	}[keyof Buffer]>;
 
 export class BufferReader {
 	private offset = 0;
@@ -14,7 +12,8 @@ export class BufferReader {
 		return this.buf;
 	}
 
-	constructor(private buf: Buffer) {}
+	constructor(private buf: Buffer) {
+	}
 
 	reset(): BufferReader {
 		this.offset = 0;
@@ -124,6 +123,17 @@ export class BufferReader {
 			y: this.nextFloat(),
 			z: this.nextFloat(),
 		};
+	}
+
+	debug(length?: number): BufferReader {
+		console.log(`Current reader status:`);
+		console.log(`Offset: ${this.offset} (0x${this.offset.toString(16)})`);
+		console.log(`Remaining: ${this.buf.length - this.offset} (0x${(this.buf.length - this.offset).toString(16)})`);
+		if (length) {
+			const bufStr = this.buf.slice(this.offset, this.offset + length).toString("hex");
+			console.log(`Next ${length} Bytes: ${bufStr.replace(/(.{1,2})/g, "$1 ")}`);
+		}
+		return this;
 	}
 
 	private tryNext<T>(fn: keyof BufferFnProperties, size: number, fallback: T): T {

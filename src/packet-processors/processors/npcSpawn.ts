@@ -69,7 +69,7 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 					sourceActorId: reader.nextUInt32(),
 				};
 			}),
-		pos: reader.nextPosition3(),
+		pos: reader.skip(6).nextPosition3(),
 		models: Array(10)
 			.fill(null)
 			.map(() => {
