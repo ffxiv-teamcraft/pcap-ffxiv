@@ -7,6 +7,7 @@ function inventoryOperation(action: number, offset: number): InventoryOperation 
 	const value = action - offset;
 	switch (value) {
 		case 0:
+			return "discard";
 		case 1:
 			return "move";
 		case 2:
@@ -18,6 +19,10 @@ function inventoryOperation(action: number, offset: number): InventoryOperation 
 		case 3:
 		case 10:
 			return "split";
+		case 15:
+			return "transferItemPlayerRetainer";
+		case 16:
+			return "transferItemRetainerPlayer";
 		case 18:
 			return "transferGil";
 	}

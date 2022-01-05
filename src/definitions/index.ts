@@ -47,6 +47,7 @@ export * from "./InitZone";
 export * from "./InventoryModifyHandler";
 export * from "./InventoryTransaction";
 export * from "./ItemInfo";
+export * from "./ItemMarketBoardInfo";
 export * from "./LogMessage";
 export * from "./Logout";
 export * from "./MarketBoardItemListing";

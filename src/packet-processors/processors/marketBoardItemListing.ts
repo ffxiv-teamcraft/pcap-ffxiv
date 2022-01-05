@@ -36,15 +36,7 @@ export function marketBoardItemListing(reader: BufferReader): MarketBoardItemLis
 					hq: reader.nextUInt8() === 1,
 					materiaCount: reader.nextUInt8(),
 					onMannequin: reader.nextUInt8() === 1,
-					city:
-						{
-							0x01: "Limsa Lominsa",
-							0x02: "Gridania",
-							0x03: "Ul'dah",
-							0x04: "Ishgard",
-							0x07: "Kugane",
-							0x0a: "Crystarium",
-						}[reader.nextUInt8()] || "Unknown",
+					city: reader.nextUInt8(),
 					dyeId: reader.nextUInt16(),
 					padding3: reader.nextUInt16(),
 					padding4: reader.nextUInt32(),

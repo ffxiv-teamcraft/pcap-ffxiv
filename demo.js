@@ -5,8 +5,8 @@ const ci = new CaptureInterface({
 });
 
 ci.on("message", (message) => {
-	if (message.type === "playerSetup") {
-		console.log(message.parsedIpcData);
+	if (message.type === "npcSpawn") {
+		console.log(message.parsedIpcData.name);
 	}
 }).on("error", console.error);
 

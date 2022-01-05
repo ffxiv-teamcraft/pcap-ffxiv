@@ -3,7 +3,7 @@ import { NpcSpawn } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
 export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?: Region): NpcSpawn {
-	const commonRegionPart = {
+	return {
 		gimmickId: reader.nextUInt32(),
 		u2b: reader.nextUInt8(),
 		u2ab: reader.nextUInt8(),
@@ -69,30 +69,13 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 					sourceActorId: reader.nextUInt32(),
 				};
 			}),
-		pos: reader.nextPosition3(),
+		pos: reader.skip(6).nextPosition3(),
 		models: Array(10)
 			.fill(null)
 			.map(() => {
 				return reader.nextUInt32();
 			}),
-	};
-	// todo: changed 5.5, comment for CN/KR
-	if (region === "Global" || region === "CN") {
-		return {
-			...commonRegionPart,
-			name: reader.skip(6).nextString(32),
-			looks: Array(26)
-				.fill(null)
-				.map(() => {
-					return reader.nextUInt8();
-				}),
-			fcTag: reader.nextString(6),
-			bNpcPartSlot: reader.skip(8).nextUInt8(),
-		};
-	}
-	return {
-		...commonRegionPart,
-		name: reader.skip(2).nextString(32),
+		name: reader.nextString(32),
 		looks: Array(26)
 			.fill(null)
 			.map(() => {

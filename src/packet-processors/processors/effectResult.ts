@@ -20,9 +20,9 @@ export function effectResult(reader: BufferReader): EffectResult {
 				return {
 					index: chunkReader.nextInt8(),
 					unknown3: chunkReader.nextInt8(),
-					id: chunkReader.nextUInt16(),
-					param: chunkReader.nextUInt16(),
 					unknown4: chunkReader.nextUInt16(),
+					param: chunkReader.nextUInt16(),
+					id: chunkReader.nextUInt16(),
 					duration: chunkReader.nextFloat(),
 					sourceActorId: chunkReader.nextUInt32(),
 				};

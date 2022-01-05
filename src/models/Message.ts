@@ -42,6 +42,7 @@ import { InitZone } from "../definitions";
 import { InventoryModifyHandler } from "../definitions";
 import { InventoryTransaction } from "../definitions";
 import { ItemInfo } from "../definitions";
+import { ItemMarketBoardInfo } from "../definitions";
 import { LogMessage } from "../definitions";
 import { Logout } from "../definitions";
 import { MarketBoardItemListing } from "../definitions";
@@ -261,6 +262,10 @@ export interface InventoryTransactionMessage extends GenericMessage<InventoryTra
 
 export interface ItemInfoMessage extends GenericMessage<ItemInfo> {
 	type: "itemInfo";
+}
+
+export interface ItemMarketBoardInfoMessage extends GenericMessage<ItemMarketBoardInfo> {
+	type: "itemMarketBoardInfo";
 }
 
 export interface LogMessageMessage extends GenericMessage<LogMessage> {
@@ -580,6 +585,7 @@ export type Message =
 	| InventoryModifyHandlerMessage
 	| InventoryTransactionMessage
 	| ItemInfoMessage
+	| ItemMarketBoardInfoMessage
 	| LogMessageMessage
 	| LogoutMessage
 	| MarketBoardItemListingMessage

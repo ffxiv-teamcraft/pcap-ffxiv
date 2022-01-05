@@ -42,6 +42,7 @@ import { initZone } from "./processors/initZone";
 import { inventoryModifyHandler } from "./processors/inventoryModifyHandler";
 import { inventoryTransaction } from "./processors/inventoryTransaction";
 import { itemInfo } from "./processors/itemInfo";
+import { itemMarketBoardInfo } from "./processors/itemMarketBoardInfo";
 import { logMessage } from "./processors/logMessage";
 import { logout } from "./processors/logout";
 import { marketBoardItemListing } from "./processors/marketBoardItemListing";
@@ -125,6 +126,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	inventoryModifyHandler,
 	inventoryTransaction,
 	itemInfo,
+	itemMarketBoardInfo,
 	logMessage,
 	logout,
 	marketBoardItemListing,
