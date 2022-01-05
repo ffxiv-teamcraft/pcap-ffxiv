@@ -10,5 +10,6 @@ export function marketTaxRates(packet: ResultDialog, reader: BufferReader): Mark
 		ishgard: reader.nextUInt32(),
 		kugane: reader.nextUInt32(),
 		crystarium: reader.nextUInt32(),
+		oldSharlayan: reader.nextUInt32(),
 	};
 }
