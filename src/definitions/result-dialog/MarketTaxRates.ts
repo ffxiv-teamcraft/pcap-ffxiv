@@ -6,4 +6,5 @@ export interface MarketTaxRates {
 	ishgard: number;
 	kugane: number;
 	crystarium: number;
+	oldSharlayan: number;
 }
