@@ -23,7 +23,7 @@ export function retainerInformation(
 		ventureComplete: reader.nextUInt32(),
 		unknown14: reader.nextUInt8(),
 	};
-	if (region === "Global") {
+	if (region === "Global" || region === "CN") {
 		return {
 			...commonRegionPart,
 			name: reader.nextString(20),
