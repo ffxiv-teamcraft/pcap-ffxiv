@@ -1,7 +1,7 @@
 import { BufferReader } from "../../BufferReader";
 import { SubmarineProgressionStatus } from "../../definitions";
 
-const SECTORS_DATA_LENGTH = 10;
+const SECTORS_DATA_LENGTH = 15;
 const MASK = 0x1;
 
 function getProgression(buffer: BufferReader) {
