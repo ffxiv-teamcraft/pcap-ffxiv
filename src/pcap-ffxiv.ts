@@ -341,6 +341,7 @@ export class CaptureInterface extends EventEmitter {
 				header,
 				opcode,
 				type: typeName as any,
+				data: Buffer.from(dataReader.buffer),
 			};
 
 			if (this._options.filter(header, typeName)) {
