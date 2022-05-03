@@ -5,4 +5,5 @@ export interface GenericMessage<T = any> extends Segment {
 	type: string;
 	subType?: string;
 	parsedIpcData?: T;
+	data?: Buffer;
 }
