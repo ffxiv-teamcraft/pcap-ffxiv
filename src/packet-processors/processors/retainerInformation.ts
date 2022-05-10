@@ -1,13 +1,10 @@
 import { BufferReader } from "../../BufferReader";
 import { RetainerInformation } from "../../definitions";
-import { ConstantsList, Region } from "../../models";
 
 export function retainerInformation(
 	reader: BufferReader,
-	constants: ConstantsList,
-	region?: Region,
 ): RetainerInformation {
-	const commonRegionPart = {
+	return {
 		unknown0: reader.nextUInt64(),
 		retainerId: reader.nextUInt64(),
 		hireOrder: reader.nextUInt8(),
@@ -22,15 +19,6 @@ export function retainerInformation(
 		ventureId: reader.nextUInt32(),
 		ventureComplete: reader.nextUInt32(),
 		unknown14: reader.nextUInt8(),
-	};
-	if (region === "Global" || region === "CN") {
-		return {
-			...commonRegionPart,
-			name: reader.nextString(20),
-		};
-	}
-	return {
-		...commonRegionPart,
-		name: reader.nextString(27),
+		name: reader.nextString(20),
 	};
 }
