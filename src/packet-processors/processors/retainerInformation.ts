@@ -1,9 +1,7 @@
 import { BufferReader } from "../../BufferReader";
 import { RetainerInformation } from "../../definitions";
 
-export function retainerInformation(
-	reader: BufferReader,
-): RetainerInformation {
+export function retainerInformation(reader: BufferReader): RetainerInformation {
 	return {
 		unknown0: reader.nextUInt64(),
 		retainerId: reader.nextUInt64(),
