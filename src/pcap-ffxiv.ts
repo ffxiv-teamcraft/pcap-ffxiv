@@ -241,7 +241,7 @@ export class CaptureInterface extends EventEmitter {
 
 		const baseUrl =
 			this._options.region === "CN"
-				? "https://cdn.jsdelivr.net/gh/karashiiro/FFXIVOpcodes@latest/"
+				? "https://gitee.com/mundanity/FFXIVOpcodes_Fork_Sync-with-Gitee/raw/fork/"
 				: "https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/";
 
 		return downloadJson(`${baseUrl}${file}`);
