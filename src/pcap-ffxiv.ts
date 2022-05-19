@@ -236,12 +236,12 @@ export class CaptureInterface extends EventEmitter {
 
 		this._options.logger({
 			type: "info",
-			message: `Loading ${file} from ${this._options.region === "CN" ? "jsdelivr" : "github"}`,
+			message: `Loading ${file} from ${this._options.region === "CN" ? "ffcafe" : "github"}`,
 		});
 
 		const baseUrl =
 			this._options.region === "CN"
-				? "https://gitee.com/mundanity/FFXIVOpcodes_Fork_Sync-with-Gitee/raw/fork/"
+				? "https://opcodes.xivcdn.com/"
 				: "https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/";
 
 		return downloadJson(`${baseUrl}${file}`);
