@@ -3,13 +3,13 @@ import { DesynthResult } from "../../definitions";
 
 export function desynthResult(reader: BufferReader): DesynthResult {
 	const unknown00 = reader.nextUint32();
-  const unknown01 = reader.nextUint32();
-  const itemResult = reader.nextUint32();
-  return {
+	const unknown01 = reader.nextUint32();
+	const itemResult = reader.nextUint32();
+	return {
 		unknown0: unknown00, 
 		unknown1: unknown01,
 		itemId: itemResult % 1000000,
-    itemHq: itemResult > 1000000,
+		itemHq: itemResult > 1000000,
 		result: Array(3)
 			.fill(null)
 			.map(() => {
