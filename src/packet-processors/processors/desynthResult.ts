@@ -2,13 +2,23 @@ import { BufferReader } from "../../BufferReader";
 import { DesynthResult } from "../../definitions";
 
 export function desynthResult(reader: BufferReader): DesynthResult {
-	return {
-		unknown0: reader.nextUInt32(),
-		unknown1: reader.nextUInt32(),
-		itemId: reader.nextUInt32() % 1000000,
-		itemHq: reader.nextUInt32() > 1000000,
-		itemResultId: reader.nextUInt32() % 1000000,
-		itemResultHq: reader.nextUInt32() > 1000000,
-		itemResultQuantity: reader.nextUInt32(),
+	const unknown00 = reader.nextUint32();
+  const unknown01 = reader.nextUint32();
+  const itemResult = reader.nextUint32();
+  return {
+		unknown0: unknown00, 
+		unknown1: unknown01,
+		itemId: itemResult % 1000000,
+    itemHq: itemResult > 1000000,
+		result: Array(3)
+			.fill(null)
+			.map(() => {
+				const itemResult = reader.nextUInt32();
+				return {
+					itemId: itemResult % 1000000,
+					itemHq: itemResult > 1000000,
+					itemQuantity: reader.nextUInt32(),
+				};
+			}),
 	};
 }
