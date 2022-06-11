@@ -1,13 +1,9 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
-const ci = new CaptureInterface({
-	localDataPath: "G:\\WebstormProjects\\FFXIVOpcodes",
-});
+const ci = new CaptureInterface();
 
 ci.on("message", (message) => {
-	if (message.type === "npcSpawn") {
-		console.log(message.parsedIpcData.name);
-	}
+	console.log(message);
 }).on("error", console.error);
 
 ci.once("ready", () => {
