@@ -231,7 +231,8 @@ export class CaptureInterface extends EventEmitter {
 				});
 
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
@@ -358,6 +359,8 @@ export class CaptureInterface extends EventEmitter {
 					}
 				}
 
+				this.emit("message", message);
+			} else if (this._options.emitUnknownPackets) {
 				this.emit("message", message);
 			}
 		}
