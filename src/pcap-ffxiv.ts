@@ -360,8 +360,6 @@ export class CaptureInterface extends EventEmitter {
 				}
 
 				this.emit("message", message);
-			} else if (this._options.emitUnknownPackets) {
-				this.emit("message", message);
 			}
 		}
 	}

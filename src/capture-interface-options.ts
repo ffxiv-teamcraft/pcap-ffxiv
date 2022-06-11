@@ -15,5 +15,4 @@ export interface CaptureInterfaceOptions {
 	 */
 	localOpcodesPath?: string;
 	localDataPath?: string;
-	emitUnknownPackets?: boolean;
 }
