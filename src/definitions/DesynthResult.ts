@@ -4,8 +4,8 @@ export interface DesynthResult {
 	itemId: number;
 	itemHq: boolean;
 	result: {
-		itemId: number,
-		itemHq: boolean,
-		itemQuantity: number,
+		itemId: number;
+		itemHq: boolean;
+		itemQuantity: number;
 	}[];
 }
