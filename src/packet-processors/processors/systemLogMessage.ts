@@ -1,7 +1,7 @@
 import { BufferReader } from "../../BufferReader";
-import { SomeDirectorUnk4 } from "../../definitions";
+import { SystemLogMessage } from "../../definitions";
 
-export function someDirectorUnk4(reader: BufferReader): SomeDirectorUnk4 {
+export function systemLogMessage(reader: BufferReader): SystemLogMessage {
 	return {
 		eventId: reader.nextUInt32(),
 		param1: reader.nextUInt32(),

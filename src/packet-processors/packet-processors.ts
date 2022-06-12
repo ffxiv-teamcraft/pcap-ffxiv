@@ -63,12 +63,12 @@ import { prepareZoning } from "./processors/prepareZoning";
 import { resultDialog } from "./processors/resultDialog";
 import { retainerInformation } from "./processors/retainerInformation";
 import { serverNotice } from "./processors/serverNotice";
-import { someDirectorUnk4 } from "./processors/someDirectorUnk4";
 import { statusEffectList } from "./processors/statusEffectList";
 import { submarineExplorationResult } from "./processors/submarineExplorationResult";
 import { submarineProgressionStatus } from "./processors/submarineProgressionStatus";
 import { submarineStatusList } from "./processors/submarineStatusList";
 import { submarineTimers } from "./processors/submarineTimers";
+import { systemLogMessage } from "./processors/systemLogMessage";
 import { updateClassInfo } from "./processors/updateClassInfo";
 import { updateHpMpTp } from "./processors/updateHpMpTp";
 import { updateInventorySlot } from "./processors/updateInventorySlot";
@@ -147,12 +147,12 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	resultDialog,
 	retainerInformation,
 	serverNotice,
-	someDirectorUnk4,
 	statusEffectList,
 	submarineExplorationResult,
 	submarineProgressionStatus,
 	submarineStatusList,
 	submarineTimers,
+	systemLogMessage,
 	updateClassInfo,
 	updateHpMpTp,
 	updateInventorySlot,

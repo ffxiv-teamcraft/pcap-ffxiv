@@ -1,4 +1,4 @@
-export interface SomeDirectorUnk4 {
+export interface SystemLogMessage {
 	eventId: number;
 	param1: number;
 	actionTimeline: number;

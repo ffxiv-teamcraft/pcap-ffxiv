@@ -63,12 +63,12 @@ import { PrepareZoning } from "../definitions";
 import { ResultDialog } from "../definitions";
 import { RetainerInformation } from "../definitions";
 import { ServerNotice } from "../definitions";
-import { SomeDirectorUnk4 } from "../definitions";
 import { StatusEffectList } from "../definitions";
 import { SubmarineExplorationResult } from "../definitions";
 import { SubmarineProgressionStatus } from "../definitions";
 import { SubmarineStatusList } from "../definitions";
 import { SubmarineTimers } from "../definitions";
+import { SystemLogMessage } from "../definitions";
 import { UpdateClassInfo } from "../definitions";
 import { UpdateHpMpTp } from "../definitions";
 import { UpdateInventorySlot } from "../definitions";
@@ -348,10 +348,6 @@ export interface ServerNoticeMessage extends GenericMessage<ServerNotice> {
 	type: "serverNotice";
 }
 
-export interface SomeDirectorUnk4Message extends GenericMessage<SomeDirectorUnk4> {
-	type: "someDirectorUnk4";
-}
-
 export interface StatusEffectListMessage extends GenericMessage<StatusEffectList> {
 	type: "statusEffectList";
 }
@@ -370,6 +366,10 @@ export interface SubmarineStatusListMessage extends GenericMessage<SubmarineStat
 
 export interface SubmarineTimersMessage extends GenericMessage<SubmarineTimers> {
 	type: "submarineTimers";
+}
+
+export interface SystemLogMessageMessage extends GenericMessage<SystemLogMessage> {
+	type: "systemLogMessage";
 }
 
 export interface UpdateClassInfoMessage extends GenericMessage<UpdateClassInfo> {
@@ -606,12 +606,12 @@ export type Message =
 	| ResultDialogMessage
 	| RetainerInformationMessage
 	| ServerNoticeMessage
-	| SomeDirectorUnk4Message
 	| StatusEffectListMessage
 	| SubmarineExplorationResultMessage
 	| SubmarineProgressionStatusMessage
 	| SubmarineStatusListMessage
 	| SubmarineTimersMessage
+	| SystemLogMessageMessage
 	| UpdateClassInfoMessage
 	| UpdateHpMpTpMessage
 	| UpdateInventorySlotMessage
