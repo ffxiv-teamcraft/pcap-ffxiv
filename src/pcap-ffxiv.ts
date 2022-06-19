@@ -175,6 +175,19 @@ export class CaptureInterface extends EventEmitter {
 			this._monitor = spawn(this._options.exePath, args);
 		}
 
+		this._monitor?.stderr.on("data", (err: Buffer) => {
+			this._options.logger({
+				type: "error",
+				message: `MachinaWrapper failed to start: 
+				${err.toLocaleString()}`,
+			});
+			this.emit("error", new Error(`MachinaWrapper failed to start: ${err.toString('utf8')}`));
+		});
+
+		this._monitor.on("exit", () => {
+			this.closeHttpServer();
+		});
+
 		this._options.logger({
 			type: "info",
 			message: `MachinaWrapper started with args: ${args.join(" ")}`,
@@ -182,16 +195,22 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	stop(): Promise<void> {
+		return new Promise(() => {
+			this._monitor?.stdin.write("kill\n", () => {
+				return this.closeHttpServer();
+			});
+		});
+	}
+
+	private closeHttpServer(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			this._monitor?.stdin.write("kill\n", (writeErr) => {
-				this._httpServer?.close((err) => {
-					delete this._httpServer;
-					if (err || writeErr) {
-						reject(err || writeErr);
-					} else {
-						resolve();
-					}
-				});
+			this._httpServer?.close((err) => {
+				delete this._httpServer;
+				if (err) {
+					reject(err);
+				} else {
+					resolve();
+				}
 			});
 		});
 	}
@@ -231,7 +250,8 @@ export class CaptureInterface extends EventEmitter {
 				});
 
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
