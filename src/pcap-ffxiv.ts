@@ -181,7 +181,7 @@ export class CaptureInterface extends EventEmitter {
 				message: `MachinaWrapper failed to start: 
 				${err.toLocaleString()}`,
 			});
-			this.emit("error", new Error(`MachinaWrapper failed to start: ${err.toString('utf8')}`));
+			this.emit("error", new Error(`MachinaWrapper failed to start: ${err.toString("utf8")}`));
 		});
 
 		this._monitor.on("exit", () => {
