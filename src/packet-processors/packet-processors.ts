@@ -41,6 +41,7 @@ import { gatheringLog } from "./processors/gatheringLog";
 import { initZone } from "./processors/initZone";
 import { inventoryModifyHandler } from "./processors/inventoryModifyHandler";
 import { inventoryTransaction } from "./processors/inventoryTransaction";
+import { islandWorkshopSupplyDemand } from "./processors/islandWorkshopSupplyDemand";
 import { itemInfo } from "./processors/itemInfo";
 import { itemMarketBoardInfo } from "./processors/itemMarketBoardInfo";
 import { logMessage } from "./processors/logMessage";
@@ -125,6 +126,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	initZone,
 	inventoryModifyHandler,
 	inventoryTransaction,
+	islandWorkshopSupplyDemand,
 	itemInfo,
 	itemMarketBoardInfo,
 	logMessage,

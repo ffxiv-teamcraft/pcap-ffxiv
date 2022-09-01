@@ -46,6 +46,7 @@ export * from "./GatheringLog";
 export * from "./InitZone";
 export * from "./InventoryModifyHandler";
 export * from "./InventoryTransaction";
+export * from "./IslandWorkshopSupplyDemand";
 export * from "./ItemInfo";
 export * from "./ItemMarketBoardInfo";
 export * from "./LogMessage";

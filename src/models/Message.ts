@@ -41,6 +41,7 @@ import { GatheringLog } from "../definitions";
 import { InitZone } from "../definitions";
 import { InventoryModifyHandler } from "../definitions";
 import { InventoryTransaction } from "../definitions";
+import { IslandWorkshopSupplyDemand } from "../definitions";
 import { ItemInfo } from "../definitions";
 import { ItemMarketBoardInfo } from "../definitions";
 import { LogMessage } from "../definitions";
@@ -258,6 +259,10 @@ export interface InventoryModifyHandlerMessage extends GenericMessage<InventoryM
 
 export interface InventoryTransactionMessage extends GenericMessage<InventoryTransaction> {
 	type: "inventoryTransaction";
+}
+
+export interface IslandWorkshopSupplyDemandMessage extends GenericMessage<IslandWorkshopSupplyDemand> {
+	type: "islandWorkshopSupplyDemand";
 }
 
 export interface ItemInfoMessage extends GenericMessage<ItemInfo> {
@@ -584,6 +589,7 @@ export type Message =
 	| InitZoneMessage
 	| InventoryModifyHandlerMessage
 	| InventoryTransactionMessage
+	| IslandWorkshopSupplyDemandMessage
 	| ItemInfoMessage
 	| ItemMarketBoardInfoMessage
 	| LogMessageMessage
