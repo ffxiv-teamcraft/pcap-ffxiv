@@ -23,7 +23,6 @@ import { clientTrigger } from "./processors/clientTrigger";
 import { containerInfo } from "./processors/containerInfo";
 import { craftingLog } from "./processors/craftingLog";
 import { currencyCrystalInfo } from "./processors/currencyCrystalInfo";
-import { desynthResult } from "./processors/desynthResult";
 import { effectResult } from "./processors/effectResult";
 import { eorzeaTimeOffset } from "./processors/eorzeaTimeOffset";
 import { equipDisplayFlags } from "./processors/equipDisplayFlags";
@@ -33,6 +32,7 @@ import { eventPlay32 } from "./processors/eventPlay32";
 import { eventPlay4 } from "./processors/eventPlay4";
 import { eventPlay8 } from "./processors/eventPlay8";
 import { eventPlayN } from "./processors/eventPlayN";
+import { eventResume } from "./processors/eventResume";
 import { eventStart } from "./processors/eventStart";
 import { freeCompanyDialog } from "./processors/freeCompanyDialog";
 import { freeCompanyInfo } from "./processors/freeCompanyInfo";
@@ -61,7 +61,6 @@ import { playerSpawn } from "./processors/playerSpawn";
 import { playerStats } from "./processors/playerStats";
 import { playTime } from "./processors/playTime";
 import { prepareZoning } from "./processors/prepareZoning";
-import { resultDialog } from "./processors/resultDialog";
 import { retainerInformation } from "./processors/retainerInformation";
 import { serverNotice } from "./processors/serverNotice";
 import { statusEffectList } from "./processors/statusEffectList";
@@ -108,7 +107,6 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	containerInfo,
 	craftingLog,
 	currencyCrystalInfo,
-	desynthResult,
 	effectResult,
 	eorzeaTimeOffset,
 	equipDisplayFlags,
@@ -118,6 +116,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	eventPlay4,
 	eventPlay8,
 	eventPlayN,
+	eventResume,
 	eventStart,
 	freeCompanyDialog,
 	freeCompanyInfo,
@@ -146,7 +145,6 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	playerStats,
 	playTime,
 	prepareZoning,
-	resultDialog,
 	retainerInformation,
 	serverNotice,
 	statusEffectList,

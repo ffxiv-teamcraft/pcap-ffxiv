@@ -34,7 +34,7 @@
 		"semi": true,
 		"useTabs": true,
 		"trailingComma": "all",
-		"endOfLine": "crlf"
+		"endOfLine": "lf"
 	},
 	"devDependencies": {
 		"@types/node": "^14.14.19",
