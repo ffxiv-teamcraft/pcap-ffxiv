@@ -23,7 +23,6 @@ import { ClientTrigger } from "../definitions";
 import { ContainerInfo } from "../definitions";
 import { CraftingLog } from "../definitions";
 import { CurrencyCrystalInfo } from "../definitions";
-import { DesynthResult } from "../definitions";
 import { EffectResult } from "../definitions";
 import { EorzeaTimeOffset } from "../definitions";
 import { EquipDisplayFlags } from "../definitions";
@@ -33,6 +32,7 @@ import { EventPlay32 } from "../definitions";
 import { EventPlay4 } from "../definitions";
 import { EventPlay8 } from "../definitions";
 import { EventPlayN } from "../definitions";
+import { EventResume } from "../definitions";
 import { EventStart } from "../definitions";
 import { FreeCompanyDialog } from "../definitions";
 import { FreeCompanyInfo } from "../definitions";
@@ -61,7 +61,6 @@ import { PlayerSpawn } from "../definitions";
 import { PlayerStats } from "../definitions";
 import { PlayTime } from "../definitions";
 import { PrepareZoning } from "../definitions";
-import { ResultDialog } from "../definitions";
 import { RetainerInformation } from "../definitions";
 import { ServerNotice } from "../definitions";
 import { StatusEffectList } from "../definitions";
@@ -85,8 +84,10 @@ import { SetMountSpeed } from "../definitions";
 import { StatusEffectLose } from "../definitions";
 import { ToggleWeapon } from "../definitions";
 import { UpdateRestedExp } from "../definitions";
-import { MarketTaxRates } from "../definitions";
+import { DesynthResult } from "../definitions";
 import { ReductionResult } from "../definitions";
+import { RetrieveMateriaResult } from "../definitions";
+import { TalkEvent } from "../definitions";
 
 /**
 * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
@@ -189,10 +190,6 @@ export interface CurrencyCrystalInfoMessage extends GenericMessage<CurrencyCryst
 	type: "currencyCrystalInfo";
 }
 
-export interface DesynthResultMessage extends GenericMessage<DesynthResult> {
-	type: "desynthResult";
-}
-
 export interface EffectResultMessage extends GenericMessage<EffectResult> {
 	type: "effectResult";
 }
@@ -227,6 +224,10 @@ export interface EventPlay8Message extends GenericMessage<EventPlay8> {
 
 export interface EventPlayNMessage extends GenericMessage<EventPlayN> {
 	type: "eventPlayN";
+}
+
+export interface EventResumeMessage extends GenericMessage<EventResume> {
+	type: "eventResume";
 }
 
 export interface EventStartMessage extends GenericMessage<EventStart> {
@@ -339,10 +340,6 @@ export interface PlayTimeMessage extends GenericMessage<PlayTime> {
 
 export interface PrepareZoningMessage extends GenericMessage<PrepareZoning> {
 	type: "prepareZoning";
-}
-
-export interface ResultDialogMessage extends GenericMessage<ResultDialog> {
-	type: "resultDialog";
 }
 
 export interface RetainerInformationMessage extends GenericMessage<RetainerInformation> {
@@ -536,14 +533,24 @@ export interface ActorControlTargetUpdateRestedExpMessage extends GenericMessage
 	subType: "updateRestedExp";
 }
 
-export interface ResultDialogMarketTaxRatesMessage extends GenericMessage<MarketTaxRates> {
-	type: "resultDialog";
-	subType: "marketTaxRates";
+export interface EventResumeDesynthResultMessage extends GenericMessage<DesynthResult> {
+	type: "eventResume";
+	subType: "desynthResult";
 }
 
-export interface ResultDialogReductionResultMessage extends GenericMessage<ReductionResult> {
-	type: "resultDialog";
+export interface EventResumeReductionResultMessage extends GenericMessage<ReductionResult> {
+	type: "eventResume";
 	subType: "reductionResult";
+}
+
+export interface EventResumeRetrieveMateriaResultMessage extends GenericMessage<RetrieveMateriaResult> {
+	type: "eventResume";
+	subType: "retrieveMateriaResult";
+}
+
+export interface EventResumeTalkEventMessage extends GenericMessage<TalkEvent> {
+	type: "eventResume";
+	subType: "talkEvent";
 }
 
 export type Message =
@@ -571,7 +578,6 @@ export type Message =
 	| ContainerInfoMessage
 	| CraftingLogMessage
 	| CurrencyCrystalInfoMessage
-	| DesynthResultMessage
 	| EffectResultMessage
 	| EorzeaTimeOffsetMessage
 	| EquipDisplayFlagsMessage
@@ -581,6 +587,7 @@ export type Message =
 	| EventPlay4Message
 	| EventPlay8Message
 	| EventPlayNMessage
+	| EventResumeMessage
 	| EventStartMessage
 	| FreeCompanyDialogMessage
 	| FreeCompanyInfoMessage
@@ -609,7 +616,6 @@ export type Message =
 	| PlayerStatsMessage
 	| PlayTimeMessage
 	| PrepareZoningMessage
-	| ResultDialogMessage
 	| RetainerInformationMessage
 	| ServerNoticeMessage
 	| StatusEffectListMessage
@@ -651,5 +657,7 @@ export type Message =
 	| ActorControlTargetStatusEffectLoseMessage
 	| ActorControlTargetToggleWeaponMessage
 	| ActorControlTargetUpdateRestedExpMessage
-	| ResultDialogMarketTaxRatesMessage
-	| ResultDialogReductionResultMessage;
+	| EventResumeDesynthResultMessage
+	| EventResumeReductionResultMessage
+	| EventResumeRetrieveMateriaResultMessage
+	| EventResumeTalkEventMessage;

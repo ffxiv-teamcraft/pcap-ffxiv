@@ -5,7 +5,7 @@ export interface OpcodeList {
 	lists: {
 		ServerZoneIpcType: {
 			name: string;
-			opcode: number;
+			opcode: number | Array<number>;
 		}[];
 		ClientZoneIpcType: {
 			name: string;

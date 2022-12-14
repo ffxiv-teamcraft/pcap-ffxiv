@@ -6,7 +6,7 @@ import {
 	OpcodeList,
 	PacketProcessor,
 	Region,
-	ResultDialogType,
+	EventHandlerType,
 	SegmentHeader,
 	SegmentType,
 	SuperPacket,
@@ -20,7 +20,7 @@ import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { join } from "path";
 import { existsSync, readFileSync } from "fs";
 import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
-import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
+import { eventResumePacketProcessors } from "./packet-processors/event-resume-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 import Heap from "heap-js";
 
@@ -81,7 +81,7 @@ export class CaptureInterface extends EventEmitter {
 			actorControl: actorControlPacketProcessors,
 			actorControlSelf: actorControlPacketProcessors,
 			actorControlTarget: actorControlPacketProcessors,
-			resultDialog: resultDialogPacketProcessors,
+			eventResume: eventResumePacketProcessors,
 		};
 
 		this._loadOpcodes().then(async () => {
@@ -220,12 +220,26 @@ export class CaptureInterface extends EventEmitter {
 		this.updateOpcodesCache();
 	}
 
-	private static opcodesToRegistry(opcodes: { name: string; opcode: number }[]): Record<number, string> {
+	private static opcodesToRegistry(
+		opcodes: { name: string; opcode: number | Array<number> }[],
+	): Record<number, string> {
 		return opcodes.reduce((acc, entry) => {
-			return {
-				...acc,
-				[entry.opcode]: entry.name,
-			};
+			if (typeof entry.opcode === "number") {
+				return {
+					...acc,
+					[entry.opcode]: entry.name,
+				};
+			} else {
+				return {
+					...acc,
+					...entry.opcode.reduce((accOp, op) => {
+						return {
+							...accOp,
+							[op]: entry.name,
+						};
+					}, {}),
+				};
+			}
 		}, {}) as Record<number, string>;
 	}
 
@@ -288,8 +302,8 @@ export class CaptureInterface extends EventEmitter {
 			case "actorControlTarget":
 				subTypesEnum = ActorControlType;
 				break;
-			case "resultDialog":
-				subTypesEnum = ResultDialogType;
+			case "eventResume":
+				subTypesEnum = EventHandlerType;
 				break;
 			default:
 				this._options.logger({

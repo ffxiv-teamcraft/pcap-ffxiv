@@ -74,14 +74,14 @@ function generateInterfaces(processors, parentInterfaceName, excludeImports) {
 function createMessageType() {
 	const { processors } = generateImportsAndProcessors("processors");
 	const actorControlProcessors = generateImportsAndProcessors("processors/actor-control").processors;
-	const resultDialogProcessors = generateImportsAndProcessors("processors/result-dialog").processors;
+	const eventResumeProcessors = generateImportsAndProcessors("processors/event-resume").processors;
 
 	const entries = [
 		...generateInterfaces(processors),
 		...generateInterfaces(actorControlProcessors, "ActorControl"),
 		...generateInterfaces(actorControlProcessors, "ActorControlSelf", true),
 		...generateInterfaces(actorControlProcessors, "ActorControlTarget", true),
-		...generateInterfaces(resultDialogProcessors, "ResultDialog"),
+		...generateInterfaces(eventResumeProcessors, "EventResume"),
 	];
 
 	const fileContent = `import { GenericMessage } from "./GenericMessage";
@@ -116,12 +116,12 @@ createProcessorsLoader(
 );
 
 createProcessorsLoader(
-	"result-dialog-packet-processors",
-	"resultDialogPacketProcessors",
-	"processors/result-dialog",
-	"SuperPacketProcessor<ResultDialog>",
+	"event-resume-packet-processors",
+	"eventResumePacketProcessors",
+	"processors/event-resume",
+	"SuperPacketProcessor<EventResume>",
 	"SuperPacketProcessor",
-	[`import { ResultDialog } from "../definitions";`],
+	[`import { EventResume } from "../definitions";`],
 );
 
 createMessageType();
