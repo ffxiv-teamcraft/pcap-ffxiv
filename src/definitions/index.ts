@@ -36,6 +36,7 @@ export * from "./EventFinish";
 export * from "./EventPlay";
 export * from "./EventPlay32";
 export * from "./EventPlay4";
+export * from "./EventPlay64";
 export * from "./EventPlay8";
 export * from "./EventPlayN";
 export * from "./EventStart";

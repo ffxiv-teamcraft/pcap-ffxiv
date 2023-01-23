@@ -31,6 +31,7 @@ import { EventFinish } from "../definitions";
 import { EventPlay } from "../definitions";
 import { EventPlay32 } from "../definitions";
 import { EventPlay4 } from "../definitions";
+import { EventPlay64 } from "../definitions";
 import { EventPlay8 } from "../definitions";
 import { EventPlayN } from "../definitions";
 import { EventStart } from "../definitions";
@@ -219,6 +220,10 @@ export interface EventPlay32Message extends GenericMessage<EventPlay32> {
 
 export interface EventPlay4Message extends GenericMessage<EventPlay4> {
 	type: "eventPlay4";
+}
+
+export interface EventPlay64Message extends GenericMessage<EventPlay64> {
+	type: "eventPlay64";
 }
 
 export interface EventPlay8Message extends GenericMessage<EventPlay8> {
@@ -579,6 +584,7 @@ export type Message =
 	| EventPlayMessage
 	| EventPlay32Message
 	| EventPlay4Message
+	| EventPlay64Message
 	| EventPlay8Message
 	| EventPlayNMessage
 	| EventStartMessage

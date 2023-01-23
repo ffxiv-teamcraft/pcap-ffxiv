@@ -31,6 +31,7 @@ import { eventFinish } from "./processors/eventFinish";
 import { eventPlay } from "./processors/eventPlay";
 import { eventPlay32 } from "./processors/eventPlay32";
 import { eventPlay4 } from "./processors/eventPlay4";
+import { eventPlay64 } from "./processors/eventPlay64";
 import { eventPlay8 } from "./processors/eventPlay8";
 import { eventPlayN } from "./processors/eventPlayN";
 import { eventStart } from "./processors/eventStart";
@@ -116,6 +117,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	eventPlay,
 	eventPlay32,
 	eventPlay4,
+	eventPlay64,
 	eventPlay8,
 	eventPlayN,
 	eventStart,
