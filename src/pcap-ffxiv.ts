@@ -147,8 +147,8 @@ export class CaptureInterface extends EventEmitter {
 		} else {
 			this.skippedPackets++;
 		}
-		// If we skipped more than 10 packets, something isn't right, let's just bump to the next available index
-		if (this.skippedPackets > 10 && peek) {
+		// If we skipped more than 200 packets, something isn't right, let's just bump to the next available index
+		if (this.skippedPackets > 200 && peek) {
 			this._options.logger({
 				type: "warn",
 				message: `Waited for packet #${this.expectedPacketIndex} for too long, bumping to ${peek.index}.`,

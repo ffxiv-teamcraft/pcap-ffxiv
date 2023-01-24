@@ -2,6 +2,7 @@ const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
 const ci = new CaptureInterface({
 	localDataPath: "H:\\WebstormProjects\\FFXIVOpcodes",
+	logger: console.log
 });
 
 ci.on("message", (message) => {
