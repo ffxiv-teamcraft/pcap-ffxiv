@@ -18,6 +18,9 @@ export function playerSetup(reader: BufferReader): PlayerSetup {
 		pvpFrontlineOverallCampaigns: reader.nextUInt32(),
 		unknownTimestamp34: reader.nextUInt32(),
 		unknownTimestamp38: reader.nextUInt32(),
-		name: reader.slice(0x2A2, 0x2C2).toString("utf8").replace(/^[\s\uFEFF\xA0\0]+|[\s\uFEFF\xA0\0]+$/g, ""),
+		name: reader
+			.slice(0x2a2, 0x2c2)
+			.toString("utf8")
+			.replace(/^[\s\uFEFF\xA0\0]+|[\s\uFEFF\xA0\0]+$/g, ""),
 	};
 }

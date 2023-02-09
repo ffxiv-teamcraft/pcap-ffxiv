@@ -250,7 +250,8 @@ export class CaptureInterface extends EventEmitter {
 				});
 
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
@@ -351,8 +352,20 @@ export class CaptureInterface extends EventEmitter {
 			operation: this._getOrigin(origin),
 		};
 		if (header.segmentType === SegmentType.Ipc) {
-			const opcode = reader.skip(2).nextUInt16();
-			const ipcData = reader.skip(12).restAsBuffer();
+			const ipcHeader = {
+				reserved: reader.nextInt16(),
+				type: reader.nextInt16(),
+				padding: reader.nextInt16(),
+				serverId: reader.nextInt16(),
+				timestamp: reader.nextUInt32(),
+				padding1: reader.nextUInt32(),
+			};
+			// This is a chat packet !
+			if (ipcHeader.serverId === 0 && header.sourceActor !== 0) {
+				return;
+			}
+			const ipcData = reader.restAsBuffer();
+			const opcode = ipcHeader.type;
 			let typeName = this._opcodes[origin][opcode] || "unknown";
 			typeName = typeName[0].toLowerCase() + typeName.slice(1);
 

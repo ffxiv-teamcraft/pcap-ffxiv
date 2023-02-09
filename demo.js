@@ -5,7 +5,7 @@ const ci = new CaptureInterface({
 });
 
 ci.on("message", (message) => {
-	console.log(message.type);
+	// console.log(message.type);
 }).on("error", console.error);
 
 ci.once("ready", () => {
