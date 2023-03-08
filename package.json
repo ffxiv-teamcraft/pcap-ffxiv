@@ -14,11 +14,11 @@
     "docs:deploy": "yarn docs:generate && node gh-pages.js",
     "prepublish": "yarn format && yarn build && yarn docs:deploy && node gh-pages.js",
     "format": "prettier . --write",
-    "copyfiles": "copyfiles ./deucalion/target/release/deucalion.dll ./lib/deucalion/ -f",
+    "copyfiles": "copyfiles ./deucalion-dll/target/release/deucalion.dll ./lib/deucalion/ -f",
     "pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/models",
     "deucalion:build": "yarn dll:build && yarn injector:build",
     "injector:build": "cd deucalion-injector && go build -o ../lib/deucalion/deucalion.exe ./main.go && cd ../",
-    "dll:build": "cargo build -r --manifest-path=./deucalion/Cargo.toml"
+    "dll:build": "cargo build -r --manifest-path=./deucalion-dll/Cargo.toml"
   },
   "files": [
     "lib/"
