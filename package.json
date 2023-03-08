@@ -49,6 +49,8 @@
 		"typescript": "^4.1.3"
 	},
 	"dependencies": {
-		"heap-js": "^2.1.5"
+		"dll-inject": "^0.0.2",
+		"heap-js": "^2.1.5",
+		"named-pipes": "^0.0.1"
 	}
 }

@@ -15,14 +15,15 @@ import {
 import { downloadJson } from "./json-downloader";
 import { packetProcessors } from "./packet-processors/packet-processors";
 import { BufferReader } from "./BufferReader";
-import { createServer as createHttpServer, Server } from "http";
+import { Server } from "http";
 import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { join } from "path";
-import { existsSync, readFileSync } from "fs";
+import { readFileSync } from "fs";
 import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 import Heap from "heap-js";
+import { Deucalion } from "./Deucalion";
 
 interface SegmentQueueEntry {
 	reader: BufferReader;
@@ -72,9 +73,9 @@ export class CaptureInterface extends EventEmitter {
 			...options,
 		};
 
-		if (!existsSync(this._options.exePath)) {
-			throw new Error(`MachinaWrapper not found in ${this._options.exePath}`);
-		}
+		// if (!existsSync(this._options.exePath)) {
+		// 	throw new Error(`MachinaWrapper not found in ${this._options.exePath}`);
+		// }
 
 		this._packetDefs = packetProcessors;
 		this._superPacketDefs = {
@@ -96,41 +97,43 @@ export class CaptureInterface extends EventEmitter {
 		});
 	}
 
-	start(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			try {
-				this.spawnMachina();
-				this._httpServer = createHttpServer((req, res) => {
-					let data: any[] = [];
-					req.on("data", (chunk) => {
-						data.push(chunk);
-					});
-					req.on("end", () => {
-						const segmentBuffer = Buffer.concat(data);
-						const segmentReader = new BufferReader(segmentBuffer);
-						const index = segmentReader.skip(1).nextUInt64();
-						this._segmentQueue.push({
-							index,
-							reader: segmentReader.reset(),
-						});
-						this._processNextSegment();
-						res.writeHead(200);
-						res.end();
-					});
-				}).listen(this._options.port, "localhost");
-				setTimeout(() => {
-					this._monitor?.stdin.write("start\n", (err) => {
-						if (err) {
-							reject(err);
-						} else {
-							resolve();
-						}
-					});
-				}, 200);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	async start() {
+		const deucalion = new Deucalion();
+		deucalion.start();
+
+		// new Promise((resolve, reject) => {
+		// 	try {
+		// 		// this._httpServer = createHttpServer((req, res) => {
+		// 		// 	let data: any[] = [];
+		// 		// 	req.on("data", (chunk) => {
+		// 		// 		data.push(chunk);
+		// 		// 	});
+		// 		// 	req.on("end", () => {
+		// 		// 		const segmentBuffer = Buffer.concat(data);
+		// 		// 		const segmentReader = new BufferReader(segmentBuffer);
+		// 		// 		const index = segmentReader.skip(1).nextUInt64();
+		// 		// 		this._segmentQueue.push({
+		// 		// 			index,
+		// 		// 			reader: segmentReader.reset(),
+		// 		// 		});
+		// 		// 		this._processNextSegment();
+		// 		// 		res.writeHead(200);
+		// 		// 		res.end();
+		// 		// 	});
+		// 		// }).listen(this._options.port, "localhost");
+		// 		// setTimeout(() => {
+		// 		// 	this._monitor?.stdin.write("start\n", (err) => {
+		// 		// 		if (err) {
+		// 		// 			reject(err);
+		// 		// 		} else {
+		// 		// 			resolve();
+		// 		// 		}
+		// 		// 	});
+		// 		// }, 200);
+		// 	} catch (e) {
+		// 		reject(e);
+		// 	}
+		// });
 	}
 
 	private _processNextSegment() {
@@ -158,7 +161,7 @@ export class CaptureInterface extends EventEmitter {
 		}
 	}
 
-	private spawnMachina(): void {
+	private _spawnMachina(): void {
 		const args: string[] = [
 			"--MonitorType",
 			this._options.monitorType,
@@ -238,8 +241,8 @@ export class CaptureInterface extends EventEmitter {
 	}
 
 	private async _fetchFFXIVOpcodes(file: string) {
-		const { localOpcodesPath, localDataPath } = this._options;
-		const localPath = localDataPath || localOpcodesPath;
+		const { localDataPath } = this._options;
+		const localPath = localDataPath;
 		if (localPath) {
 			try {
 				const content = readFileSync(join(localPath, file), "utf-8");
@@ -250,8 +253,7 @@ export class CaptureInterface extends EventEmitter {
 				});
 
 				return JSON.parse(content);
-			} catch (e) {
-			}
+			} catch (e) {}
 		}
 
 		this._options.logger({
