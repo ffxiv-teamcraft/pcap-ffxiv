@@ -23,7 +23,7 @@ export class Deucalion extends EventEmitter {
 
 	pipe_path!: string;
 
-	constructor(private RECVZONEPACKET_SIG: string, private logger: CaptureInterfaceOptions["logger"], pid = 24280) {
+	constructor(private readonly RECVZONEPACKET_SIG: string, private readonly logger: CaptureInterfaceOptions["logger"], readonly pid: number) {
 		super();
 		this.pipe_path = `\\\\.\\pipe\\deucalion-${pid}`;
 	}
@@ -66,7 +66,7 @@ export class Deucalion extends EventEmitter {
 				if (remaining) {
 					this.logger({
 						type: "log",
-						message: `Remaining ! ${remaining.toString("hex")}`,
+						message: `Remaining ! 0x${remaining.toString("hex")}`,
 					});
 					this.remaining = remaining;
 				} else {
@@ -146,9 +146,6 @@ export class Deucalion extends EventEmitter {
 			case Operation.PING:
 				// Ignore ping for now
 				break;
-			case Operation.EXIT:
-				this.socket?.end(() => delete this.socket);
-				break;
 			case Operation.RECV:
 				this.handleRecv(packet.channel, packet.data);
 				break;
@@ -163,6 +160,25 @@ export class Deucalion extends EventEmitter {
 		const reader = new BufferReader(data);
 		const packet: DeucalionPacket = {
 			origin: Origin.Server,
+			header: {
+				sourceActor: reader.nextUInt32(),
+				targetActor: reader.nextUInt32(),
+				reserved: reader.nextInt16(),
+				type: reader.nextInt16(),
+				padding: reader.nextInt16(),
+				serverId: reader.nextInt16(),
+				timestamp: reader.nextUInt32(),
+				padding1: reader.nextUInt32(),
+			},
+			data: reader.restAsBuffer(),
+		};
+		this.emit("packet", packet);
+	}
+
+	private handleSend(channel: number, data: Buffer): void {
+		const reader = new BufferReader(data);
+		const packet: DeucalionPacket = {
+			origin: Origin.Client,
 			header: {
 				sourceActor: reader.nextUInt32(),
 				targetActor: reader.nextUInt32(),

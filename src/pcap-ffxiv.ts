@@ -84,7 +84,7 @@ export class CaptureInterface extends EventEmitter {
 		if (!this.constants) {
 			throw new Error("Trying to start capture before ready event was emitted");
 		}
-		const callback = (err, stdout, stderr) => {
+		const callback = (err, stdout) => {
 			if (err) {
 				this._options.logger({
 					type: "error",
@@ -93,22 +93,16 @@ export class CaptureInterface extends EventEmitter {
 				this.emit("error", err);
 				return;
 			}
-			if (stderr) {
-				this._options.logger({
-					type: "error",
-					message: stderr,
-				});
-				return;
-			}
 			const [_, pid] = stdout.split(" ");
 			this._deucalion = new Deucalion(this.constants?.RECV || "", this._options.logger, +pid);
 			this._deucalion.start();
 			this._deucalion.on("packet", p => this._processSegment(p));
 		};
+		const hash = readFileSync(join(__dirname, "dll.sum"));
 		if (this._options.hasWine) {
-			exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath}`, callback);
+			exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath} ${hash}`, callback);
 		} else {
-			exec(this._options.deucalionExePath, callback);
+			exec(`${this._options.deucalionExePath} ${hash}`, callback);
 		}
 	}
 

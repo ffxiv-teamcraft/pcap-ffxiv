@@ -1,7 +1,11 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
+	"io"
+	"log"
 	"os"
 	"os/signal"
 	"path/filepath"
@@ -30,18 +34,43 @@ func ListMatchingProcesses(match string) ([]uint32, error) {
 	return pids, nil
 }
 
-const RECVZONEPACKET_SIG = "49 8B 40 10 4C 8B 50 38"
+func checkHash(dllPath string, expected string) bool {
+	f, err := os.Open(dllPath)
+	if err != nil {
+		panic(err)
+	}
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		log.Fatal(err)
+	}
+	hash := hex.EncodeToString(h.Sum(nil))
+	if hash != expected {
+		panic(fmt.Sprintf("Checksum doesn't match for dll. Expected %s, got %s", expected, hash))
+	}
+	return true
+}
 
 func main() {
+	if len(os.Args) != 2 {
+		fmt.Fprintf(os.Stderr, "Must provide hash")
+	}
+	expectedHash := os.Args[1]
 	ids, err := ListMatchingProcesses("ffxiv_dx11.exe")
 	if err != nil {
 		panic(err)
 	}
+	ex, err := os.Executable()
+	if err != nil {
+		panic(err)
+	}
+	exPath := filepath.Dir(ex)
+	dllPath := filepath.Join(exPath, "./deucalion.dll")
+
+	checkHash(dllPath, expectedHash)
 	// Simplified approach, don't ask for PID, just take the first one, screw multiboxing anyways
 	var procID uint32 = ids[0]
 
 	fmt.Println("PID", procID)
-	dllPath, _ := filepath.Abs("./deucalion.dll")
 	c, err := hook.NewConn(pe, procID, dllPath)
 	if err != nil {
 		panic(err)
