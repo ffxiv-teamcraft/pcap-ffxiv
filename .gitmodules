@@ -1,0 +1,3 @@
+[submodule "deucalion-dll"]
+	path = deucalion-dll
+	url = git@github.com:ff14wed/deucalion.git

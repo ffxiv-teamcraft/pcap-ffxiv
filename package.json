@@ -1,56 +1,56 @@
 {
-	"name": "@ffxiv-teamcraft/pcap-ffxiv",
-	"version": "0.11.13",
-	"description": "A Machina wrapper for FINAL FANTASY XIV packet capture in JS/TS.",
-	"main": "lib/index.js",
-	"repository": "https://github.com/ffxiv-teamcraft/pcap-ffxiv.git",
-	"author": "karashiiro <49822414+karashiiro@users.noreply.github.com>",
-	"license": "MIT",
-	"scripts": {
-		"prebuild": "rimraf lib/* && yarn pcap-types:generate && yarn copyfiles && node prebuild.js",
-		"build": "yarn prebuild && tsc",
-		"build:watch": "yarn prebuild && tsc -w",
-		"docs:generate": "typedoc",
-		"docs:deploy": "yarn docs:generate && node gh-pages.js",
-		"prepublish": "yarn format && yarn build && yarn docs:deploy && node gh-pages.js",
-		"format": "prettier . --write",
-		"copyfiles": "copyfiles ./deucalion/* ./lib",
-		"pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/models"
-	},
-	"files": [
-		"lib/"
-	],
-	"eslintConfig": {
-		"extends": [
-			"prettier"
-		],
-		"env": {
-			"es11": true
-		}
-	},
-	"prettier": {
-		"singleQuote": false,
-		"printWidth": 120,
-		"semi": true,
-		"useTabs": true,
-		"trailingComma": "all",
-		"endOfLine": "crlf"
-	},
-	"devDependencies": {
-		"@types/node": "^14.14.19",
-		"barrelsby": "^2.2.0",
-		"copyfiles": "^2.4.1",
-		"eslint": "^7.17.0",
-		"eslint-config-prettier": "^7.1.0",
-		"gh-pages": "^3.1.0",
-		"prettier": "^2.2.1",
-		"rimraf": "^3.0.2",
-		"typedoc": "^0.20.35",
-		"typescript": "^4.1.3"
-	},
-	"dependencies": {
-		"dll-inject": "^0.0.2",
-		"heap-js": "^2.1.5",
-		"named-pipes": "^0.0.1"
-	}
+  "name": "@ffxiv-teamcraft/pcap-ffxiv",
+  "version": "0.11.13",
+  "description": "A Machina wrapper for FINAL FANTASY XIV packet capture in JS/TS.",
+  "main": "lib/index.js",
+  "repository": "https://github.com/ffxiv-teamcraft/pcap-ffxiv.git",
+  "author": "karashiiro <49822414+karashiiro@users.noreply.github.com>",
+  "license": "MIT",
+  "scripts": {
+    "prebuild": "rimraf lib/* && yarn pcap-types:generate && yarn deucalion:build && yarn copyfiles && node prebuild.js",
+    "build": "yarn prebuild && tsc",
+    "build:watch": "yarn prebuild && tsc -w",
+    "docs:generate": "typedoc",
+    "docs:deploy": "yarn docs:generate && node gh-pages.js",
+    "prepublish": "yarn format && yarn build && yarn docs:deploy && node gh-pages.js",
+    "format": "prettier . --write",
+    "copyfiles": "copyfiles ./deucalion/target/release/deucalion.dll ./lib/deucalion/ -f",
+    "pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/models",
+    "deucalion:build": "yarn dll:build && yarn injector:build",
+    "injector:build": "cd deucalion-injector && go build -o ../lib/deucalion/deucalion.exe ./main.go && cd ../",
+    "dll:build": "cargo build -r --manifest-path=./deucalion/Cargo.toml"
+  },
+  "files": [
+    "lib/"
+  ],
+  "eslintConfig": {
+    "extends": [
+      "prettier"
+    ],
+    "env": {
+      "es11": true
+    }
+  },
+  "prettier": {
+    "singleQuote": false,
+    "printWidth": 120,
+    "semi": true,
+    "useTabs": true,
+    "trailingComma": "all",
+    "endOfLine": "crlf"
+  },
+  "devDependencies": {
+    "@types/node": "^14.14.19",
+    "barrelsby": "^2.2.0",
+    "copyfiles": "^2.4.1",
+    "eslint": "^7.17.0",
+    "eslint-config-prettier": "^7.1.0",
+    "gh-pages": "^3.1.0",
+    "prettier": "^2.2.1",
+    "rimraf": "^3.0.2",
+    "typedoc": "^0.20.35",
+    "typescript": "^4.1.3"
+  },
+  "dependencies": {
+  }
 }
