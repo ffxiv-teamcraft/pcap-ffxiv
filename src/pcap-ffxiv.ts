@@ -2,33 +2,25 @@ import { EventEmitter } from "events";
 import {
 	ActorControlType,
 	ConstantsList,
+	DeucalionPacket,
 	Message,
 	OpcodeList,
 	PacketProcessor,
 	Region,
 	ResultDialogType,
-	SegmentHeader,
-	SegmentType,
 	SuperPacket,
 	SuperPacketProcessor,
 } from "./models";
 import { downloadJson } from "./json-downloader";
 import { packetProcessors } from "./packet-processors/packet-processors";
 import { BufferReader } from "./BufferReader";
-import { Server } from "http";
-import { ChildProcessWithoutNullStreams, spawn } from "child_process";
 import { join } from "path";
-import { readFileSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
-import Heap from "heap-js";
 import { Deucalion } from "./Deucalion";
-
-interface SegmentQueueEntry {
-	reader: BufferReader;
-	index: bigint;
-}
+import { exec } from "child_process";
 
 export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
@@ -39,16 +31,10 @@ export class CaptureInterface extends EventEmitter {
 		C: {},
 		S: {},
 	};
-	private _segmentQueue = new Heap<SegmentQueueEntry>((a, b) => Number(a.index - b.index));
-
-	private _httpServer: Server | undefined = undefined;
-	private _monitor: ChildProcessWithoutNullStreams | undefined;
 
 	readonly _options: CaptureInterfaceOptions;
 
-	private expectedPacketIndex = BigInt(0);
-
-	private skippedPackets = 0;
+	private _deucalion?: Deucalion;
 
 	public get constants(): ConstantsList | undefined {
 		return this._constants ? this._constants[this._options.region] : undefined;
@@ -59,8 +45,7 @@ export class CaptureInterface extends EventEmitter {
 
 		const defaultOptions: CaptureInterfaceOptions = {
 			region: "Global",
-			exePath: join(__dirname, "./MachinaWrapper/MachinaWrapper.exe"),
-			monitorType: "WinPCap",
+			deucalionExePath: join(__dirname, "./deucalion/deucalion.exe"),
 			port: 13346,
 			filter: () => true,
 			logger: (payload) => console[payload.type](payload.message),
@@ -73,9 +58,9 @@ export class CaptureInterface extends EventEmitter {
 			...options,
 		};
 
-		// if (!existsSync(this._options.exePath)) {
-		// 	throw new Error(`MachinaWrapper not found in ${this._options.exePath}`);
-		// }
+		if (!existsSync(this._options.deucalionExePath)) {
+			throw new Error(`Deucalion.exe not found in ${this._options.deucalionExePath}`);
+		}
 
 		this._packetDefs = packetProcessors;
 		this._superPacketDefs = {
@@ -91,131 +76,44 @@ export class CaptureInterface extends EventEmitter {
 		});
 
 		process.on("exit", () => {
-			this.stop().then(() => {
-				process.exit();
-			});
+			this.stop();
 		});
 	}
 
-	async start() {
-		const deucalion = new Deucalion();
-		deucalion.start();
-
-		// new Promise((resolve, reject) => {
-		// 	try {
-		// 		// this._httpServer = createHttpServer((req, res) => {
-		// 		// 	let data: any[] = [];
-		// 		// 	req.on("data", (chunk) => {
-		// 		// 		data.push(chunk);
-		// 		// 	});
-		// 		// 	req.on("end", () => {
-		// 		// 		const segmentBuffer = Buffer.concat(data);
-		// 		// 		const segmentReader = new BufferReader(segmentBuffer);
-		// 		// 		const index = segmentReader.skip(1).nextUInt64();
-		// 		// 		this._segmentQueue.push({
-		// 		// 			index,
-		// 		// 			reader: segmentReader.reset(),
-		// 		// 		});
-		// 		// 		this._processNextSegment();
-		// 		// 		res.writeHead(200);
-		// 		// 		res.end();
-		// 		// 	});
-		// 		// }).listen(this._options.port, "localhost");
-		// 		// setTimeout(() => {
-		// 		// 	this._monitor?.stdin.write("start\n", (err) => {
-		// 		// 		if (err) {
-		// 		// 			reject(err);
-		// 		// 		} else {
-		// 		// 			resolve();
-		// 		// 		}
-		// 		// 	});
-		// 		// }, 200);
-		// 	} catch (e) {
-		// 		reject(e);
-		// 	}
-		// });
-	}
-
-	private _processNextSegment() {
-		const peek = this._segmentQueue.peek();
-		if (peek && peek.index <= this.expectedPacketIndex) {
-			const next = this._segmentQueue.pop();
-			// This is really just for the compiler because if we're here, there's something to pop.
-			if (next) {
-				this._processSegment(next.reader);
-				this.expectedPacketIndex++;
-				this.skippedPackets = 0;
-				this._processNextSegment();
+	start() {
+		if (!this.constants) {
+			throw new Error("Trying to start capture before ready event was emitted");
+		}
+		const callback = (err, stdout, stderr) => {
+			if (err) {
+				this._options.logger({
+					type: "error",
+					message: err.message,
+				});
+				this.emit("error", err);
+				return;
 			}
-		} else {
-			this.skippedPackets++;
-		}
-		// If we skipped more than 200 packets, something isn't right, let's just bump to the next available index
-		if (this.skippedPackets > 200 && peek) {
-			this._options.logger({
-				type: "warn",
-				message: `Waited for packet #${this.expectedPacketIndex} for too long, bumping to ${peek.index}.`,
-			});
-			this.expectedPacketIndex = peek.index;
-			this.skippedPackets = 0;
-		}
-	}
-
-	private _spawnMachina(): void {
-		const args: string[] = [
-			"--MonitorType",
-			this._options.monitorType,
-			"--Region",
-			this._options.region,
-			"--Port",
-			this._options.port.toString(),
-		];
-		if (this._options.pid) args.push("--ProcessID", this._options.pid.toString());
-
+			if (stderr) {
+				this._options.logger({
+					type: "error",
+					message: stderr,
+				});
+				return;
+			}
+			const [_, pid] = stdout.split(" ");
+			this._deucalion = new Deucalion(this.constants?.RECV || "", this._options.logger, +pid);
+			this._deucalion.start();
+			this._deucalion.on("packet", p => this._processSegment(p));
+		};
 		if (this._options.hasWine) {
-			this._monitor = spawn(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.exePath}`, args);
+			exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath}`, callback);
 		} else {
-			this._monitor = spawn(this._options.exePath, args);
+			exec(this._options.deucalionExePath, callback);
 		}
-
-		this._monitor?.stderr.on("data", (err: Buffer) => {
-			this._options.logger({
-				type: "error",
-				message: `MachinaWrapper failed to start: 
-				${err.toLocaleString()}`,
-			});
-			this.emit("error", new Error(`MachinaWrapper failed to start: ${err.toString("utf8")}`));
-		});
-
-		this._monitor.on("exit", () => {
-			this.closeHttpServer();
-		});
-
-		this._options.logger({
-			type: "info",
-			message: `MachinaWrapper started with args: ${args.join(" ")}`,
-		});
 	}
 
-	stop(): Promise<void> {
-		return new Promise(() => {
-			this._monitor?.stdin.write("kill\n", () => {
-				return this.closeHttpServer();
-			});
-		});
-	}
-
-	private closeHttpServer(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			this._httpServer?.close((err) => {
-				delete this._httpServer;
-				if (err) {
-					reject(err);
-				} else {
-					resolve();
-				}
-			});
-		});
+	stop() {
+		return this._deucalion?.stop(true);
 	}
 
 	setRegion(region: Region) {
@@ -253,7 +151,8 @@ export class CaptureInterface extends EventEmitter {
 				});
 
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
@@ -326,74 +225,34 @@ export class CaptureInterface extends EventEmitter {
 		return message;
 	}
 
-	private _getOriginKey(originIndex: number): null | "C" | "S" {
-		return [null, "C", "S"][originIndex] as null | "C" | "S";
-	}
+	private _processSegment(packet: DeucalionPacket): void {
+		const ipcData = packet.data;
+		const opcode = packet.header.type;
+		let typeName = this._opcodes[packet.origin][opcode] || "unknown";
+		typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
-	private _getOrigin(originKey: "C" | "S"): "send" | "receive" {
-		return { C: "send", S: "receive" }[originKey] as "send" | "receive";
-	}
-
-	private _processSegment(dataReader: BufferReader): void {
-		const originIndex = dataReader.nextUInt8();
-		const origin = this._getOriginKey(originIndex);
-		if (!origin) {
-			this._options.logger({
-				type: "error",
-				message: `Received a packet with origin ${originIndex}, should be 1 or 2.`,
-			});
-			return;
-		}
-		const reader = dataReader.skip(8).restAsBuffer(true);
-		const header: SegmentHeader = {
-			size: reader.nextUInt32(),
-			sourceActor: reader.nextUInt32(),
-			targetActor: reader.nextUInt32(),
-			segmentType: reader.nextUInt16(),
-			padding: reader.nextUInt16(),
-			operation: this._getOrigin(origin),
+		let message: Message = {
+			header: packet.header,
+			opcode: packet.header.type,
+			type: typeName as any,
+			data: Buffer.from(packet.data),
 		};
-		if (header.segmentType === SegmentType.Ipc) {
-			const ipcHeader = {
-				reserved: reader.nextInt16(),
-				type: reader.nextInt16(),
-				padding: reader.nextInt16(),
-				serverId: reader.nextInt16(),
-				timestamp: reader.nextUInt32(),
-				padding1: reader.nextUInt32(),
-			};
-			// This is a chat packet !
-			if (ipcHeader.serverId === 0 && header.sourceActor !== 0) {
-				return;
-			}
-			const ipcData = reader.restAsBuffer();
-			const opcode = ipcHeader.type;
-			let typeName = this._opcodes[origin][opcode] || "unknown";
-			typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
-			let message: Message = {
-				header,
-				opcode,
-				type: typeName as any,
-				data: Buffer.from(dataReader.buffer),
-			};
+		if (this._options.filter(packet.header, typeName)) {
+			// Unmarshal the data, if possible.
+			if (this._packetDefs[typeName] && this._constants) {
+				const processorName: keyof typeof packetProcessors = typeName;
+				const ipcDataReader = new BufferReader(ipcData);
+				const processor = this._packetDefs[processorName];
+				message.parsedIpcData = processor(ipcDataReader, this._constants[this._options.region], this._options.region);
 
-			if (this._options.filter(header, typeName)) {
-				// Unmarshal the data, if possible.
-				if (this._packetDefs[typeName] && this._constants) {
-					const processorName: keyof typeof packetProcessors = typeName;
-					const ipcDataReader = new BufferReader(ipcData);
-					const processor = this._packetDefs[processorName];
-					message.parsedIpcData = processor(ipcDataReader, this._constants[this._options.region], this._options.region);
-
-					// If this is a super packet
-					if (this._superPacketDefs[typeName]) {
-						message = this._processSuperPacket(typeName, message, ipcDataReader.reset());
-					}
+				// If this is a super packet
+				if (this._superPacketDefs[typeName]) {
+					message = this._processSuperPacket(typeName, message, ipcDataReader.reset());
 				}
-
-				this.emit("message", message);
 			}
+
+			this.emit("message", message);
 		}
 	}
 }

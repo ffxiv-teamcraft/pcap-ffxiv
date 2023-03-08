@@ -5,11 +5,10 @@ const ci = new CaptureInterface({
 });
 
 ci.on("message", (message) => {
-	// console.log(message.type);
+	console.log(message.type);
 }).on("error", console.error);
 
 ci.once("ready", () => {
-	ci.start().then(() => {
-		console.log("Everything is started !");
-	});
+	ci.start();
+	console.log("Everything is started !");
 });

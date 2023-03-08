@@ -1,6 +1,9 @@
-import { createWriteStream, open } from "fs";
+import { open } from "fs";
 import { Socket } from "net";
 import { BufferReader } from "./BufferReader";
+import { DeucalionPacket, DeucalionPayload, Origin } from "./models";
+import { EventEmitter } from "events";
+import { CaptureInterfaceOptions } from "./capture-interface-options";
 
 enum Operation {
 	DEBUG,
@@ -9,20 +12,24 @@ enum Operation {
 	RECV
 }
 
-export class Deucalion {
-
-	private static readonly RECVZONEPACKET_SIG = "49 8B 40 10 4C 8B 50 38";
-
+export class Deucalion extends EventEmitter {
 	private socket?: Socket;
+
+	private remaining?: Buffer;
 
 	public get running() {
 		return this.socket !== undefined;
 	}
 
-	public start() {
-		//TODO get PID at runtime
-		const PIPE_PATH = `\\\\.\\pipe\\deucalion-7936`;
-		open(PIPE_PATH, "r+", (err, fd) => {
+	pipe_path!: string;
+
+	constructor(private RECVZONEPACKET_SIG: string, private logger: CaptureInterfaceOptions["logger"], pid = 24280) {
+		super();
+		this.pipe_path = `\\\\.\\pipe\\deucalion-${pid}`;
+	}
+
+	public start(): void {
+		open(this.pipe_path, "r+", (err, fd) => {
 			if (err) {
 				console.error("Error while opening pipe", err);
 				return;
@@ -34,43 +41,107 @@ export class Deucalion {
 				writable: false,
 			});
 
-			this.socket.connect({ path: PIPE_PATH }, () => {
-				console.log("Connected to pipe");
+			this.socket.connect({ path: this.pipe_path }, () => {
 				const recvInitPayload = Buffer.alloc(32);
 				recvInitPayload.writeUInt32LE(32, 0); // 0x04
 				recvInitPayload[4] = Operation.RECV; // 0x05
 				recvInitPayload.writeUInt32LE(1, 5); // 0x09
-				recvInitPayload.write(Deucalion.RECVZONEPACKET_SIG, 9, "utf-8");
-				const writeStream = createWriteStream(PIPE_PATH);
-				writeStream.write(recvInitPayload, () => {
-					console.log("SENT RECV INIT");
-					writeStream.end();
-				});
+				recvInitPayload.write(this.RECVZONEPACKET_SIG, 9, "utf-8");
+				this.send(recvInitPayload);
 			});
 
 			this.socket.on("data", (data) => {
-				this.handleData(data);
+				let { packet, remaining } = this.nextPacket(data);
+				while (packet !== null) {
+					this.handlePacket(packet);
+					if (remaining) {
+						const next = this.nextPacket(remaining);
+						packet = next.packet;
+						remaining = next.remaining;
+					} else {
+						packet = null;
+						remaining = null;
+					}
+				}
+				if (remaining) {
+					this.logger({
+						type: "log",
+						message: `Remaining ! ${remaining.toString("hex")}`,
+					});
+					this.remaining = remaining;
+				} else {
+					delete this.remaining;
+				}
 			});
 
 			this.socket.on("error", (err: Error) => {
-				console.error("Client had an error", err);
+				this.logger({
+					type: "error",
+					message: `Deucalion error: ${err.message}`,
+				});
 			});
 
 			this.socket.on("close", () => {
-				console.error("Client closed");
+				this.logger({
+					type: "info",
+					message: "Client closed",
+				});
 			});
 		});
 	}
 
-	handleData(data: Buffer): void {
-		const reader = new BufferReader(data);
-		const size = reader.nextUInt32();
-		const op = reader.nextInt8();
-		const channel = reader.nextUInt32();
-		const packet = reader.nextBuffer(size);
-		switch (op) {
+	public stop(exit = false): void {
+		this.socket?.end(() => {
+			const exitPayload = Buffer.alloc(5);
+			exitPayload.writeUInt32LE(5, 0); // 0x04
+			exitPayload[4] = Operation.EXIT; // 0x05
+			this.send(exitPayload);
+			if (exit) {
+				process.exit(0);
+			}
+		});
+	}
+
+	private send(data: Buffer) {
+		return this.socket?.write(data);
+	}
+
+	private nextPacket(buffer: Buffer): { packet: DeucalionPayload | null, remaining: Buffer | null } {
+		const reader = new BufferReader(buffer);
+		/**
+		 * Removing 9 bytes because it includes:
+		 *  - size: 4B
+		 *  - op: 1B
+		 *  - channel: 4B
+		 */
+		const size = reader.nextUInt32() - 9;
+		const packet: DeucalionPayload = {
+			size: size,
+			op: reader.nextInt8(),
+			channel: reader.nextUInt32(),
+			data: reader.nextBuffer(size),
+		};
+		const remaining = reader.restAsBuffer();
+		if (packet.data.length === packet.size) {
+			return {
+				packet,
+				remaining: remaining.length === 0 ? null : remaining,
+			};
+		} else {
+			return {
+				packet: null,
+				remaining: buffer,
+			};
+		}
+	}
+
+	private handlePacket(packet: DeucalionPayload): void {
+		switch (packet.op) {
 			case Operation.DEBUG:
-				console.log(`DEBUG: ${packet.toString()}`);
+				this.logger({
+					type: "info",
+					message: `DEUCALION: ${packet.data.toString()}`,
+				});
 				break;
 			case Operation.PING:
 				// Ignore ping for now
@@ -79,30 +150,31 @@ export class Deucalion {
 				this.socket?.end(() => delete this.socket);
 				break;
 			case Operation.RECV:
-				this.handleRecv(channel, packet);
+				this.handleRecv(packet.channel, packet.data);
 				break;
 		}
 	}
 
-	private PACKET_COUNT = 0;
-
-	private handleRecv(channel: number, packet: Buffer): void {
+	private handleRecv(channel: number, data: Buffer): void {
 		// Let's ignore non-zone packets
 		if (channel !== 1) {
 			return;
 		}
-		const reader = new BufferReader(packet);
-		const header = {
-			source_actor: reader.nextUInt32(),
-			target_actor: reader.nextUInt32(),
-			reserved: reader.nextInt16(),
-			type: reader.nextInt16(),
-			padding: reader.nextInt16(),
-			serverId: reader.nextInt16(),
-			timestamp: reader.nextUInt32(),
-			padding1: reader.nextUInt32(),
+		const reader = new BufferReader(data);
+		const packet: DeucalionPacket = {
+			origin: Origin.Server,
+			header: {
+				sourceActor: reader.nextUInt32(),
+				targetActor: reader.nextUInt32(),
+				reserved: reader.nextInt16(),
+				type: reader.nextInt16(),
+				padding: reader.nextInt16(),
+				serverId: reader.nextInt16(),
+				timestamp: reader.nextUInt32(),
+				padding1: reader.nextUInt32(),
+			},
+			data: reader.restAsBuffer(),
 		};
-		this.PACKET_COUNT++;
-		console.log(this.PACKET_COUNT, reader.restAsBuffer());
+		this.emit("packet", packet);
 	}
 }

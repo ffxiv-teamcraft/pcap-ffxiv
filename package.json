@@ -14,7 +14,7 @@
 		"docs:deploy": "yarn docs:generate && node gh-pages.js",
 		"prepublish": "yarn format && yarn build && yarn docs:deploy && node gh-pages.js",
 		"format": "prettier . --write",
-		"copyfiles": "copyfiles ./MachinaWrapper/* ./lib",
+		"copyfiles": "copyfiles ./deucalion/* ./lib",
 		"pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/models"
 	},
 	"files": [
