@@ -34,59 +34,67 @@ export class Deucalion extends EventEmitter {
 		this.pipe_path = `\\\\.\\pipe\\deucalion-${pid}`;
 	}
 
-	public start(): void {
-		open(this.pipe_path, "r+", (err, fd) => {
-			if (err) {
-				console.error("Error while opening pipe", err);
-				return;
-			}
-
-			this.socket = new Socket({
-				fd,
-				readable: true,
-				writable: false,
-			});
-
-			this.socket.connect({ path: this.pipe_path });
-
-			this.socket.on("data", (data) => {
-				let { packet, remaining } = this.nextPacket(data);
-				while (packet !== null) {
-					this.handleDeucalionPacket(packet);
-					if (remaining) {
-						const next = this.nextPacket(remaining);
-						packet = next.packet;
-						remaining = next.remaining;
-					} else {
-						packet = null;
-						remaining = null;
-					}
-				}
-				if (remaining) {
+	public start(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			open(this.pipe_path, "r+", (err, fd) => {
+				if (err) {
 					this.logger({
-						type: "log",
-						message: `Remaining ! 0x${remaining.toString("hex")}`,
+						type: "error",
+						message: `Error while opening pipe ${err.message}`,
 					});
-					this.remaining = remaining;
-				} else {
-					delete this.remaining;
+					reject(err);
+					return;
 				}
-			});
 
-			this.socket.on("error", (err: Error) => {
-				this.logger({
-					type: "error",
-					message: `Deucalion error: ${err.message}`,
+				this.socket = new Socket({
+					fd,
+					readable: true,
+					writable: false,
 				});
-				this.emit("error", err);
-			});
 
-			this.socket.on("close", () => {
-				this.logger({
-					type: "info",
-					message: "Client closed",
+				this.socket.connect({ path: this.pipe_path }, () => {
+					resolve();
 				});
-				this.emit("closed");
+
+				this.socket.on("data", (data) => {
+					let { packet, remaining } = this.nextPacket(data);
+					while (packet !== null) {
+						this.handleDeucalionPacket(packet);
+						if (remaining) {
+							const next = this.nextPacket(remaining);
+							packet = next.packet;
+							remaining = next.remaining;
+						} else {
+							packet = null;
+							remaining = null;
+						}
+					}
+					if (remaining) {
+						this.logger({
+							type: "log",
+							message: `Remaining ! 0x${remaining.toString("hex")}`,
+						});
+						this.remaining = remaining;
+					} else {
+						delete this.remaining;
+					}
+				});
+
+				this.socket.on("error", (err: Error) => {
+					this.logger({
+						type: "error",
+						message: `Deucalion error: ${err.message}`,
+					});
+					this.emit("error", err);
+				});
+
+				this.socket.on("close", () => {
+					this.logger({
+						type: "info",
+						message: "Client closed",
+					});
+					this.emit("closed");
+				});
 			});
 		});
 	}
