@@ -1,5 +1,12 @@
 const path = require("path");
 const fs = require("fs");
+const crypto = require("crypto");
+
+function updateDllHash() {
+	const buff = fs.readFileSync(path.join(__dirname, "lib/deucalion/deucalion.dll"));
+	const hash = crypto.createHash("sha256").update(buff).digest("hex");
+	fs.writeFileSync(path.join(__dirname, "lib/dll.sum"), hash);
+}
 
 function generateImportsAndProcessors(folder) {
 	const processorFiles = fs.readdirSync(path.join(__dirname, "./src/packet-processors/", folder));
@@ -86,9 +93,9 @@ function createMessageType() {
 
 	const fileContent = `import { GenericMessage } from "./GenericMessage";
 ${entries
-	.filter((e) => e.importString)
-	.map((e) => e.importString)
-	.join("\n")}
+		.filter((e) => e.importString)
+		.map((e) => e.importString)
+		.join("\n")}
 
 /**
 * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
@@ -125,3 +132,5 @@ createProcessorsLoader(
 );
 
 createMessageType();
+
+updateDllHash();

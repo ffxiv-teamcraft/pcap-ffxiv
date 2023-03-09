@@ -1,8 +1,8 @@
 import { Segment } from "./Segment";
-import { SegmentHeader } from "./SegmentHeader";
+import { DeucalionPacketHeader } from "./DeucalionPacket";
 
 export interface GenericMessage<T = any> extends Segment {
-	header: SegmentHeader;
+	header: DeucalionPacketHeader;
 	opcode: number;
 	type: string;
 	subType?: string;

@@ -1,6 +1,6 @@
-import { SegmentHeader } from "./SegmentHeader";
+import { DeucalionPacketHeader } from "./DeucalionPacket";
 
 export interface Segment {
-	header: SegmentHeader;
+	header: DeucalionPacketHeader;
 	data?: Buffer;
 }

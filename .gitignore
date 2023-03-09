@@ -111,3 +111,6 @@ lib/
 
 # TypeDoc output
 docs/
+
+# Other
+deucalion-injector/deucalion.dll
