@@ -58,6 +58,11 @@ export class CaptureInterface extends EventEmitter {
 			...options,
 		};
 
+		this._options.logger({
+			type: "info",
+			message: JSON.stringify(this._options),
+		});
+
 		if (!existsSync(this._options.deucalionExePath)) {
 			throw new Error(`Deucalion.exe not found in ${this._options.deucalionExePath}`);
 		}
@@ -80,30 +85,34 @@ export class CaptureInterface extends EventEmitter {
 		});
 	}
 
-	start() {
-		if (!this.constants) {
-			throw new Error("Trying to start capture before ready event was emitted");
-		}
-		const callback = (err, stdout) => {
-			if (err) {
-				this._options.logger({
-					type: "error",
-					message: err.message,
-				});
-				this.emit("error", err);
-				return;
+	start(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			if (!this.constants) {
+				reject("Trying to start capture before ready event was emitted");
 			}
-			const [_, pid] = stdout.split(" ");
-			this._deucalion = new Deucalion(this.constants?.RECV || "", this.constants?.SEND || "", this._options.logger, +pid);
-			this._deucalion.start();
-			this._deucalion.on("packet", p => this._processSegment(p));
-		};
-		const hash = readFileSync(join(__dirname, "dll.sum"));
-		if (this._options.hasWine) {
-			exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath} ${hash}`, callback);
-		} else {
-			exec(`${this._options.deucalionExePath} ${hash}`, callback);
-		}
+			const callback = (err, stdout, stderr) => {
+				if (err) {
+					this._options.logger({
+						type: "error",
+						message: err.message,
+					});
+					reject(stderr || err);
+					return;
+				}
+				const [_, pid] = stdout.split(" ");
+				this._deucalion = new Deucalion(this.constants?.RECV || "", this.constants?.SEND || "", this._options.logger, +pid);
+				this._deucalion.start();
+				this._deucalion.on("packet", p => this._processSegment(p));
+				this._deucalion.on("closed", () => this.emit("stopped"));
+				this._deucalion.on("error", err => this.emit("error", err));
+			};
+			const hash = readFileSync(join(__dirname, "dll.sum"));
+			if (this._options.hasWine) {
+				exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath} ${hash}`, callback);
+			} else {
+				exec(`${this._options.deucalionExePath} ${hash}`, callback);
+			}
+		});
 	}
 
 	stop() {
@@ -138,12 +147,10 @@ export class CaptureInterface extends EventEmitter {
 		if (localPath) {
 			try {
 				const content = readFileSync(join(localPath, file), "utf-8");
-
 				this._options.logger({
 					type: "info",
 					message: `Loading ${file} from ${localPath}`,
 				});
-
 				return JSON.parse(content);
 			} catch (e) {
 			}
@@ -253,6 +260,7 @@ export class CaptureInterface extends EventEmitter {
 
 export interface CaptureInterfaceEvents {
 	ready: () => void;
+	stopped: () => void;
 	error: (err: Error) => void;
 	message: (message: Message) => void;
 }

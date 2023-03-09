@@ -74,6 +74,7 @@ export class Deucalion extends EventEmitter {
 					type: "error",
 					message: `Deucalion error: ${err.message}`,
 				});
+				this.emit("error", err);
 			});
 
 			this.socket.on("close", () => {
@@ -81,19 +82,21 @@ export class Deucalion extends EventEmitter {
 					type: "info",
 					message: "Client closed",
 				});
+				this.emit("closed");
 			});
 		});
 	}
 
 	public stop(exit = false): void {
 		this.socket?.end(() => {
-			const exitPayload = Buffer.alloc(5);
-			exitPayload.writeUInt32LE(5, 0); // 0x04
-			exitPayload[4] = Operation.EXIT; // 0x05
-			this.send(exitPayload);
-			if (exit) {
-				process.exit(0);
-			}
+			// This is what we need to add to exit on stop, for now we decided not to
+			// const exitPayload = Buffer.alloc(5);
+			// exitPayload.writeUInt32LE(5, 0); // 0x04
+			// exitPayload[4] = Operation.EXIT; // 0x05
+			// this.send(exitPayload);
+			// if (exit) {
+			// 	process.exit(0);
+			// }
 		});
 	}
 

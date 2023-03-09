@@ -67,6 +67,9 @@ func main() {
 	dllPath := filepath.Join(exPath, "./deucalion.dll")
 
 	checkHash(dllPath, expectedHash)
+	if len(ids) < 1 {
+		panic("ERR_GAME_NOT_RUNNING")
+	}
 	// Simplified approach, don't ask for PID, just take the first one, screw multiboxing anyways
 	var procID uint32 = ids[0]
 

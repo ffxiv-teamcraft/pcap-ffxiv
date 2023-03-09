@@ -1,14 +1,19 @@
 const { CaptureInterface } = require("./lib/pcap-ffxiv");
 
 const ci = new CaptureInterface({
-	region: "Global",
+	region: "Global"
 });
 
 ci.on("message", (message) => {
 	console.log(message.type);
-}).on("error", console.error);
+}).on("error", err => {
+	console.error("ERR EVENT", err);
+});
 
 ci.once("ready", () => {
-	ci.start();
-	console.log("Everything is started !");
+	ci.start().then(() => {
+		console.log("Everything is started !");
+	}).catch(err => {
+		console.log("Error starting pcap:", err);
+	});
 });
