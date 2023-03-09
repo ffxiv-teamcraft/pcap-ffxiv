@@ -10,7 +10,7 @@ enum Operation {
 	PING,
 	EXIT,
 	RECV,
-	SEND
+	SEND,
 }
 
 export class Deucalion extends EventEmitter {
@@ -24,8 +24,12 @@ export class Deucalion extends EventEmitter {
 
 	pipe_path!: string;
 
-	constructor(private readonly RECVZONEPACKET_SIG: string, private readonly SENDZONEPACKET_SIG: string,
-							private readonly logger: CaptureInterfaceOptions["logger"], readonly pid: number) {
+	constructor(
+		private readonly RECVZONEPACKET_SIG: string,
+		private readonly SENDZONEPACKET_SIG: string,
+		private readonly logger: CaptureInterfaceOptions["logger"],
+		readonly pid: number,
+	) {
 		super();
 		this.pipe_path = `\\\\.\\pipe\\deucalion-${pid}`;
 	}
@@ -87,16 +91,11 @@ export class Deucalion extends EventEmitter {
 		});
 	}
 
-	public stop(exit = false): void {
-		this.socket?.end(() => {
-			// This is what we need to add to exit on stop, for now we decided not to
-			// const exitPayload = Buffer.alloc(5);
-			// exitPayload.writeUInt32LE(5, 0); // 0x04
-			// exitPayload[4] = Operation.EXIT; // 0x05
-			// this.send(exitPayload);
-			// if (exit) {
-			// 	process.exit(0);
-			// }
+	public stop() {
+		return new Promise<void>(resolve => {
+			this.socket?.end(() => {
+				resolve();
+			});
 		});
 	}
 
@@ -104,7 +103,7 @@ export class Deucalion extends EventEmitter {
 		return this.socket?.write(data);
 	}
 
-	private nextPacket(buffer: Buffer): { packet: DeucalionPayload | null, remaining: Buffer | null } {
+	private nextPacket(buffer: Buffer): { packet: DeucalionPayload | null; remaining: Buffer | null } {
 		const reader = new BufferReader(buffer);
 		/**
 		 * Removing 9 bytes because it includes:
@@ -157,7 +156,7 @@ export class Deucalion extends EventEmitter {
 			message: `DEUCALION: ${data.toString()}`,
 		});
 
-		if (stringContent.includes("RECV REQUIRES SIG")) {
+		if (stringContent.includes("RECV REQUIRES SIG") || stringContent === "SERVER HELLO") {
 			const recvInitPayload = Buffer.alloc(32);
 			recvInitPayload.writeUInt32LE(32, 0); // 0x04
 			recvInitPayload[4] = Operation.RECV; // 0x05

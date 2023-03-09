@@ -46,7 +46,6 @@ export class CaptureInterface extends EventEmitter {
 		const defaultOptions: CaptureInterfaceOptions = {
 			region: "Global",
 			deucalionExePath: join(__dirname, "./deucalion/deucalion.exe"),
-			port: 13346,
 			filter: () => true,
 			logger: (payload) => console[payload.type](payload.message),
 			winePrefix: "$HOME/.Wine",
@@ -80,8 +79,15 @@ export class CaptureInterface extends EventEmitter {
 			this.emit("ready");
 		});
 
-		process.on("exit", () => {
-			this.stop();
+		["beforeExit", "uncaughtException", "unhandledRejection",
+			"SIGHUP", "SIGINT", "SIGQUIT", "SIGILL", "SIGTRAP", "SIGABRT",
+			"SIGBUS", "SIGFPE", "SIGUSR1", "SIGSEGV", "SIGUSR2", "SIGTERM",
+		].forEach((sig) => {
+			process.on(sig, () => {
+				this.stop().then(() => {
+					process.exit(0);
+				});
+			});
 		});
 	}
 
@@ -100,23 +106,31 @@ export class CaptureInterface extends EventEmitter {
 					return;
 				}
 				const [_, pid] = stdout.split(" ");
-				this._deucalion = new Deucalion(this.constants?.RECV || "", this.constants?.SEND || "", this._options.logger, +pid);
+				this._deucalion = new Deucalion(
+					this.constants?.RECV || "",
+					this.constants?.SEND || "",
+					this._options.logger,
+					+pid,
+				);
 				this._deucalion.start();
-				this._deucalion.on("packet", p => this._processSegment(p));
+				this._deucalion.on("packet", (p) => this._processSegment(p));
 				this._deucalion.on("closed", () => this.emit("stopped"));
-				this._deucalion.on("error", err => this.emit("error", err));
+				this._deucalion.on("error", (err) => this.emit("error", err));
 			};
 			const hash = readFileSync(join(__dirname, "dll.sum"));
 			if (this._options.hasWine) {
 				exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath} ${hash}`, callback);
 			} else {
-				exec(`${this._options.deucalionExePath} ${hash}`, callback);
+				exec(`${this._options.deucalionExePath.replace(/ /g, "\\ ")} ${hash}`, callback);
 			}
 		});
 	}
 
 	stop() {
-		return this._deucalion?.stop(true);
+		if (!this._deucalion) {
+			return Promise.resolve();
+		}
+		return this._deucalion.stop();
 	}
 
 	setRegion(region: Region) {

@@ -93,9 +93,9 @@ function createMessageType() {
 
 	const fileContent = `import { GenericMessage } from "./GenericMessage";
 ${entries
-		.filter((e) => e.importString)
-		.map((e) => e.importString)
-		.join("\n")}
+	.filter((e) => e.importString)
+	.map((e) => e.importString)
+	.join("\n")}
 
 /**
 * THIS IS A GENERATED FILE, DO NOT EDIT IT BY HAND.
