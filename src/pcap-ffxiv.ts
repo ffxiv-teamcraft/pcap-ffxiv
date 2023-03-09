@@ -79,9 +79,22 @@ export class CaptureInterface extends EventEmitter {
 			this.emit("ready");
 		});
 
-		["beforeExit", "uncaughtException", "unhandledRejection",
-			"SIGHUP", "SIGINT", "SIGQUIT", "SIGILL", "SIGTRAP", "SIGABRT",
-			"SIGBUS", "SIGFPE", "SIGUSR1", "SIGSEGV", "SIGUSR2", "SIGTERM",
+		[
+			"beforeExit",
+			"uncaughtException",
+			"unhandledRejection",
+			"SIGHUP",
+			"SIGINT",
+			"SIGQUIT",
+			"SIGILL",
+			"SIGTRAP",
+			"SIGABRT",
+			"SIGBUS",
+			"SIGFPE",
+			"SIGUSR1",
+			"SIGSEGV",
+			"SIGUSR2",
+			"SIGTERM",
 		].forEach((sig) => {
 			process.on(sig, () => {
 				this.stop().then(() => {
@@ -166,8 +179,7 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {
-			}
+			} catch (e) {}
 		}
 
 		this._options.logger({
