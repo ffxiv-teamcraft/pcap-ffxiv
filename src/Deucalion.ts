@@ -11,6 +11,7 @@ enum Operation {
 	EXIT,
 	RECV,
 	SEND,
+	OPTION
 }
 
 export class Deucalion extends EventEmitter {
@@ -54,6 +55,12 @@ export class Deucalion extends EventEmitter {
 
 				this.socket.connect({ path: this.pipe_path }, () => {
 					resolve();
+					const optionPayload = Buffer.alloc(9);
+					optionPayload.writeUInt32LE(9, 0); // 0x04
+					optionPayload[4] = Operation.OPTION; // 0x05
+					optionPayload.writeUInt32LE(1 << 1 | 1 << 4, 5); // 0x09
+					optionPayload.write(this.RECVZONEPACKET_SIG, 9, "utf-8");
+					this.send(optionPayload);
 				});
 
 				this.socket.on("data", (data) => {
@@ -164,7 +171,7 @@ export class Deucalion extends EventEmitter {
 			message: `DEUCALION: ${data.toString()}`,
 		});
 
-		if (stringContent.includes("RECV REQUIRES SIG") || stringContent === "SERVER HELLO") {
+		if (stringContent.includes("RECV REQUIRES SIG")) {
 			const recvInitPayload = Buffer.alloc(32);
 			recvInitPayload.writeUInt32LE(32, 0); // 0x04
 			recvInitPayload[4] = Operation.RECV; // 0x05
