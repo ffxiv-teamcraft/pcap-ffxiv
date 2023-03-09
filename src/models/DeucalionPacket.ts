@@ -9,6 +9,7 @@ export interface DeucalionPacket {
 export interface DeucalionPacketHeader {
 	sourceActor: number;
 	targetActor: number;
+	ipcTimestamp: bigint;
 	reserved: number;
 	type: number;
 	padding: number;

@@ -9,7 +9,8 @@ enum Operation {
 	DEBUG,
 	PING,
 	EXIT,
-	RECV
+	RECV,
+	SEND
 }
 
 export class Deucalion extends EventEmitter {
@@ -23,7 +24,8 @@ export class Deucalion extends EventEmitter {
 
 	pipe_path!: string;
 
-	constructor(private readonly RECVZONEPACKET_SIG: string, private readonly logger: CaptureInterfaceOptions["logger"], readonly pid: number) {
+	constructor(private readonly RECVZONEPACKET_SIG: string, private readonly SENDZONEPACKET_SIG: string,
+							private readonly logger: CaptureInterfaceOptions["logger"], readonly pid: number) {
 		super();
 		this.pipe_path = `\\\\.\\pipe\\deucalion-${pid}`;
 	}
@@ -41,19 +43,12 @@ export class Deucalion extends EventEmitter {
 				writable: false,
 			});
 
-			this.socket.connect({ path: this.pipe_path }, () => {
-				const recvInitPayload = Buffer.alloc(32);
-				recvInitPayload.writeUInt32LE(32, 0); // 0x04
-				recvInitPayload[4] = Operation.RECV; // 0x05
-				recvInitPayload.writeUInt32LE(1, 5); // 0x09
-				recvInitPayload.write(this.RECVZONEPACKET_SIG, 9, "utf-8");
-				this.send(recvInitPayload);
-			});
+			this.socket.connect({ path: this.pipe_path });
 
 			this.socket.on("data", (data) => {
 				let { packet, remaining } = this.nextPacket(data);
 				while (packet !== null) {
-					this.handlePacket(packet);
+					this.handleDeucalionPacket(packet);
 					if (remaining) {
 						const next = this.nextPacket(remaining);
 						packet = next.packet;
@@ -135,53 +130,61 @@ export class Deucalion extends EventEmitter {
 		}
 	}
 
-	private handlePacket(packet: DeucalionPayload): void {
+	private handleDeucalionPacket(packet: DeucalionPayload): void {
 		switch (packet.op) {
 			case Operation.DEBUG:
-				this.logger({
-					type: "info",
-					message: `DEUCALION: ${packet.data.toString()}`,
-				});
+				this.handleDebug(packet.data);
 				break;
 			case Operation.PING:
 				// Ignore ping for now
 				break;
 			case Operation.RECV:
-				this.handleRecv(packet.channel, packet.data);
+				this.handleXIVPacket(packet.channel, Origin.Server, packet.data);
+				break;
+			case Operation.SEND:
+				this.handleXIVPacket(packet.channel, Origin.Client, packet.data);
 				break;
 		}
 	}
 
-	private handleRecv(channel: number, data: Buffer): void {
+	private handleDebug(data: Buffer): void {
+		const stringContent = data.toString();
+		this.logger({
+			type: "info",
+			message: `DEUCALION: ${data.toString()}`,
+		});
+
+		if (stringContent.includes("RECV REQUIRES SIG")) {
+			const recvInitPayload = Buffer.alloc(32);
+			recvInitPayload.writeUInt32LE(32, 0); // 0x04
+			recvInitPayload[4] = Operation.RECV; // 0x05
+			recvInitPayload.writeUInt32LE(1, 5); // 0x09
+			recvInitPayload.write(this.RECVZONEPACKET_SIG, 9, "utf-8");
+			this.send(recvInitPayload);
+		}
+
+		if (stringContent.includes("SEND REQUIRES SIG")) {
+			const recvInitPayload = Buffer.alloc(32);
+			recvInitPayload.writeUInt32LE(32, 0); // 0x04
+			recvInitPayload[4] = Operation.SEND; // 0x05
+			recvInitPayload.writeUInt32LE(1, 5); // 0x09
+			recvInitPayload.write(this.SENDZONEPACKET_SIG, 9, "utf-8");
+			this.send(recvInitPayload);
+		}
+	}
+
+	private handleXIVPacket(channel: number, origin: Origin, data: Buffer): void {
 		// Let's ignore non-zone packets
 		if (channel !== 1) {
 			return;
 		}
 		const reader = new BufferReader(data);
 		const packet: DeucalionPacket = {
-			origin: Origin.Server,
+			origin,
 			header: {
 				sourceActor: reader.nextUInt32(),
 				targetActor: reader.nextUInt32(),
-				reserved: reader.nextInt16(),
-				type: reader.nextInt16(),
-				padding: reader.nextInt16(),
-				serverId: reader.nextInt16(),
-				timestamp: reader.nextUInt32(),
-				padding1: reader.nextUInt32(),
-			},
-			data: reader.restAsBuffer(),
-		};
-		this.emit("packet", packet);
-	}
-
-	private handleSend(channel: number, data: Buffer): void {
-		const reader = new BufferReader(data);
-		const packet: DeucalionPacket = {
-			origin: Origin.Client,
-			header: {
-				sourceActor: reader.nextUInt32(),
-				targetActor: reader.nextUInt32(),
+				ipcTimestamp: reader.nextUInt64(),
 				reserved: reader.nextInt16(),
 				type: reader.nextInt16(),
 				padding: reader.nextInt16(),

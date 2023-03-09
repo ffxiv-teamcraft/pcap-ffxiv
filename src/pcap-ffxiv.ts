@@ -94,7 +94,7 @@ export class CaptureInterface extends EventEmitter {
 				return;
 			}
 			const [_, pid] = stdout.split(" ");
-			this._deucalion = new Deucalion(this.constants?.RECV || "", this._options.logger, +pid);
+			this._deucalion = new Deucalion(this.constants?.RECV || "", this.constants?.SEND || "", this._options.logger, +pid);
 			this._deucalion.start();
 			this._deucalion.on("packet", p => this._processSegment(p));
 		};
