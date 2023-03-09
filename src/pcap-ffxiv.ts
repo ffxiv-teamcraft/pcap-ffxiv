@@ -134,7 +134,7 @@ export class CaptureInterface extends EventEmitter {
 			if (this._options.hasWine) {
 				exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath} ${hash}`, callback);
 			} else {
-				exec(`${this._options.deucalionExePath.replace(/ /g, "\\ ")} ${hash}`, callback);
+				exec(`"${this._options.deucalionExePath}" ${hash}`, callback);
 			}
 		});
 	}

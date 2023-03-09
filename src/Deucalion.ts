@@ -54,12 +54,12 @@ export class Deucalion extends EventEmitter {
 				});
 
 				this.socket.connect({ path: this.pipe_path }, () => {
-					resolve();
 					const optionPayload = Buffer.alloc(9);
 					optionPayload.writeUInt32LE(9, 0); // 0x04
 					optionPayload[4] = Operation.OPTION; // 0x05
 					optionPayload.writeUInt32LE(1 << 1 | 1 << 4, 5); // 0x09
 					this.send(optionPayload);
+					resolve();
 				});
 
 				this.socket.on("data", (data) => {
