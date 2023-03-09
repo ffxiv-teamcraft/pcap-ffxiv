@@ -59,7 +59,6 @@ export class Deucalion extends EventEmitter {
 					optionPayload.writeUInt32LE(9, 0); // 0x04
 					optionPayload[4] = Operation.OPTION; // 0x05
 					optionPayload.writeUInt32LE(1 << 1 | 1 << 4, 5); // 0x09
-					optionPayload.write(this.RECVZONEPACKET_SIG, 9, "utf-8");
 					this.send(optionPayload);
 				});
 
