@@ -20,7 +20,7 @@ import { actorControlPacketProcessors } from "./packet-processors/actor-control-
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 import { Deucalion } from "./Deucalion";
-import { getProcessPIDByName, injectPID } from "dll-inject";
+import { getPIDByName, injectPID } from "dll-inject";
 import crypto from "crypto";
 
 export class CaptureInterface extends EventEmitter {
@@ -48,7 +48,7 @@ export class CaptureInterface extends EventEmitter {
 			region: "Global",
 			deucalionDllPath: join(__dirname, "./deucalion/deucalion.dll"),
 			filter: () => true,
-			logger: (payload) => console[payload.type](payload.message)
+			logger: (payload) => console[payload.type](payload.message),
 		};
 
 		this._options = {
@@ -108,7 +108,7 @@ export class CaptureInterface extends EventEmitter {
 			if (!this.constants) {
 				reject("Trying to start capture before ready event was emitted");
 			}
-			const pid = getProcessPIDByName("ffxiv_dx11.exe");
+			const pid = getPIDByName("ffxiv_dx11.exe");
 			const buff = readFileSync(this._options.deucalionDllPath);
 			const expectedHash = readFileSync(join(__dirname, "dll.sum"), "utf-8");
 			const hash = crypto.createHash("sha256").update(buff).digest("hex");
@@ -184,8 +184,7 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {
-			}
+			} catch (e) {}
 		}
 
 		this._options.logger({

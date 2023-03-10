@@ -312,10 +312,10 @@ deep-is@^0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.3.tgz#b369d6fb5dbc13eecf524f91b070feedc357cf34"
   integrity sha1-s2nW+128E+7PUk+RsHD+7cNXzzQ=
 
-dll-inject@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/dll-inject/-/dll-inject-0.0.2.tgz#2f6bca14339527decac3b42d057613bf5684fc92"
-  integrity sha512-zFaiHvCYWae/25pg43PmslswZ6TaBj3EBdBm4L2X0f1F9XH2j2PXdencNCx/ld46ZlT1n15nbXSh6yEq8DnBfA==
+dll-inject@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/dll-inject/-/dll-inject-0.0.3.tgz#54261c46c0515590f30d09e9ea26cc4144c1043f"
+  integrity sha512-tWCJ/AweRzPKsghUXm3zqIcZtBhEU8L6su9IkynfudlQUiYoBaJkXrrpizY3GNRbkdcMI5sxycmjoWCOJpYDKQ==
   dependencies:
     bindings "^1.3.0"
     nan "^2.11.1"
