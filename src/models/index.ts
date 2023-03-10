@@ -6,6 +6,7 @@ export * from "./ActorControlType";
 export * from "./ConstantsList";
 export * from "./DeucalionPacket";
 export * from "./DeucalionPayload";
+export * from "./ErrorCodes";
 export * from "./GenericMessage";
 export * from "./InventoryOperation";
 export * from "./Message";

@@ -1,5 +1,4 @@
-import { open } from "fs";
-import { Socket } from "net";
+import { createReadStream, createWriteStream, open, ReadStream, WriteStream } from "fs";
 import { BufferReader } from "./BufferReader";
 import { DeucalionPacket, DeucalionPayload, Origin } from "./models";
 import { EventEmitter } from "events";
@@ -15,12 +14,13 @@ enum Operation {
 }
 
 export class Deucalion extends EventEmitter {
-	private socket?: Socket;
+	private readStream?: ReadStream;
+	private writeStream?: WriteStream;
 
 	private remaining?: Buffer;
 
 	public get running() {
-		return this.socket !== undefined;
+		return this.readStream !== undefined;
 	}
 
 	pipe_path!: string;
@@ -52,77 +52,32 @@ export class Deucalion extends EventEmitter {
 						}
 						return;
 					}
+					this.readStream = createReadStream(this.pipe_path, { fd, autoClose: false });
+					this.writeStream = createWriteStream(this.pipe_path, { fd, autoClose: false });
 
-					this.socket = new Socket({
-						fd,
-						readable: true,
-						writable: false,
-					});
-
-					this.socket.connect({ path: this.pipe_path }, () => {
-						const optionPayload = Buffer.alloc(9);
-						optionPayload.writeUInt32LE(9, 0); // 0x04
-						optionPayload[4] = Operation.OPTION; // 0x05
-						optionPayload.writeUInt32LE((1 << 1) | (1 << 4), 5); // 0x09
-						this.send(optionPayload);
-						clearInterval(connectInterval);
-						resolve();
-					});
-
-					this.socket.on("data", (data) => {
-						let { packet, remaining } = this.nextPacket(data);
-						while (packet !== null) {
-							this.handleDeucalionPacket(packet);
-							if (remaining) {
-								const next = this.nextPacket(remaining);
-								packet = next.packet;
-								remaining = next.remaining;
-							} else {
-								packet = null;
-								remaining = null;
-							}
-						}
-						if (remaining) {
-							this.logger({
-								type: "log",
-								message: `Remaining ! 0x${remaining.toString("hex")}`,
-							});
-							this.remaining = remaining;
-						} else {
-							delete this.remaining;
-						}
-					});
-
-					this.socket.on("error", (err: Error) => {
-						this.logger({
-							type: "error",
-							message: `Deucalion error: ${err.message}`,
-						});
-						this.emit("error", err);
-					});
-
-					this.socket.on("close", () => {
-						this.logger({
-							type: "info",
-							message: "Client closed",
-						});
-						this.emit("closed");
-					});
+					const optionPayload = Buffer.alloc(9);
+					optionPayload.writeUInt32LE(9, 0); // 0x04
+					optionPayload[4] = Operation.OPTION; // 0x05
+					optionPayload.writeUInt32LE((1 << 1) | (1 << 4), 5); // 0x09
+					this.send(optionPayload);
+					this.setupDataListeners();
+					clearInterval(connectInterval);
+					resolve();
 				});
-			}, 500);
+			}, 200);
 		});
 	}
 
 	public stop() {
 		return new Promise<void>((resolve) => {
-			this.socket?.end(() => {
-				resolve();
-			});
+			this.readStream?.close();
+			this.writeStream?.close();
+			resolve();
 		});
 	}
 
 	private send(data: Buffer) {
-		return this.socket?.write(data);
+		return this.writeStream?.write(data);
 	}
 
 	private nextPacket(buffer: Buffer): { packet: DeucalionPayload | null; remaining: Buffer | null } {
@@ -200,5 +155,62 @@ export class Deucalion extends EventEmitter {
 			data: reader.restAsBuffer(),
 		};
 		this.emit("packet", packet);
+	}
+
+	private setupDataListeners() {
+		if (!this.readStream || !this.writeStream) {
+			return;
+		}
+		this.readStream.on("data", (data: Buffer) => {
+			let { packet, remaining } = this.nextPacket(data);
+			while (packet !== null) {
+				this.handleDeucalionPacket(packet);
+				if (remaining) {
+					const next = this.nextPacket(remaining);
+					packet = next.packet;
+					remaining = next.remaining;
+				} else {
+					packet = null;
+					remaining = null;
+				}
+			}
+			if (remaining) {
+				this.logger({
+					type: "log",
+					message: `Remaining ! 0x${remaining.toString("hex")}`,
+				});
+				this.remaining = remaining;
+			} else {
+				delete this.remaining;
+			}
+		});
+
+		this.readStream.on("close", () => {
+			this.logger({
+				type: "info",
+				message: "Client closed",
+			});
+			this.emit("closed");
+		});
+
+		this.readStream.on("end", () => {
+			this.logger({
+				type: "info",
+				message: "Pipe end",
+			});
+			this.emit("closed");
+		});
+
+		this.readStream.on("error", (err: Error) => {
+			this.logger({
+				type: "error",
+				message: `Deucalion error: ${err.message}`,
+			});
+			if (err.message.includes("ENOENT")) {
+				console.error(err);
+			} else {
+				this.emit("error", err);
+			}
+		});
 	}
 }

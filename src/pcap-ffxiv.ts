@@ -133,13 +133,13 @@ export class CaptureInterface extends EventEmitter {
 					pid,
 				);
 				this._deucalion.start().then(() => {
+					this._deucalion!.on("packet", (p) => this._processSegment(p));
+					this._deucalion!.on("closed", () => this.emit("stopped"));
+					this._deucalion!.on("error", (err) => this.emit("error", err));
 					resolve();
 				});
-				this._deucalion.on("packet", (p) => this._processSegment(p));
-				this._deucalion.on("closed", () => this.emit("stopped"));
-				this._deucalion.on("error", (err) => this.emit("error", err));
 			} else {
-				reject(`Failed to start Deucalion`);
+				reject(res);
 			}
 		});
 	}
