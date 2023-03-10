@@ -110,7 +110,7 @@ export class CaptureInterface extends EventEmitter {
 				reject("Trying to start capture before ready event was emitted");
 			}
 			const callback = (err, stdout, stderr) => {
-				if (err) {
+				if (err && !err.includes("")) {
 					this._options.logger({
 						type: "error",
 						message: err.message,
@@ -125,7 +125,9 @@ export class CaptureInterface extends EventEmitter {
 					this._options.logger,
 					+pid,
 				);
-				this._deucalion.start();
+				this._deucalion.start().then(() => {
+					resolve();
+				});
 				this._deucalion.on("packet", (p) => this._processSegment(p));
 				this._deucalion.on("closed", () => this.emit("stopped"));
 				this._deucalion.on("error", (err) => this.emit("error", err));
@@ -179,7 +181,8 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({

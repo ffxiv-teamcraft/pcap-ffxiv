@@ -37,71 +37,79 @@ export class Deucalion extends EventEmitter {
 
 	public start(): Promise<void> {
 		return new Promise((resolve, reject) => {
-			open(this.pipe_path, "r+", (err, fd) => {
-				if (err) {
-					this.logger({
-						type: "error",
-						message: `Error while opening pipe ${err.message}`,
-					});
-					reject(err);
-					return;
-				}
-
-				this.socket = new Socket({
-					fd,
-					readable: true,
-					writable: false,
-				});
-
-				this.socket.connect({ path: this.pipe_path }, () => {
-					const optionPayload = Buffer.alloc(9);
-					optionPayload.writeUInt32LE(9, 0); // 0x04
-					optionPayload[4] = Operation.OPTION; // 0x05
-					optionPayload.writeUInt32LE(1 << 1 | 1 << 4, 5); // 0x09
-					this.send(optionPayload);
-					resolve();
-				});
-
-				this.socket.on("data", (data) => {
-					let { packet, remaining } = this.nextPacket(data);
-					while (packet !== null) {
-						this.handleDeucalionPacket(packet);
-						if (remaining) {
-							const next = this.nextPacket(remaining);
-							packet = next.packet;
-							remaining = next.remaining;
-						} else {
-							packet = null;
-							remaining = null;
-						}
-					}
-					if (remaining) {
+			let tries = 0;
+			const connectInterval = setInterval(() => {
+				open(this.pipe_path, "r+", (err, fd) => {
+					if (err) {
 						this.logger({
-							type: "log",
-							message: `Remaining ! 0x${remaining.toString("hex")}`,
+							type: "error",
+							message: `Error while opening pipe ${err.message}`,
 						});
-						this.remaining = remaining;
-					} else {
-						delete this.remaining;
+						tries++;
+						if (tries >= 5) {
+							clearInterval(connectInterval);
+							reject(err);
+						}
+						return;
 					}
-				});
 
-				this.socket.on("error", (err: Error) => {
-					this.logger({
-						type: "error",
-						message: `Deucalion error: ${err.message}`,
+					this.socket = new Socket({
+						fd,
+						readable: true,
+						writable: false,
 					});
-					this.emit("error", err);
-				});
 
-				this.socket.on("close", () => {
-					this.logger({
-						type: "info",
-						message: "Client closed",
+					this.socket.connect({ path: this.pipe_path }, () => {
+						const optionPayload = Buffer.alloc(9);
+						optionPayload.writeUInt32LE(9, 0); // 0x04
+						optionPayload[4] = Operation.OPTION; // 0x05
+						optionPayload.writeUInt32LE(1 << 1 | 1 << 4, 5); // 0x09
+						this.send(optionPayload);
+						clearInterval(connectInterval);
+						resolve();
 					});
-					this.emit("closed");
+
+					this.socket.on("data", (data) => {
+						let { packet, remaining } = this.nextPacket(data);
+						while (packet !== null) {
+							this.handleDeucalionPacket(packet);
+							if (remaining) {
+								const next = this.nextPacket(remaining);
+								packet = next.packet;
+								remaining = next.remaining;
+							} else {
+								packet = null;
+								remaining = null;
+							}
+						}
+						if (remaining) {
+							this.logger({
+								type: "log",
+								message: `Remaining ! 0x${remaining.toString("hex")}`,
+							});
+							this.remaining = remaining;
+						} else {
+							delete this.remaining;
+						}
+					});
+
+					this.socket.on("error", (err: Error) => {
+						this.logger({
+							type: "error",
+							message: `Deucalion error: ${err.message}`,
+						});
+						this.emit("error", err);
+					});
+
+					this.socket.on("close", () => {
+						this.logger({
+							type: "info",
+							message: "Client closed",
+						});
+						this.emit("closed");
+					});
 				});
-			});
+			}, 500);
 		});
 	}
 
@@ -164,29 +172,10 @@ export class Deucalion extends EventEmitter {
 	}
 
 	private handleDebug(data: Buffer): void {
-		const stringContent = data.toString();
 		this.logger({
 			type: "info",
 			message: `DEUCALION: ${data.toString()}`,
 		});
-
-		if (stringContent.includes("RECV REQUIRES SIG")) {
-			const recvInitPayload = Buffer.alloc(32);
-			recvInitPayload.writeUInt32LE(32, 0); // 0x04
-			recvInitPayload[4] = Operation.RECV; // 0x05
-			recvInitPayload.writeUInt32LE(1, 5); // 0x09
-			recvInitPayload.write(this.RECVZONEPACKET_SIG, 9, "utf-8");
-			this.send(recvInitPayload);
-		}
-
-		if (stringContent.includes("SEND REQUIRES SIG")) {
-			const recvInitPayload = Buffer.alloc(32);
-			recvInitPayload.writeUInt32LE(32, 0); // 0x04
-			recvInitPayload[4] = Operation.SEND; // 0x05
-			recvInitPayload.writeUInt32LE(1, 5); // 0x09
-			recvInitPayload.write(this.SENDZONEPACKET_SIG, 9, "utf-8");
-			this.send(recvInitPayload);
-		}
 	}
 
 	private handleXIVPacket(channel: number, origin: Origin, data: Buffer): void {

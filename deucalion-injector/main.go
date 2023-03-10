@@ -6,17 +6,26 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"net"
 	"os"
-	"os/signal"
 	"path/filepath"
 	"strings"
-	"syscall"
+	"time"
 
-	"deucalion-injector/hook"
 	"deucalion-injector/win32"
 )
 
 var pe = win32.Provider{}
+
+type RemoteProcessProvider interface {
+	InjectDLL(processID uint32, payloadPath string) error
+	DialPipe(path string, timeout *time.Duration) (net.Conn, error)
+	IsPipeClosed(err error) bool
+}
+
+type DLLAlreadyInjectedError interface {
+	IsDLLAlreadyInjectedError()
+}
 
 // ListMatchingProcesses lists all IDs for processes that match the given string
 func ListMatchingProcesses(match string) ([]uint32, error) {
@@ -52,7 +61,7 @@ func checkHash(dllPath string, expected string) bool {
 
 func main() {
 	if len(os.Args) != 2 {
-		fmt.Fprintf(os.Stderr, "Must provide hash")
+		panic("Must provide hash")
 	}
 	expectedHash := os.Args[1]
 	ids, err := ListMatchingProcesses("ffxiv_dx11.exe")
@@ -74,17 +83,9 @@ func main() {
 	var procID uint32 = ids[0]
 
 	fmt.Println("PID", procID)
-	c, err := hook.NewConn(pe, procID, dllPath)
-	if err != nil {
+	err = pe.InjectDLL(procID, dllPath)
+	if _, ok := err.(DLLAlreadyInjectedError); ok {
+	} else if err != nil {
 		panic(err)
 	}
-	sig := make(chan os.Signal)
-	signal.Notify(sig, os.Interrupt, syscall.SIGTERM)
-	go func() {
-		<-sig
-		c.Close()
-		os.Exit(1)
-	}()
-
-	defer c.Close()
 }
