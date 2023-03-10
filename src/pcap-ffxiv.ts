@@ -20,7 +20,8 @@ import { actorControlPacketProcessors } from "./packet-processors/actor-control-
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 import { Deucalion } from "./Deucalion";
-import { exec } from "child_process";
+import { getProcessPIDByName, injectPID } from "dll-inject";
+import crypto from "crypto";
 
 export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
@@ -45,11 +46,9 @@ export class CaptureInterface extends EventEmitter {
 
 		const defaultOptions: CaptureInterfaceOptions = {
 			region: "Global",
-			deucalionExePath: join(__dirname, "./deucalion/deucalion.exe"),
+			deucalionDllPath: join(__dirname, "./deucalion/deucalion.dll"),
 			filter: () => true,
-			logger: (payload) => console[payload.type](payload.message),
-			winePrefix: "$HOME/.Wine",
-			hasWine: false,
+			logger: (payload) => console[payload.type](payload.message)
 		};
 
 		this._options = {
@@ -62,8 +61,8 @@ export class CaptureInterface extends EventEmitter {
 			message: JSON.stringify(this._options),
 		});
 
-		if (!existsSync(this._options.deucalionExePath)) {
-			throw new Error(`Deucalion.exe not found in ${this._options.deucalionExePath}`);
+		if (!existsSync(this._options.deucalionDllPath)) {
+			throw new Error(`Deucalion.dll not found in ${this._options.deucalionDllPath}`);
 		}
 
 		this._packetDefs = packetProcessors;
@@ -109,21 +108,29 @@ export class CaptureInterface extends EventEmitter {
 			if (!this.constants) {
 				reject("Trying to start capture before ready event was emitted");
 			}
-			const callback = (err, stdout, stderr) => {
-				if (err && !err.includes("")) {
-					this._options.logger({
-						type: "error",
-						message: err.message,
-					});
-					reject(stderr || err);
-					return;
-				}
-				const [_, pid] = stdout.split(" ");
+			const pid = getProcessPIDByName("ffxiv_dx11.exe");
+			const buff = readFileSync(this._options.deucalionDllPath);
+			const expectedHash = readFileSync(join(__dirname, "dll.sum"), "utf-8");
+			const hash = crypto.createHash("sha256").update(buff).digest("hex");
+			if (hash !== expectedHash) {
+				this._options.logger({
+					type: "error",
+					message: `Deucalion Hash missmatch`,
+				});
+				reject(`Hash missmatch`);
+				return;
+			}
+			const res = injectPID(pid, this._options.deucalionDllPath);
+			this._options.logger({
+				type: "info",
+				message: `Deucalion-inj res: ${res}`,
+			});
+			if (res === 0) {
 				this._deucalion = new Deucalion(
 					this.constants?.RECV || "",
 					this.constants?.SEND || "",
 					this._options.logger,
-					+pid,
+					pid,
 				);
 				this._deucalion.start().then(() => {
 					resolve();
@@ -131,12 +138,8 @@ export class CaptureInterface extends EventEmitter {
 				this._deucalion.on("packet", (p) => this._processSegment(p));
 				this._deucalion.on("closed", () => this.emit("stopped"));
 				this._deucalion.on("error", (err) => this.emit("error", err));
-			};
-			const hash = readFileSync(join(__dirname, "dll.sum"));
-			if (this._options.hasWine) {
-				exec(`WINEPREFIX="${this._options.winePrefix}" wine ${this._options.deucalionExePath} ${hash}`, callback);
 			} else {
-				exec(`"${this._options.deucalionExePath}" ${hash}`, callback);
+				reject(`Failed to start Deucalion`);
 			}
 		});
 	}

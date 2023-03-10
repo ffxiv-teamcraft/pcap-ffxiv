@@ -11,7 +11,7 @@ enum Operation {
 	EXIT,
 	RECV,
 	SEND,
-	OPTION
+	OPTION,
 }
 
 export class Deucalion extends EventEmitter {
@@ -63,7 +63,7 @@ export class Deucalion extends EventEmitter {
 						const optionPayload = Buffer.alloc(9);
 						optionPayload.writeUInt32LE(9, 0); // 0x04
 						optionPayload[4] = Operation.OPTION; // 0x05
-						optionPayload.writeUInt32LE(1 << 1 | 1 << 4, 5); // 0x09
+						optionPayload.writeUInt32LE((1 << 1) | (1 << 4), 5); // 0x09
 						this.send(optionPayload);
 						clearInterval(connectInterval);
 						resolve();
