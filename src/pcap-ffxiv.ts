@@ -137,7 +137,7 @@ export class CaptureInterface extends EventEmitter {
 					this._deucalion!.on("closed", () => this.emit("stopped"));
 					this._deucalion!.on("error", (err) => this.emit("error", err));
 					resolve();
-				});
+				}).catch(err => reject(err));
 			} else {
 				reject(res);
 			}
@@ -146,6 +146,7 @@ export class CaptureInterface extends EventEmitter {
 
 	stop() {
 		if (!this._deucalion) {
+			this.emit("stopped");
 			return Promise.resolve();
 		}
 		return this._deucalion.stop();
@@ -184,7 +185,8 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({

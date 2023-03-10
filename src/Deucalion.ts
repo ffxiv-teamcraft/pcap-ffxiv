@@ -52,8 +52,8 @@ export class Deucalion extends EventEmitter {
 						}
 						return;
 					}
-					this.readStream = createReadStream(this.pipe_path, { fd, autoClose: false });
-					this.writeStream = createWriteStream(this.pipe_path, { fd, autoClose: false });
+					this.readStream = createReadStream(this.pipe_path, { fd });
+					this.writeStream = createWriteStream(this.pipe_path, { fd });
 
 					const optionPayload = Buffer.alloc(9);
 					optionPayload.writeUInt32LE(9, 0); // 0x04
@@ -69,10 +69,14 @@ export class Deucalion extends EventEmitter {
 	}
 
 	public stop() {
-		return new Promise<void>((resolve) => {
+		return new Promise<void>(resolve => {
 			this.readStream?.close();
-			this.writeStream?.close();
-			resolve();
+			this.writeStream?.end(() => {
+				this.readStream?.destroy();
+				this.writeStream?.destroy();
+				this.emit("closed");
+				resolve();
+			});
 		});
 	}
 
@@ -202,6 +206,14 @@ export class Deucalion extends EventEmitter {
 		});
 
 		this.readStream.on("error", (err: Error) => {
+			// Close happened
+			if (err.message.includes("EBADF")) {
+				return;
+			}
+			// Game closed
+			if (err.message.includes("EOF")) {
+				return;
+			}
 			this.logger({
 				type: "error",
 				message: `Deucalion error: ${err.message}`,
