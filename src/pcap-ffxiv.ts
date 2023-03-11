@@ -3,6 +3,7 @@ import {
 	ActorControlType,
 	ConstantsList,
 	DeucalionPacket,
+	ErrorCodes,
 	Message,
 	OpcodeList,
 	PacketProcessor,
@@ -20,8 +21,9 @@ import { actorControlPacketProcessors } from "./packet-processors/actor-control-
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 import { Deucalion } from "./Deucalion";
-import { getPIDByName, injectPID } from "dll-inject";
+import { getPIDByName, injectPID } from "@ffxiv-teamcraft/dll-inject";
 import crypto from "crypto";
+import { exec } from "child_process";
 
 export class CaptureInterface extends EventEmitter {
 	private _opcodeLists: OpcodeList[] | undefined;
@@ -103,44 +105,115 @@ export class CaptureInterface extends EventEmitter {
 		});
 	}
 
+	tasklist(): Promise<{ name: string; pid: number }[]> {
+		return new Promise<{ name: string; pid: number }[]>((resolve, reject) => {
+			exec("tasklist", (err, stdout) => {
+				if (err) {
+					reject(err);
+				}
+				resolve(
+					stdout
+						.split("\n")
+						.map((line) => {
+							const match = /^(\S+)\s+(\d+)/gm.exec(line);
+							if (match) {
+								return {
+									name: match[1],
+									pid: +match[2],
+								};
+							}
+						})
+						.filter(Boolean) as { name: string; pid: number }[],
+				);
+			});
+		});
+	}
+
+	getXIVPID(): Promise<number> {
+		return new Promise<number>((resolve, reject) => {
+			const fromInjector = getPIDByName("ffxiv_dx11.exe");
+			if (fromInjector > 0) {
+				return resolve(fromInjector);
+			} else {
+				this._options.logger({
+					type: "info",
+					message: "Process not found, falling back to tasklist",
+				});
+				this.tasklist()
+					.then((processes) => {
+						const xivProcess = processes.find((p) => p.name.includes("ffxiv_dx11.exe"));
+						if (xivProcess) {
+							this._options.logger({
+								type: "info",
+								message: "Found XIV process in tasklist",
+							});
+							return resolve(xivProcess.pid);
+						} else {
+							return reject(ErrorCodes.GAME_NOT_RUNNING);
+						}
+					})
+					.catch((err) => {
+						this._options.logger({
+							type: "error",
+							message: err,
+						});
+					});
+			}
+		});
+	}
+
 	start(): Promise<void> {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			if (!this.constants) {
 				reject("Trying to start capture before ready event was emitted");
 			}
-			const pid = getPIDByName("ffxiv_dx11.exe");
-			const buff = readFileSync(this._options.deucalionDllPath);
-			const expectedHash = readFileSync(join(__dirname, "dll.sum"), "utf-8");
-			const hash = crypto.createHash("sha256").update(buff).digest("hex");
-			if (hash !== expectedHash) {
-				this._options.logger({
-					type: "error",
-					message: `Deucalion Hash missmatch`,
+			this.getXIVPID()
+				.then((pid) => {
+					const buff = readFileSync(this._options.deucalionDllPath);
+					const expectedHash = readFileSync(join(__dirname, "dll.sum"), "utf-8");
+					const hash = crypto.createHash("sha256").update(buff).digest("hex");
+					if (hash !== expectedHash) {
+						this._options.logger({
+							type: "error",
+							message: `Deucalion Hash missmatch`,
+						});
+						reject(`Hash missmatch`);
+						return;
+					}
+					const res = injectPID(pid, this._options.deucalionDllPath);
+					this._options.logger({
+						type: "info",
+						message: `Deucalion-inj res: ${res}`,
+					});
+					if (res === 0) {
+						this._deucalion = new Deucalion(
+							this.constants?.RECV || "",
+							this.constants?.SEND || "",
+							this._options.logger,
+							pid,
+						);
+						this._deucalion
+							.start()
+							.then(() => {
+								this._deucalion!.on("packet", (p) => this._processSegment(p));
+								this._deucalion!.on("closed", () => this.emit("stopped"));
+								this._deucalion!.on("error", (err) => this.emit("error", err));
+								resolve();
+							})
+							.catch((err) => reject(err));
+					} else {
+						reject(res);
+					}
+				})
+				.catch((err) => {
+					if (err) {
+						this._options.logger({
+							type: "error",
+							message: err,
+						});
+					}
+					reject(ErrorCodes.GAME_NOT_RUNNING);
 				});
-				reject(`Hash missmatch`);
-				return;
-			}
-			const res = injectPID(pid, this._options.deucalionDllPath);
-			this._options.logger({
-				type: "info",
-				message: `Deucalion-inj res: ${res}`,
-			});
-			if (res === 0) {
-				this._deucalion = new Deucalion(
-					this.constants?.RECV || "",
-					this.constants?.SEND || "",
-					this._options.logger,
-					pid,
-				);
-				this._deucalion.start().then(() => {
-					this._deucalion!.on("packet", (p) => this._processSegment(p));
-					this._deucalion!.on("closed", () => this.emit("stopped"));
-					this._deucalion!.on("error", (err) => this.emit("error", err));
-					resolve();
-				}).catch(err => reject(err));
-			} else {
-				reject(res);
-			}
 		});
 	}
 
@@ -185,8 +258,7 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {
-			}
+			} catch (e) {}
 		}
 
 		this._options.logger({

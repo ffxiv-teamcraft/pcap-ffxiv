@@ -69,7 +69,7 @@ export class Deucalion extends EventEmitter {
 	}
 
 	public stop() {
-		return new Promise<void>(resolve => {
+		return new Promise<void>((resolve) => {
 			this.readStream?.close();
 			this.writeStream?.end(() => {
 				this.readStream?.destroy();
