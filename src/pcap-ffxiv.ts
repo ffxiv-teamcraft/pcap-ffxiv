@@ -105,8 +105,8 @@ export class CaptureInterface extends EventEmitter {
 		});
 	}
 
-	tasklist(): Promise<{ name: string; pid: number }[]> {
-		return new Promise<{ name: string; pid: number }[]>((resolve, reject) => {
+	getXIVPIFFromTasklist(): Promise<{ name: string; pid: number } | null> {
+		return new Promise<{ name: string; pid: number } | null>((resolve, reject) => {
 			exec("tasklist", (err, stdout) => {
 				if (err) {
 					reject(err);
@@ -115,7 +115,7 @@ export class CaptureInterface extends EventEmitter {
 					stdout
 						.split("\n")
 						.map((line) => {
-							const match = /^(\S+)\s+(\d+)/gm.exec(line);
+							const match = /(ffxiv_dx11.exe)\s+(\d+)/gm.exec(line);
 							if (match) {
 								return {
 									name: match[1],
@@ -123,7 +123,7 @@ export class CaptureInterface extends EventEmitter {
 								};
 							}
 						})
-						.filter(Boolean) as { name: string; pid: number }[],
+						.find(Boolean) || null,
 				);
 			});
 		});
@@ -139,15 +139,14 @@ export class CaptureInterface extends EventEmitter {
 					type: "info",
 					message: "Process not found, falling back to tasklist",
 				});
-				this.tasklist()
-					.then((processes) => {
-						const xivProcess = processes.find((p) => p.name.includes("ffxiv_dx11.exe"));
-						if (xivProcess) {
+				this.getXIVPIFFromTasklist()
+					.then((fromTaskList) => {
+						if (fromTaskList) {
 							this._options.logger({
 								type: "info",
 								message: "Found XIV process in tasklist",
 							});
-							return resolve(xivProcess.pid);
+							return resolve(fromTaskList.pid);
 						} else {
 							return reject(ErrorCodes.GAME_NOT_RUNNING);
 						}
@@ -258,7 +257,8 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
