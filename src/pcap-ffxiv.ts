@@ -182,7 +182,7 @@ export class CaptureInterface extends EventEmitter {
 					const res = injectPID(pid, this._options.deucalionDllPath);
 					this._options.logger({
 						type: "info",
-						message: `Deucalion-inj res: ${res}`,
+						message: `Deucalion-inj res: [${res}] ${ErrorCodes[res]}}`,
 					});
 					if (res === 0) {
 						this._deucalion = new Deucalion(
@@ -208,7 +208,7 @@ export class CaptureInterface extends EventEmitter {
 					if (err) {
 						this._options.logger({
 							type: "error",
-							message: err,
+							message: ErrorCodes[err] || err,
 						});
 					}
 					reject(ErrorCodes.GAME_NOT_RUNNING);
@@ -257,7 +257,8 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
