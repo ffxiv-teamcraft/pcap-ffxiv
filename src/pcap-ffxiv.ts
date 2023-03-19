@@ -82,8 +82,6 @@ export class CaptureInterface extends EventEmitter {
 
 		[
 			"beforeExit",
-			"uncaughtException",
-			"unhandledRejection",
 			"SIGHUP",
 			"SIGINT",
 			"SIGQUIT",
@@ -97,8 +95,12 @@ export class CaptureInterface extends EventEmitter {
 			"SIGUSR2",
 			"SIGTERM",
 		].forEach((sig) => {
-			process.on(sig, () => {
+			process.on(sig, (args) => {
 				this.stop().then(() => {
+					this._options.logger({
+						type: "error",
+						message: JSON.stringify(args),
+					});
 					process.exit(0);
 				});
 			});
@@ -182,7 +184,7 @@ export class CaptureInterface extends EventEmitter {
 					const res = injectPID(pid, this._options.deucalionDllPath);
 					this._options.logger({
 						type: "info",
-						message: `Deucalion-inj res: [${res}] ${res > 0 ? ErrorCodes[res] : ''}`,
+						message: `Deucalion-inj res: [${res}] ${res > 0 ? ErrorCodes[res] : ""}`,
 					});
 					if (res === 0) {
 						this._deucalion = new Deucalion(
@@ -257,7 +259,8 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
