@@ -52,6 +52,6 @@
 		"typescript": "^4.1.3"
 	},
 	"dependencies": {
-		"@ffxiv-teamcraft/dll-inject": "0.0.5"
+		"@ffxiv-teamcraft/dll-inject": "0.0.6"
 	}
 }
