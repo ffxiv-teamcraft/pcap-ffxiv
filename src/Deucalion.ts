@@ -69,14 +69,19 @@ export class Deucalion extends EventEmitter {
 	}
 
 	public stop() {
-		return new Promise<void>((resolve) => {
-			this.readStream?.close();
-			this.writeStream?.end(() => {
-				this.readStream?.destroy();
-				this.writeStream?.destroy();
-				this.emit("closed");
-				resolve();
-			});
+		return new Promise<void>(async (resolve) => {
+			try {
+				await this.closeStreams();
+			} catch (err) {
+				if (!err.message.includes("EBADF")) {
+					this.logger({
+						type: "error",
+						message: err,
+					});
+				}
+			}
+			this.emit("closed");
+			resolve();
 		});
 	}
 
@@ -161,6 +166,18 @@ export class Deucalion extends EventEmitter {
 		this.emit("packet", packet);
 	}
 
+	private closeStreams(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			try {
+				this.readStream?.close();
+				this.writeStream?.close();
+				resolve();
+			} catch (err) {
+				reject(err);
+			}
+		});
+	}
+
 	private setupDataListeners() {
 		if (!this.readStream || !this.writeStream) {
 			return;
@@ -194,7 +211,6 @@ export class Deucalion extends EventEmitter {
 				type: "info",
 				message: "Client closed",
 			});
-			this.emit("closed");
 		});
 
 		this.readStream.on("end", () => {
@@ -202,7 +218,6 @@ export class Deucalion extends EventEmitter {
 				type: "info",
 				message: "Pipe end",
 			});
-			this.emit("closed");
 		});
 
 		this.readStream.on("error", (err: Error) => {

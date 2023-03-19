@@ -99,7 +99,7 @@ export class CaptureInterface extends EventEmitter {
 				this.stop().then(() => {
 					this._options.logger({
 						type: "error",
-						message: JSON.stringify(args),
+						message: args,
 					});
 					process.exit(0);
 				});
@@ -259,8 +259,7 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {
-			}
+			} catch (e) {}
 		}
 
 		this._options.logger({
