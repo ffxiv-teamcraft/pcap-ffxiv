@@ -1,6 +1,6 @@
 {
 	"name": "@ffxiv-teamcraft/pcap-ffxiv",
-	"version": "1.0.14",
+	"version": "1.0.15",
 	"description": "A Machina wrapper for FINAL FANTASY XIV packet capture in JS/TS.",
 	"main": "lib/index.js",
 	"repository": "https://github.com/ffxiv-teamcraft/pcap-ffxiv.git",
@@ -52,6 +52,6 @@
 		"typescript": "^4.9.5"
 	},
 	"dependencies": {
-		"@ffxiv-teamcraft/dll-inject": "0.0.7"
+		"@ffxiv-teamcraft/dll-inject": "0.0.8"
 	}
 }
