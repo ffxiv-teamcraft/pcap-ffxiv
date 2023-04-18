@@ -5,6 +5,5 @@
 		"src/models/index.ts",
 		"src/definitions/index.ts"
 	],
-	"out": "docs",
-	"theme": "minimal"
+	"out": "docs"
 }

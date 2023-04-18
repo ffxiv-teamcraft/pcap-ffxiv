@@ -192,6 +192,7 @@ export class CaptureInterface extends EventEmitter {
 							this.constants?.SEND || "",
 							this._options.logger,
 							pid,
+							this._options.name,
 						);
 						this._deucalion
 							.start()

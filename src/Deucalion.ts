@@ -30,9 +30,13 @@ export class Deucalion extends EventEmitter {
 		private readonly SENDZONEPACKET_SIG: string,
 		private readonly logger: CaptureInterfaceOptions["logger"],
 		readonly pid: number,
+		private readonly name = "PCAP_FFXIV",
 	) {
 		super();
 		this.pipe_path = `\\\\.\\pipe\\deucalion-${pid}`;
+		if (!/^[A-Za-z0-9_]+$/.test(this.name)) {
+			throw new Error("Please provide a name that matches ^[A-Za-z0-9_]+$");
+		}
 	}
 
 	public start(): Promise<void> {
@@ -60,6 +64,14 @@ export class Deucalion extends EventEmitter {
 					optionPayload[4] = Operation.OPTION; // 0x05
 					optionPayload.writeUInt32LE((1 << 1) | (1 << 4), 5); // 0x09
 					this.send(optionPayload);
+					const nicknameBufferSize = 9 + this.name.length;
+					const nicknamePayload = Buffer.alloc(nicknameBufferSize);
+					nicknamePayload.writeUInt32LE(nicknameBufferSize, 0); // 0x04
+					nicknamePayload[4] = Operation.DEBUG; // 0x05
+					nicknamePayload.writeUInt32LE(9000, 5); // 0x09
+					nicknamePayload.write(this.name, 9, "utf-8"); // 0x18 or 24
+					console.log(nicknamePayload);
+					this.send(nicknamePayload);
 					this.setupDataListeners();
 					clearInterval(connectInterval);
 					resolve();
@@ -72,7 +84,7 @@ export class Deucalion extends EventEmitter {
 		return new Promise<void>(async (resolve) => {
 			try {
 				await this.closeStreams();
-			} catch (err) {
+			} catch (err: any) {
 				if (!err.message.includes("EBADF")) {
 					this.logger({
 						type: "error",
@@ -211,6 +223,13 @@ export class Deucalion extends EventEmitter {
 				type: "info",
 				message: "Client closed",
 			});
+			this.closeStreams()
+				.then(() => {
+					this.emit("closed");
+				})
+				.catch(() => {
+					this.emit("closed");
+				});
 		});
 
 		this.readStream.on("end", () => {

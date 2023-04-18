@@ -6,4 +6,5 @@ export interface CaptureInterfaceOptions {
 	logger: (payload: { type: "info" | "log" | "warn" | "error"; message: string }) => void;
 	filter: (header: DeucalionPacketHeader, typeName: string) => boolean;
 	localDataPath?: string;
+	name?: string;
 }

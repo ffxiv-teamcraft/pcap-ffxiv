@@ -140,7 +140,7 @@ export class BufferReader {
 	private tryNext<T>(fn: keyof BufferFnProperties, size: number, fallback: T): T {
 		try {
 			if (typeof this.buf[fn] !== "function") {
-				console.error(`Tried to read data using a non-function buffer prop, this shouldn't happen: ${fn}`);
+				console.error(`Tried to read data using a non-function buffer prop, this shouldn't happen: ${String(fn)}`);
 				return fallback;
 			}
 			const value: T = (<Function>this.buf[fn])(this.offset);
