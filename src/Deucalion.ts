@@ -70,7 +70,6 @@ export class Deucalion extends EventEmitter {
 					nicknamePayload[4] = Operation.DEBUG; // 0x05
 					nicknamePayload.writeUInt32LE(9000, 5); // 0x09
 					nicknamePayload.write(this.name, 9, "utf-8"); // 0x18 or 24
-					console.log(nicknamePayload);
 					this.send(nicknamePayload);
 					this.setupDataListeners();
 					clearInterval(connectInterval);
