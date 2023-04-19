@@ -39,6 +39,28 @@
 		"trailingComma": "all",
 		"endOfLine": "crlf"
 	},
+	"typesVersions": {
+		"*": {
+			"*": [
+				"lib/index.d.ts"
+			],
+			"models": [
+				"lib/browser-index.d.ts"
+			]
+		}
+	},
+	"exports": {
+		".": {
+			"import": "./lib/index.js",
+			"require": "./lib/index.js",
+			"types": "./lib/index.d.ts"
+		},
+		"models": {
+			"import": "./lib/browser-index.js",
+			"require": "./lib/browser-index.js",
+			"types": "./lib/browser-index.d.ts"
+		}
+	},
 	"devDependencies": {
 		"@types/node": "^18.15.11",
 		"barrelsby": "^2.2.0",
