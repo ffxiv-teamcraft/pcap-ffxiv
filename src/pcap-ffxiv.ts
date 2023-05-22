@@ -260,7 +260,8 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) {
+			}
 		}
 
 		this._options.logger({
@@ -273,7 +274,14 @@ export class CaptureInterface extends EventEmitter {
 				? "https://opcodes.xivcdn.com/"
 				: "https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/";
 
-		return downloadJson(`${baseUrl}${file}`);
+		const fallbackUrl =
+			this._options.region === "CN"
+				? "https://raw.githubusercontent.com/karashiiro/FFXIVOpcodes/master/"
+				: "https://opcodes.xivcdn.com/";
+
+		return downloadJson(`${baseUrl}${file}`).catch(async () => {
+			return await downloadJson(`${fallbackUrl}${file}`);
+		});
 	}
 
 	private async _loadOpcodes() {
