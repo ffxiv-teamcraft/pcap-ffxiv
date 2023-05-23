@@ -14,6 +14,10 @@ export class BufferReader {
 		return this.buf;
 	}
 
+	public get remaining(): number {
+		return this.buf.byteLength - this.offset;
+	}
+
 	constructor(private buf: Buffer) {}
 
 	reset(): BufferReader {

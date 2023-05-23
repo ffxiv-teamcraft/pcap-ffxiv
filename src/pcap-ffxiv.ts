@@ -260,8 +260,7 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {
-			}
+			} catch (e) {}
 		}
 
 		this._options.logger({
