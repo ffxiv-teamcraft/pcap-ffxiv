@@ -39,10 +39,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@ffxiv-teamcraft/dll-inject@0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@ffxiv-teamcraft/dll-inject/-/dll-inject-0.0.8.tgz#4a1897e5f854c8f1f9aff0de9fe5be584d34465b"
-  integrity sha512-PWaT3TAuZopD1x3Hfh4RuzTw7KiPYE1Xjm+luEkPbdMQllPRdrUCpYDW+tcdLCq8sfLtUKqfghFcekVTY6rOkA==
+"@ffxiv-teamcraft/dll-inject@0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@ffxiv-teamcraft/dll-inject/-/dll-inject-0.0.9.tgz#43bbacbd0bac7211261a6ff03af75a2ac908a4fe"
+  integrity sha512-nFY7nNmzjwLnvXiPA99v3/q+OYBrws58UOn3qaGaQdrZ+UdEBe8fNCm1+O9AoLBUHXPfd+g5K26pl/y1Z/SbMw==
   dependencies:
     bindings "^1.5.0"
     cross-spawn "^5.1.0"
