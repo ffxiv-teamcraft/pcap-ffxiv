@@ -17,6 +17,7 @@ function inventoryOperation(action: number, offset: number): InventoryOperation 
 		case 5:
 			return "merge";
 		case 3:
+		case 6:
 		case 10:
 			return "split";
 		case 15:
