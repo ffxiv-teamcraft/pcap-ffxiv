@@ -171,8 +171,9 @@ export class CaptureInterface extends EventEmitter {
 			this.getXIVPID()
 				.then((pid) => {
 					const buff = readFileSync(this._options.deucalionDllPath);
-					const expectedHash = readFileSync(join(__dirname, "dll.sum"), "utf-8");
+					const expectedHash = this._options.deucalionDllPath.endsWith('_6.dll') ? readFileSync(join(__dirname, "dll6.sum"), "utf-8") : readFileSync(join(__dirname, "dll.sum"), "utf-8");
 					const hash = crypto.createHash("sha256").update(buff).digest("hex");
+					console.log(this._options.deucalionDllPath);
 					if (hash !== expectedHash) {
 						this._options.logger({
 							type: "error",
@@ -347,6 +348,7 @@ export class CaptureInterface extends EventEmitter {
 		typeName = typeName[0].toLowerCase() + typeName.slice(1);
 
 		let message: Message = {
+			origin: packet.origin,
 			header: packet.header,
 			opcode: packet.header.type,
 			type: typeName as any,

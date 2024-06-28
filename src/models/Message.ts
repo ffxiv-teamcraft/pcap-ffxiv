@@ -24,6 +24,7 @@ import { ContainerInfo } from "../definitions";
 import { CraftingLog } from "../definitions";
 import { CurrencyCrystalInfo } from "../definitions";
 import { DesynthResult } from "../definitions";
+import { Effect } from "../definitions";
 import { EffectResult } from "../definitions";
 import { EorzeaTimeOffset } from "../definitions";
 import { EquipDisplayFlags } from "../definitions";
@@ -192,6 +193,10 @@ export interface CurrencyCrystalInfoMessage extends GenericMessage<CurrencyCryst
 
 export interface DesynthResultMessage extends GenericMessage<DesynthResult> {
 	type: "desynthResult";
+}
+
+export interface EffectMessage extends GenericMessage<Effect> {
+	type: "effect";
 }
 
 export interface EffectResultMessage extends GenericMessage<EffectResult> {
@@ -577,6 +582,7 @@ export type Message =
 	| CraftingLogMessage
 	| CurrencyCrystalInfoMessage
 	| DesynthResultMessage
+	| EffectMessage
 	| EffectResultMessage
 	| EorzeaTimeOffsetMessage
 	| EquipDisplayFlagsMessage

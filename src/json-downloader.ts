@@ -14,7 +14,7 @@ export function downloadJson<T>(uri: string): Promise<T> {
 				}
 			});
 		});
-		req.on("error", err => {
+		req.on("error", (err) => {
 			reject(err);
 		});
 		req.end();

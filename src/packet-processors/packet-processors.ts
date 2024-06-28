@@ -24,6 +24,7 @@ import { containerInfo } from "./processors/containerInfo";
 import { craftingLog } from "./processors/craftingLog";
 import { currencyCrystalInfo } from "./processors/currencyCrystalInfo";
 import { desynthResult } from "./processors/desynthResult";
+import { effect } from "./processors/effect";
 import { effectResult } from "./processors/effectResult";
 import { eorzeaTimeOffset } from "./processors/eorzeaTimeOffset";
 import { equipDisplayFlags } from "./processors/equipDisplayFlags";
@@ -110,6 +111,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	craftingLog,
 	currencyCrystalInfo,
 	desynthResult,
+	effect,
 	effectResult,
 	eorzeaTimeOffset,
 	equipDisplayFlags,

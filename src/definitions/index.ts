@@ -29,6 +29,7 @@ export * from "./CraftingLog";
 export * from "./CurrencyCrystalInfo";
 export * from "./DesynthOrReductionResult";
 export * from "./DesynthResult";
+export * from "./Effect";
 export * from "./EffectResult";
 export * from "./EorzeaTimeOffset";
 export * from "./EquipDisplayFlags";

@@ -16,7 +16,7 @@
 		"prepublish": "yarn format && yarn build && yarn docs:deploy && node gh-pages.js",
 		"format": "prettier . --write",
 		"copyfiles:rust": "copyfiles ./deucalion-dll/target/release/deucalion.dll ./lib/deucalion/ -f",
-		"copyfiles": "copyfiles ./deucalion/deucalion.dll ./lib/deucalion/ -f",
+		"copyfiles": "copyfiles deucalion/deucalion* ./lib/deucalion/ -f",
 		"pcap-types:generate": "barrelsby -D -d ./src/definitions && barrelsby -D -d ./src/models",
 		"dll:build": "cargo build -r --manifest-path=./deucalion-dll/Cargo.toml"
 	},
