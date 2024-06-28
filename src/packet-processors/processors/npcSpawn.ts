@@ -47,7 +47,7 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 		voice: reader.nextUInt8(),
 		u25c: reader.nextUInt16(),
 		enemyType: reader.nextUInt8(),
-		level: reader.nextUInt8(),
+		level: reader.skip(5).nextUInt8(),
 		classJob: reader.nextUInt8(),
 		u26d: reader.nextUInt8(),
 		u27a: reader.nextUInt16(),
@@ -69,13 +69,13 @@ export function npcSpawn(reader: BufferReader, constants: ConstantsList, region?
 					sourceActorId: reader.nextUInt32(),
 				};
 			}),
-		pos: reader.skip(6).nextPosition3(),
+		pos: reader.skip(1).nextPosition3(),
 		models: Array(10)
 			.fill(null)
 			.map(() => {
 				return reader.nextUInt32();
 			}),
-		name: reader.nextString(32),
+		name: reader.skip(14).nextString(32),
 		looks: Array(26)
 			.fill(null)
 			.map(() => {

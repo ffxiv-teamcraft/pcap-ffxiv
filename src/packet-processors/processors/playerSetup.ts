@@ -19,7 +19,7 @@ export function playerSetup(reader: BufferReader): PlayerSetup {
 		unknownTimestamp34: reader.nextUInt32(),
 		unknownTimestamp38: reader.nextUInt32(),
 		name: reader
-			.slice(0x2a2, 0x2c2)
+			.slice(0x2F8, 0x318)
 			.toString("utf8")
 			.replace(/^[\s\uFEFF\xA0\0]+|[\s\uFEFF\xA0\0]+$/g, ""),
 	};

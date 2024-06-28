@@ -14,12 +14,12 @@ export interface Effect {
 	padding_22: number[];
 	effectDisplayType: number;
 	effects: {
-		param0: number,
-		param1: number,
-		param2: number,
-		extendedValueHighestByte: number,
-		flags: number,
-		value: number
+		param0: number;
+		param1: number;
+		param2: number;
+		extendedValueHighestByte: number;
+		flags: number;
+		value: number;
 	}[];
 	padding_6A: number[];
 	effectTargetId: number;

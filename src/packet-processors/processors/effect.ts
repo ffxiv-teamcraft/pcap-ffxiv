@@ -17,8 +17,11 @@ export function effect(reader: BufferReader): Effect {
 		unknown20: reader.nextUInt8(),
 		effectCount: reader.nextUInt8(),
 		padding_21: reader.nextUInt16(),
-		padding_22: Array(3).fill(null).map(() => reader.nextUInt16()),
-		effects: Array(8).fill(null)
+		padding_22: Array(3)
+			.fill(null)
+			.map(() => reader.nextUInt16()),
+		effects: Array(8)
+			.fill(null)
 			.map(() => {
 				const chunkReader = reader.nextBuffer(14, true);
 				return {
@@ -32,7 +35,9 @@ export function effect(reader: BufferReader): Effect {
 				};
 			}),
 
-		padding_6A: Array(3).fill(null).map(() => reader.nextUInt16()),
+		padding_6A: Array(3)
+			.fill(null)
+			.map(() => reader.nextUInt16()),
 
 		effectTargetId: reader.nextUInt32(), // who the effect targets
 		effectFlags: reader.nextUInt32(), // nonzero = effects do nothing, no battle log, no ui text - only shows animations
