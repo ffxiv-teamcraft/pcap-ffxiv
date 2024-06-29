@@ -3,7 +3,7 @@ import { PlayerSetup } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
 export function playerSetup(reader: BufferReader, constants?: ConstantsList, region?: Region): PlayerSetup {
-	if(region !== 'Global'){
+	if (region !== "Global") {
 		return {
 			contentId: reader.nextUInt64(),
 			unknown8: reader.nextUInt32(),
