@@ -7,4 +7,6 @@ export interface MarketTaxRates {
 	kugane: number;
 	crystarium: number;
 	oldSharlayan: number;
+	tuliyollal: number;
+	validUntil: number;
 }

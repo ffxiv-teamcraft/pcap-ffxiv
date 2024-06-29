@@ -2,6 +2,7 @@ import { EventEmitter } from "events";
 import {
 	ActorControlType,
 	ConstantsList,
+	DesynthResultType,
 	DeucalionPacket,
 	ErrorCodes,
 	Message,
@@ -18,6 +19,7 @@ import { BufferReader } from "./BufferReader";
 import { join } from "path";
 import { existsSync, readFileSync } from "fs";
 import { actorControlPacketProcessors } from "./packet-processors/actor-control-packet-processors";
+import { desynthResultPacketProcessors } from "./packet-processors/desynth-result-packet-processors";
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 import { Deucalion } from "./Deucalion";
@@ -72,6 +74,7 @@ export class CaptureInterface extends EventEmitter {
 			actorControl: actorControlPacketProcessors,
 			actorControlSelf: actorControlPacketProcessors,
 			actorControlTarget: actorControlPacketProcessors,
+			desynthResult: desynthResultPacketProcessors,
 			resultDialog: resultDialogPacketProcessors,
 		};
 
@@ -307,6 +310,9 @@ export class CaptureInterface extends EventEmitter {
 			case "actorControlSelf":
 			case "actorControlTarget":
 				subTypesEnum = ActorControlType;
+				break;
+			case "desynthResult":
+				subTypesEnum = DesynthResultType;
 				break;
 			case "resultDialog":
 				subTypesEnum = ResultDialogType;

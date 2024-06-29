@@ -14,7 +14,6 @@ export interface MarketBoardItemListing {
 		quantity: number;
 		itemId: number;
 		lastReviewTime: number;
-		containerId: number;
 		slot: number;
 		durability: number;
 		spiritbond: number;
@@ -32,8 +31,14 @@ export interface MarketBoardItemListing {
 		materiaCount: number;
 		onMannequin: boolean;
 		city: number;
+		/** @deprecated Use primaryDyeId and secondaryDyeId. */
 		dyeId: number;
+		primaryDyeId: number;
+		secondaryDyeId: number;
 		padding3: number;
-		padding4: number;
 	}[];
+	listingIndexEnd: number;
+	listingIndexStart: number;
+	requestId: number;
 }
+

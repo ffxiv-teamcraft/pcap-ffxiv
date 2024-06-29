@@ -3,10 +3,8 @@ import { BufferReader } from "../../BufferReader";
 
 export function marketBoardItemListingCount(reader: BufferReader): MarketBoardItemListingCount {
 	return {
-		itemCatalogId: reader.nextUInt32(),
-		unknown1: reader.nextUInt32(),
-		requestId: reader.nextUInt16(),
-		unknown2: reader.nextUInt8(),
-		quantity: reader.nextUInt16(),
+		// Known values: default=0; rate limited=0x70000003
+		status: reader.nextUInt32(),
+		quantity: reader.nextUInt32(),
 	};
 }

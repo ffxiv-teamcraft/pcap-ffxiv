@@ -84,6 +84,7 @@ function generateInterfaces(processors, parentInterfaceName, excludeImports) {
 function createMessageType() {
 	const { processors } = generateImportsAndProcessors("processors");
 	const actorControlProcessors = generateImportsAndProcessors("processors/actor-control").processors;
+	const desynthResultProcessors = generateImportsAndProcessors("processors/desynth-result").processors;
 	const resultDialogProcessors = generateImportsAndProcessors("processors/result-dialog").processors;
 
 	const entries = [
@@ -91,6 +92,7 @@ function createMessageType() {
 		...generateInterfaces(actorControlProcessors, "ActorControl"),
 		...generateInterfaces(actorControlProcessors, "ActorControlSelf", true),
 		...generateInterfaces(actorControlProcessors, "ActorControlTarget", true),
+		...generateInterfaces(desynthResultProcessors, "DesynthResult"),
 		...generateInterfaces(resultDialogProcessors, "ResultDialog"),
 	];
 
@@ -134,6 +136,16 @@ createProcessorsLoader(
 	[`import { ResultDialog } from "../definitions";`],
 );
 
+createProcessorsLoader(
+	"desynth-result-packet-processors",
+	"desynthResultPacketProcessors",
+	"processors/desynth-result",
+	"SuperPacketProcessor<DesynthResult>",
+	"SuperPacketProcessor",
+	[`import { DesynthResult } from "../definitions";`],
+);
+
 createMessageType();
 
 updateDllHash();
+

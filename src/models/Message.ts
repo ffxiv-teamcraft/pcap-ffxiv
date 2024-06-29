@@ -87,6 +87,7 @@ import { SetMountSpeed } from "../definitions";
 import { StatusEffectLose } from "../definitions";
 import { ToggleWeapon } from "../definitions";
 import { UpdateRestedExp } from "../definitions";
+import { ItemDesynthResult } from "../definitions";
 import { MarketTaxRates } from "../definitions";
 import { ReductionResult } from "../definitions";
 
@@ -546,8 +547,13 @@ export interface ActorControlTargetUpdateRestedExpMessage extends GenericMessage
 	subType: "updateRestedExp";
 }
 
-export interface ResultDialogMarketTaxRatesMessage extends GenericMessage<MarketTaxRates> {
-	type: "resultDialog";
+export interface DesynthResultItemDesynthResultMessage extends GenericMessage<ItemDesynthResult> {
+	type: "desynthResult";
+	subType: "itemDesynthResult";
+}
+
+export interface DesynthResultMarketTaxRatesMessage extends GenericMessage<MarketTaxRates> {
+	type: "desynthResult";
 	subType: "marketTaxRates";
 }
 
@@ -663,5 +669,6 @@ export type Message =
 	| ActorControlTargetStatusEffectLoseMessage
 	| ActorControlTargetToggleWeaponMessage
 	| ActorControlTargetUpdateRestedExpMessage
-	| ResultDialogMarketTaxRatesMessage
+	| DesynthResultItemDesynthResultMessage
+	| DesynthResultMarketTaxRatesMessage
 	| ResultDialogReductionResultMessage;

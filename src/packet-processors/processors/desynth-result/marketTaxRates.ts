@@ -1,7 +1,7 @@
-import { MarketTaxRates, ResultDialog } from "../../../definitions";
+import { DesynthResult, MarketTaxRates } from "../../../definitions";
 import { BufferReader } from "../../../BufferReader";
 
-export function marketTaxRates(packet: ResultDialog, reader: BufferReader): MarketTaxRates {
+export function marketTaxRates(packet: DesynthResult, reader: BufferReader): MarketTaxRates {
 	return {
 		...packet,
 		limsaLominsa: reader.skip(0x08).nextUInt32(),
@@ -11,5 +11,7 @@ export function marketTaxRates(packet: ResultDialog, reader: BufferReader): Mark
 		kugane: reader.nextUInt32(),
 		crystarium: reader.nextUInt32(),
 		oldSharlayan: reader.nextUInt32(),
+		tuliyollal: reader.nextUInt32(),
+		validUntil: reader.nextUInt32(),
 	};
 }
