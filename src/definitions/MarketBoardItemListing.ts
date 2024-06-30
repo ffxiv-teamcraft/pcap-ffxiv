@@ -41,4 +41,3 @@ export interface MarketBoardItemListing {
 	listingIndexStart: number;
 	requestId: number;
 }
-

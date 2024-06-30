@@ -8,4 +8,3 @@ export interface ItemDesynthResult {
 		itemQuantity: number;
 	}[];
 }
-

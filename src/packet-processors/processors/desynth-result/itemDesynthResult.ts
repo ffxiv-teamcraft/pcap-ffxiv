@@ -22,4 +22,3 @@ export function itemDesynthResult(packet: DesynthResult, reader: BufferReader): 
 			}),
 	};
 }
-

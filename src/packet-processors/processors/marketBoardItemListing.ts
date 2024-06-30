@@ -54,4 +54,3 @@ export function marketBoardItemListing(reader: BufferReader): MarketBoardItemLis
 		requestId: reader.nextUInt16(),
 	};
 }
-

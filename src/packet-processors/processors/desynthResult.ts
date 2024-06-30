@@ -6,4 +6,3 @@ export function desynthResult(reader: BufferReader): DesynthResult {
 		category: reader.nextUInt32(),
 	};
 }
-
