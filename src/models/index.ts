@@ -4,6 +4,7 @@
 
 export * from "./ActorControlType";
 export * from "./ConstantsList";
+export * from "./DesynthResultType";
 export * from "./DeucalionPacket";
 export * from "./DeucalionPayload";
 export * from "./ErrorCodes";

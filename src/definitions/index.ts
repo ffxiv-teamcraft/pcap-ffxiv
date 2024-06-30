@@ -95,4 +95,5 @@ export * from "./actor-control/SetMountSpeed";
 export * from "./actor-control/StatusEffectLose";
 export * from "./actor-control/ToggleWeapon";
 export * from "./actor-control/UpdateRestedExp";
-export * from "./result-dialog/MarketTaxRates";
+export * from "./desynth-result/ItemDesynthResult";
+export * from "./desynth-result/MarketTaxRates";

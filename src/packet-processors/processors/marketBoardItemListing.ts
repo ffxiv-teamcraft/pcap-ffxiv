@@ -15,8 +15,8 @@ export function marketBoardItemListing(reader: BufferReader): MarketBoardItemLis
 					totalTax: reader.nextUInt32(),
 					quantity: reader.nextUInt32(),
 					itemId: reader.nextUInt32(),
-					lastReviewTime: reader.nextUInt32(),
-					containerId: reader.nextUInt16(),
+					// Removed in 7.0; using placeholder value for backwards-compatibility
+					lastReviewTime: 0,
 					slot: reader.nextUInt16(),
 					durability: reader.nextUInt16(),
 					spiritbond: reader.nextUInt16(),
@@ -32,16 +32,26 @@ export function marketBoardItemListing(reader: BufferReader): MarketBoardItemLis
 					padding1: reader.nextUInt16(),
 					padding2: reader.nextUInt32(),
 					retainerName: reader.nextString(0x20),
+					// Empty as of 7.0
 					playerName: reader.nextString(0x20),
 					hq: reader.nextUInt8() === 1,
 					materiaCount: reader.nextUInt8(),
 					onMannequin: reader.nextUInt8() === 1,
 					city: reader.nextUInt8(),
-					dyeId: reader.nextUInt16(),
-					padding3: reader.nextUInt16(),
-					padding4: reader.nextUInt32(),
+					primaryDyeId: reader.nextUInt8(),
+					secondaryDyeId: reader.nextUInt8(),
+					padding3: reader.nextUInt32(),
 				};
 			})
+			.map((listing) => ({
+				...listing,
+				// Repack the data for backwards-compatibility
+				dyeId: (listing.primaryDyeId << 8) | listing.secondaryDyeId,
+			}))
 			.filter((listing) => listing.pricePerUnit > 0),
+		listingIndexEnd: reader.nextUInt8(),
+		listingIndexStart: reader.nextUInt8(),
+		requestId: reader.nextUInt16(),
 	};
 }
+

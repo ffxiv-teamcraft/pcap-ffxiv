@@ -1,5 +1,4 @@
 import { SuperPacketProcessor } from "../models";
-import { marketTaxRates } from "./processors/result-dialog/marketTaxRates";
 import { reductionResult } from "./processors/result-dialog/reductionResult";
 import { ResultDialog } from "../definitions";
 
@@ -10,6 +9,5 @@ import { ResultDialog } from "../definitions";
 */
 
 export const resultDialogPacketProcessors: Record<string, SuperPacketProcessor<ResultDialog>> = { 
-	marketTaxRates,
 	reductionResult, 
 };
