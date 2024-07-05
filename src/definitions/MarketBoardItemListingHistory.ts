@@ -1,5 +1,6 @@
 export interface MarketBoardItemListingHistory {
 	itemCatalogId: number;
+	itemCatalogId2?: number;
 	listings: {
 		salePrice: number;
 		purchaseTime: number;
@@ -8,5 +9,6 @@ export interface MarketBoardItemListingHistory {
 		onMannequin: boolean;
 		buyerName: string;
 		padding: number;
+		itemCatalogId?: number;
 	}[];
 }
