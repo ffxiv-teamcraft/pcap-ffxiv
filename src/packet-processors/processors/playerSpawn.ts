@@ -3,7 +3,7 @@ import { PlayerSpawn } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
 export function playerSpawn(reader: BufferReader, constants: ConstantsList, region?: Region): PlayerSpawn {
-	if(region != 'Global'){
+	if (region != "Global") {
 		return {
 			title: reader.nextUInt16(),
 			u1b: reader.nextUInt16(),

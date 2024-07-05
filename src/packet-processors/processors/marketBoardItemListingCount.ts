@@ -1,8 +1,12 @@
 import { MarketBoardItemListingCount } from "../../definitions";
 import { BufferReader } from "../../BufferReader";
-import { Region } from "../../models";
+import { ConstantsList, Region } from "../../models";
 
-export function marketBoardItemListingCount(reader: BufferReader, region?: Region): MarketBoardItemListingCount {
+export function marketBoardItemListingCount(
+	reader: BufferReader,
+	constants: ConstantsList,
+	region?: Region,
+): MarketBoardItemListingCount {
 	if (region !== "Global") {
 		return {
 			itemCatalogId: reader.nextUInt32(),

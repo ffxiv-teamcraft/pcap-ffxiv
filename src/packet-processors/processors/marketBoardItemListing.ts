@@ -1,8 +1,12 @@
 import { MarketBoardItemListing, MateriaEntry } from "../../definitions";
 import { BufferReader } from "../../BufferReader";
-import { Region } from "../../models";
+import { ConstantsList, Region } from "../../models";
 
-export function marketBoardItemListing(reader: BufferReader, region?: Region): MarketBoardItemListing {
+export function marketBoardItemListing(
+	reader: BufferReader,
+	constants: ConstantsList,
+	region?: Region,
+): MarketBoardItemListing {
 	if (region !== "Global") {
 		return {
 			listings: Array(10)

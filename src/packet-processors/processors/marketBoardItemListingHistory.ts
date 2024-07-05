@@ -1,8 +1,12 @@
 import { MarketBoardItemListingHistory } from "../../definitions";
 import { BufferReader } from "../../BufferReader";
-import { Region } from "../../models";
+import { ConstantsList, Region } from "../../models";
 
-export function marketBoardItemListingHistory(reader: BufferReader, region?: Region): MarketBoardItemListingHistory {
+export function marketBoardItemListingHistory(
+	reader: BufferReader,
+	constants: ConstantsList,
+	region?: Region,
+): MarketBoardItemListingHistory {
 	if (region !== "Global") {
 		return {
 			itemCatalogId: reader.nextUInt32(),
