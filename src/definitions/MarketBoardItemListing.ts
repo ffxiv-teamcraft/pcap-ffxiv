@@ -14,6 +14,7 @@ export interface MarketBoardItemListing {
 		quantity: number;
 		itemId: number;
 		lastReviewTime: number;
+		containerId?: number;
 		slot: number;
 		durability: number;
 		spiritbond: number;
@@ -37,7 +38,7 @@ export interface MarketBoardItemListing {
 		secondaryDyeId: number;
 		padding3: number;
 	}[];
-	listingIndexEnd: number;
-	listingIndexStart: number;
-	requestId: number;
+	listingIndexEnd?: number;
+	listingIndexStart?: number;
+	requestId?: number;
 }
