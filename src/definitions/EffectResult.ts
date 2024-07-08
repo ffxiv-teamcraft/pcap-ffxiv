@@ -5,7 +5,7 @@ export interface EffectResult {
 	currentHp: number;
 	maxHp: number;
 	currentMp: number;
-	unknown2: number
+	unknown2: number;
 	classId: number;
 	shieldPercentage: number;
 	entryCount: number;
