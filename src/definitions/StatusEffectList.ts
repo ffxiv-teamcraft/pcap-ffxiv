@@ -7,9 +7,10 @@ export interface StatusEffectList {
 	currentMp: number;
 	maxMp: number;
 	currentTp: number;
+	unknown1: number;
 	effects: {
 		effectId: number;
-		unknown1: number;
+		param: number;
 		duration: number;
 		sourceActorId: number;
 	}[];

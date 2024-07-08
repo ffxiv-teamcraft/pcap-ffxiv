@@ -11,12 +11,13 @@ export function statusEffectList(reader: BufferReader): StatusEffectList {
 		currentMp: reader.nextUInt16(),
 		maxMp: reader.nextUInt16(),
 		currentTp: reader.nextUInt16(),
+		unknown1: reader.nextUInt16(),
 		effects: Array(30)
 			.fill(null)
 			.map(() => {
 				return {
-					unknown1: reader.nextUInt16(),
 					effectId: reader.nextUInt16(),
+					param: reader.nextUInt16(),
 					duration: reader.nextFloat(),
 					sourceActorId: reader.nextUInt32(),
 				};
