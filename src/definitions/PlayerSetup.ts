@@ -15,5 +15,5 @@ export interface PlayerSetup {
 	unknownTimestamp34: number;
 	unknownTimestamp38: number;
 	name: string;
-	fishingGuideMask?: Buffer;
+	fishingGuideMask: Buffer;
 }

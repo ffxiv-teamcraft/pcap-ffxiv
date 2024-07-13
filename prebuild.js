@@ -4,11 +4,8 @@ const crypto = require("crypto");
 
 function updateDllHash() {
 	const buff = fs.readFileSync(path.join(__dirname, "lib/deucalion/deucalion.dll"));
-	const buff6 = fs.readFileSync(path.join(__dirname, "lib/deucalion/deucalion_6.dll"));
 	const hash = crypto.createHash("sha256").update(buff).digest("hex");
-	const hash6 = crypto.createHash("sha256").update(buff6).digest("hex");
 	fs.writeFileSync(path.join(__dirname, "lib/dll.sum"), hash);
-	fs.writeFileSync(path.join(__dirname, "lib/dll_6.sum"), hash6);
 }
 
 function generateImportsAndProcessors(folder) {
