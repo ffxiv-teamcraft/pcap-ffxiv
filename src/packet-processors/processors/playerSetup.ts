@@ -46,6 +46,6 @@ export function playerSetup(reader: BufferReader, constants?: ConstantsList, reg
 			.slice(0x2f8, 0x318)
 			.toString("utf8")
 			.replace(/^[\s\uFEFF\xA0\0]+|[\s\uFEFF\xA0\0]+$/g, ""),
-		fishingGuideMask: reader.slice(0x06d1, 0x0784)
+		fishingGuideMask: reader.slice(0x06d1, 0x0784),
 	};
 }
