@@ -15,7 +15,7 @@ export function freeCompanyDialog(buffer: BufferReader): FreeCompanyDialog {
 		fcRank: buffer.nextUInt8(),
 		fcName: buffer.nextString(20),
 		padding1: buffer.nextUInt16(),
-		fcTag: buffer.nextString(5),
+		fcTag: buffer.nextString(6),
 		padding2: buffer.nextUInt16(),
 	};
 }
