@@ -7,7 +7,7 @@ export function retainerInformation(
 	constants?: ConstantsList,
 	region?: Region,
 ): RetainerInformation {
-	if (region !== "Global") {
+	if (region === "KR") {
 		return {
 			unknown0: reader.nextUInt64(),
 			retainerId: reader.nextUInt64(),

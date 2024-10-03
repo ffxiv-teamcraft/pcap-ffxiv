@@ -7,7 +7,7 @@ export function marketBoardItemListingHistory(
 	constants: ConstantsList,
 	region?: Region,
 ): MarketBoardItemListingHistory {
-	if (region !== "Global") {
+	if (region === "KR") {
 		return {
 			itemCatalogId: reader.nextUInt32(),
 			itemCatalogId2: reader.nextUInt32(),

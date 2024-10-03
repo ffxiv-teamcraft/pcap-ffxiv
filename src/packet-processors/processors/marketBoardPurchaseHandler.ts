@@ -7,7 +7,7 @@ export function marketBoardPurchaseHandler(
 	constants: ConstantsList,
 	region?: Region,
 ): MarketBoardPurchaseHandler {
-	if (region !== "Global") {
+	if (region === "KR") {
 		return {
 			retainerId: reader.nextUInt64(),
 			listingId: reader.nextUInt64(),

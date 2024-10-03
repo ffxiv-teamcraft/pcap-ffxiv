@@ -7,7 +7,7 @@ export function marketBoardItemListingCount(
 	constants: ConstantsList,
 	region?: Region,
 ): MarketBoardItemListingCount {
-	if (region !== "Global") {
+	if (region === "KR") {
 		return {
 			itemCatalogId: reader.nextUInt32(),
 			unknown1: reader.nextUInt32(),

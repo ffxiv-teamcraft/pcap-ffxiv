@@ -7,7 +7,7 @@ export function marketBoardItemListing(
 	constants: ConstantsList,
 	region?: Region,
 ): MarketBoardItemListing {
-	if (region !== "Global") {
+	if (region === "KR") {
 		return {
 			listings: Array(10)
 				.fill(null)
