@@ -39,14 +39,14 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@ffxiv-teamcraft/dll-inject@0.0.11":
-  version "0.0.11"
-  resolved "https://registry.yarnpkg.com/@ffxiv-teamcraft/dll-inject/-/dll-inject-0.0.11.tgz#0f657601ddf3406269757066e30850c8819db308"
-  integrity sha512-+0PpSLRBkp8NtgwJSRdSz5PRn/8rSEhLuQSCsG4w8doporj49GDxcEL345a6LLgydLj1bXML8NmkQPHanwIvdw==
+"@ffxiv-teamcraft/dll-inject@0.0.13":
+  version "0.0.13"
+  resolved "https://registry.yarnpkg.com/@ffxiv-teamcraft/dll-inject/-/dll-inject-0.0.13.tgz#6f7f86eee0877c1c8c7643d2a36d21d1298d2a80"
+  integrity sha512-MEamC/BmKXWsUd4vUjRB0kh+eKlTwDLtPeOIf2z/J/NcgMcvoNAxyBwNvqCrC3NncOhzWjQU82dA+qA6DKetpA==
   dependencies:
     bindings "^1.5.0"
     cross-spawn "^5.1.0"
-    nan "^2.20.0"
+    nan "^2.22.0"
     prebuild-install "^7.1.2"
 
 "@types/node@^18.15.11":
@@ -964,10 +964,10 @@ ms@2.1.2:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.2.tgz#d09d1f357b443f493382a8eb3ccd183872ae6009"
   integrity sha512-sGkPx+VjMtmA6MX27oA4FBFELFCZZ4S4XqeGOXCv68tT+jb3vk/RyaKWP0PTKyWtmLSM0b+adUTEvbs1PEaH2w==
 
-nan@^2.20.0:
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/nan/-/nan-2.20.0.tgz#08c5ea813dd54ed16e5bd6505bf42af4f7838ca3"
-  integrity sha512-bk3gXBZDGILuuo/6sKtr0DQmSThYHLtNCdSdXk9YkxD/jK6X2vmCyyXBBxyqZ4XcnzTyYEAThfX3DCEnLf6igw==
+nan@^2.22.0:
+  version "2.22.0"
+  resolved "https://registry.yarnpkg.com/nan/-/nan-2.22.0.tgz#31bc433fc33213c97bad36404bb68063de604de3"
+  integrity sha512-nbajikzWTMwsW+eSsNm3QwlOs7het9gGJU5dDZzRTQGk03vyBOauxgI4VakDzE0PtsGTmXPsXTbbjVhRwR5mpw==
 
 napi-build-utils@^1.0.1:
   version "1.0.2"
