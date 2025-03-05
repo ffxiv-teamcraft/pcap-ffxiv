@@ -13,9 +13,9 @@ export function freeCompanyDialog(buffer: BufferReader): FreeCompanyDialog {
 		unknown6: buffer.nextUInt32(),
 		unknown7: buffer.nextUInt8(),
 		fcRank: buffer.nextUInt8(),
-		fcName: buffer.nextString(20),
-		padding1: buffer.nextUInt16(),
+		fcName: buffer.nextString(21),
+		padding1: buffer.nextUInt8(),
 		fcTag: buffer.nextString(6),
-		padding2: buffer.nextUInt16(),
+		padding2: buffer.nextUInt8(),
 	};
 }
