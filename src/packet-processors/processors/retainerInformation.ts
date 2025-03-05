@@ -1,8 +1,15 @@
 import { BufferReader } from "../../BufferReader";
 import { RetainerInformation } from "../../definitions";
-import { ConstantsList } from "../../models";
+import { ConstantsList, Region } from "../../models";
 
-export function retainerInformation(reader: BufferReader, constants?: ConstantsList): RetainerInformation {
+export function retainerInformation(
+	reader: BufferReader,
+	constants?: ConstantsList,
+	region?: Region,
+): RetainerInformation {
+	// Global: 20 characters.
+	// Korean: 9 characters (each character is 3 bytes).
+	const nameLength = region != "KR" ? 20 : 27;
 	return {
 		unknown0: reader.nextUInt64(),
 		retainerId: reader.nextUInt64(),
@@ -18,6 +25,6 @@ export function retainerInformation(reader: BufferReader, constants?: ConstantsL
 		ventureId: reader.nextUInt32(),
 		ventureComplete: reader.nextUInt32(),
 		unknown14: reader.nextUInt8(),
-		name: reader.skip(4).nextString(20),
+		name: reader.skip(4).nextString(nameLength),
 	};
 }
