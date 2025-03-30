@@ -26,8 +26,6 @@ export class Deucalion extends EventEmitter {
 	pipe_path!: string;
 
 	constructor(
-		private readonly RECVZONEPACKET_SIG: string,
-		private readonly SENDZONEPACKET_SIG: string,
 		private readonly logger: CaptureInterfaceOptions["logger"],
 		readonly pid: number,
 		private readonly name = "PCAP_FFXIV",
