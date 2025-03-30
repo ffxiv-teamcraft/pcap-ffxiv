@@ -62,6 +62,9 @@ export interface PlayerSpawn {
 	scale: number;
 
 	elementData: number;
+	unk28?: number;
+	unk28b?: number;
+	unk28c?: number;
 
 	effects: {
 		id: number;
@@ -73,6 +76,10 @@ export interface PlayerSpawn {
 	models: number[];
 	name: string;
 	look: number[];
+	unk29?: number;
+	unk29b?: number;
+	unk29c?: number;
+	unk29d?: number;
 	fcTag: string;
 	unk30: number;
 }
