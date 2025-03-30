@@ -2,10 +2,9 @@ import { BufferReader } from "../../BufferReader";
 import { PlayerSpawn } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
-export function playerSpawn(reader: BufferReader, constants: ConstantsList, region: Region): PlayerSpawn {
-
+export function playerSpawn(reader: BufferReader, constants: ConstantsList, region?: Region): PlayerSpawn {
 	// Updated with 7.2
-	if (region === 'Global'){
+	if (region === "Global") {
 		return {
 			title: reader.skip(16).nextUInt16(),
 			u1b: reader.nextUInt16(),
@@ -73,8 +72,8 @@ export function playerSpawn(reader: BufferReader, constants: ConstantsList, regi
 			elementData: reader.nextUInt16(),
 
 			unk28: reader.nextUInt16(), //0x9E - 0xA0 here
-			unk28b:reader.nextUInt32(),
-			unk28c:reader.nextUInt32(),
+			unk28b: reader.nextUInt32(),
+			unk28c: reader.nextUInt32(),
 			// As of 7.2, effects start at 0xA8
 			effects: Array(30)
 				.fill(null)
@@ -95,9 +94,9 @@ export function playerSpawn(reader: BufferReader, constants: ConstantsList, regi
 				.fill(null)
 				.map(() => reader.nextUInt8()),
 			unk29: reader.nextInt16(),
-			unk29b:reader.nextUInt32(),
-			unk29c:reader.nextUInt32(),
-			unk29d:reader.nextUInt32(),
+			unk29b: reader.nextUInt32(),
+			unk29c: reader.nextUInt32(),
+			unk29d: reader.nextUInt32(),
 			fcTag: reader.nextString(6),
 			unk30: reader.nextUInt32(),
 		};

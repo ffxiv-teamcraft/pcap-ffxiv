@@ -193,11 +193,7 @@ export class CaptureInterface extends EventEmitter {
 						message: `Deucalion-inj res: [${res}] ${res > 0 ? ErrorCodes[res] : ""}`,
 					});
 					if (res === 0) {
-						this._deucalion = new Deucalion(
-							this._options.logger,
-							pid,
-							this._options.name,
-						);
+						this._deucalion = new Deucalion(this._options.logger, pid, this._options.name);
 						this._deucalion
 							.start()
 							.then(() => {

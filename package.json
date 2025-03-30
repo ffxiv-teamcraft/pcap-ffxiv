@@ -1,6 +1,6 @@
 {
 	"name": "@ffxiv-teamcraft/pcap-ffxiv",
-	"version": "1.2.16",
+	"version": "1.2.17",
 	"description": "A Machina wrapper for FINAL FANTASY XIV packet capture in JS/TS.",
 	"main": "lib/index.js",
 	"repository": "https://github.com/ffxiv-teamcraft/pcap-ffxiv.git",
