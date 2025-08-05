@@ -2,7 +2,7 @@ import { BufferReader } from "../../BufferReader";
 import { StatusEffectList } from "../../definitions";
 import { ConstantsList, Region } from "../../models";
 
-export function statusEffectList(reader: BufferReader, _constants: ConstantsList, region: Region): StatusEffectList {
+export function statusEffectList(reader: BufferReader, _constants: ConstantsList, region?: Region): StatusEffectList {
 	const data: StatusEffectList = {
 		classId: reader.nextUInt8(),
 		level1: reader.nextUInt8(),
@@ -28,12 +28,12 @@ export function statusEffectList(reader: BufferReader, _constants: ConstantsList
 		// 7.3 added a random offset to status effect list that's sent everytime you zone,
 		// but unless you have less than 30 effects, the offset is going to be easy to find in last entry.
 		const idOffset = data.effects[data.effects.length - 1].effectId;
-		data.effects = data.effects.map(e => {
+		data.effects = data.effects.map((e) => {
 			return {
 				...e,
-				effectId: e.effectId - idOffset
-			}
-		})
+				effectId: e.effectId - idOffset,
+			};
+		});
 	}
 	return data;
 }
