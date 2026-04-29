@@ -1,4 +1,5 @@
 import { createReadStream, createWriteStream, open, ReadStream, WriteStream } from "fs";
+import { createConnection, Socket } from "net";
 import { BufferReader } from "./BufferReader";
 import { DeucalionPacket, DeucalionPayload, Origin } from "./models";
 import { EventEmitter } from "events";
@@ -16,11 +17,15 @@ enum Operation {
 export class Deucalion extends EventEmitter {
 	private readStream?: ReadStream;
 	private writeStream?: WriteStream;
+	/** Used instead of readStream/writeStream when connecting via TCP (Linux bridge mode). */
+	private _socket?: Socket;
+	/** Set to true by stop() to abort the startTcp retry loop. */
+	private _stopped = false;
 
 	private remaining?: Buffer;
 
 	public get running() {
-		return this.readStream !== undefined;
+		return this.readStream !== undefined || this._socket !== undefined;
 	}
 
 	pipe_path!: string;
@@ -29,6 +34,7 @@ export class Deucalion extends EventEmitter {
 		private readonly logger: CaptureInterfaceOptions["logger"],
 		readonly pid: number,
 		private readonly name = "PCAP_FFXIV",
+		private readonly bridgeTcpPort?: number,
 	) {
 		super();
 		this.pipe_path = `\\\\.\\pipe\\deucalion-${pid}`;
@@ -38,6 +44,10 @@ export class Deucalion extends EventEmitter {
 	}
 
 	public start(): Promise<void> {
+		return this.bridgeTcpPort !== undefined ? this.startTcp() : this.startPipe();
+	}
+
+	private startPipe(): Promise<void> {
 		return new Promise((resolve, reject) => {
 			let tries = 0;
 			const connectInterval = setInterval(() => {
@@ -56,19 +66,7 @@ export class Deucalion extends EventEmitter {
 					}
 					this.readStream = createReadStream(this.pipe_path, { fd });
 					this.writeStream = createWriteStream(this.pipe_path, { fd });
-
-					const optionPayload = Buffer.alloc(9);
-					optionPayload.writeUInt32LE(9, 0); // 0x04
-					optionPayload[4] = Operation.OPTION; // 0x05
-					optionPayload.writeUInt32LE((1 << 1) | (1 << 4), 5); // 0x09
-					this.send(optionPayload);
-					const nicknameBufferSize = 9 + this.name.length;
-					const nicknamePayload = Buffer.alloc(nicknameBufferSize);
-					nicknamePayload.writeUInt32LE(nicknameBufferSize, 0); // 0x04
-					nicknamePayload[4] = Operation.DEBUG; // 0x05
-					nicknamePayload.writeUInt32LE(9000, 5); // 0x09
-					nicknamePayload.write(this.name, 9, "utf-8"); // 0x18 or 24
-					this.send(nicknamePayload);
+					this.sendHandshake();
 					this.setupDataListeners();
 					clearInterval(connectInterval);
 					resolve();
@@ -77,7 +75,57 @@ export class Deucalion extends EventEmitter {
 		});
 	}
 
+	private startTcp(): Promise<void> {
+		this._stopped = false;
+		return new Promise((resolve) => {
+			let tries = 0;
+			const tryConnect = () => {
+				if (this._stopped) return;
+				const socket = createConnection({ host: "127.0.0.1", port: this.bridgeTcpPort! });
+				socket.on("connect", () => {
+					if (this._stopped) {
+						socket.destroy();
+						return;
+					}
+					this._socket = socket;
+					this.sendHandshake();
+					this.setupDataListeners();
+					resolve();
+				});
+				socket.on("error", (err) => {
+					socket.destroy();
+					tries++;
+					// Log every ~5 seconds so the log isn't flooded
+					if (tries % 25 === 1) {
+						this.logger({
+							type: "info",
+							message: `[TCP] Waiting for deucalion bridge on :${this.bridgeTcpPort} (${tries} attempts)…`,
+						});
+					}
+					if (!this._stopped) setTimeout(tryConnect, 200);
+				});
+			};
+			tryConnect();
+		});
+	}
+
+	private sendHandshake() {
+		const optionPayload = Buffer.alloc(9);
+		optionPayload.writeUInt32LE(9, 0);
+		optionPayload[4] = Operation.OPTION;
+		optionPayload.writeUInt32LE((1 << 1) | (1 << 4), 5);
+		this.send(optionPayload);
+		const nicknameBufferSize = 9 + this.name.length;
+		const nicknamePayload = Buffer.alloc(nicknameBufferSize);
+		nicknamePayload.writeUInt32LE(nicknameBufferSize, 0);
+		nicknamePayload[4] = Operation.DEBUG;
+		nicknamePayload.writeUInt32LE(9000, 5);
+		nicknamePayload.write(this.name, 9, "utf-8");
+		this.send(nicknamePayload);
+	}
+
 	public stop() {
+		this._stopped = true;
 		return new Promise<void>(async (resolve) => {
 			try {
 				await this.closeStreams();
@@ -95,7 +143,7 @@ export class Deucalion extends EventEmitter {
 	}
 
 	private send(data: Buffer) {
-		return this.writeStream?.write(data);
+		return this._socket ? this._socket.write(data) : this.writeStream?.write(data);
 	}
 
 	private nextPacket(buffer: Buffer): { packet: DeucalionPayload | null; remaining: Buffer | null } {
@@ -178,8 +226,13 @@ export class Deucalion extends EventEmitter {
 	private closeStreams(): Promise<void> {
 		return new Promise((resolve, reject) => {
 			try {
-				this.readStream?.close();
-				this.writeStream?.close();
+				if (this._socket) {
+					this._socket.destroy();
+					this._socket = undefined;
+				} else {
+					this.readStream?.close();
+					this.writeStream?.close();
+				}
 				resolve();
 			} catch (err) {
 				reject(err);
@@ -188,10 +241,11 @@ export class Deucalion extends EventEmitter {
 	}
 
 	private setupDataListeners() {
-		if (!this.readStream || !this.writeStream) {
+		const readable = this._socket ?? this.readStream;
+		if (!readable) {
 			return;
 		}
-		this.readStream.on("data", (data: Buffer) => {
+		readable.on("data", (data: Buffer) => {
 			let { packet, remaining } = this.nextPacket(data);
 			while (packet !== null) {
 				this.handleDeucalionPacket(packet);
@@ -215,7 +269,7 @@ export class Deucalion extends EventEmitter {
 			}
 		});
 
-		this.readStream.on("close", () => {
+		readable.on("close", () => {
 			this.logger({
 				type: "info",
 				message: "Client closed",
@@ -229,14 +283,14 @@ export class Deucalion extends EventEmitter {
 				});
 		});
 
-		this.readStream.on("end", () => {
+		readable.on("end", () => {
 			this.logger({
 				type: "info",
 				message: "Pipe end",
 			});
 		});
 
-		this.readStream.on("error", (err: Error) => {
+		readable.on("error", (err: Error) => {
 			// Close happened
 			if (err.message.includes("EBADF")) {
 				return;

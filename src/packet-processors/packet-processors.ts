@@ -59,10 +59,10 @@ import { mount } from "./processors/mount";
 import { npcSpawn } from "./processors/npcSpawn";
 import { objectSpawn } from "./processors/objectSpawn";
 import { persistentEffect } from "./processors/persistentEffect";
+import { playTime } from "./processors/playTime";
 import { playerSetup } from "./processors/playerSetup";
 import { playerSpawn } from "./processors/playerSpawn";
 import { playerStats } from "./processors/playerStats";
-import { playTime } from "./processors/playTime";
 import { prepareZoning } from "./processors/prepareZoning";
 import { resultDialog } from "./processors/resultDialog";
 import { retainerInformation } from "./processors/retainerInformation";
@@ -147,10 +147,10 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	npcSpawn,
 	objectSpawn,
 	persistentEffect,
+	playTime,
 	playerSetup,
 	playerSpawn,
 	playerStats,
-	playTime,
 	prepareZoning,
 	resultDialog,
 	retainerInformation,
