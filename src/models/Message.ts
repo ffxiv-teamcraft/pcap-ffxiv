@@ -36,6 +36,7 @@ import { EventPlay64 } from "../definitions";
 import { EventPlay8 } from "../definitions";
 import { EventPlayN } from "../definitions";
 import { EventStart } from "../definitions";
+import { FishCaught } from "../definitions";
 import { FreeCompanyDialog } from "../definitions";
 import { FreeCompanyInfo } from "../definitions";
 import { FreeCompanyUpdateShortMessage } from "../definitions";
@@ -242,6 +243,10 @@ export interface EventPlayNMessage extends GenericMessage<EventPlayN> {
 
 export interface EventStartMessage extends GenericMessage<EventStart> {
 	type: "eventStart";
+}
+
+export interface FishCaughtMessage extends GenericMessage<FishCaught> {
+	type: "fishCaught";
 }
 
 export interface FreeCompanyDialogMessage extends GenericMessage<FreeCompanyDialog> {
@@ -600,6 +605,7 @@ export type Message =
 	| EventPlay8Message
 	| EventPlayNMessage
 	| EventStartMessage
+	| FishCaughtMessage
 	| FreeCompanyDialogMessage
 	| FreeCompanyInfoMessage
 	| FreeCompanyUpdateShortMessageMessage

@@ -41,6 +41,7 @@ export * from "./EventPlay64";
 export * from "./EventPlay8";
 export * from "./EventPlayN";
 export * from "./EventStart";
+export * from "./FishCaught";
 export * from "./FreeCompanyDialog";
 export * from "./FreeCompanyInfo";
 export * from "./FreeCompanyUpdateShortMessage";

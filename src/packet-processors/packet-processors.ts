@@ -36,6 +36,7 @@ import { eventPlay64 } from "./processors/eventPlay64";
 import { eventPlay8 } from "./processors/eventPlay8";
 import { eventPlayN } from "./processors/eventPlayN";
 import { eventStart } from "./processors/eventStart";
+import { fishCaught } from "./processors/fishCaught";
 import { freeCompanyDialog } from "./processors/freeCompanyDialog";
 import { freeCompanyInfo } from "./processors/freeCompanyInfo";
 import { freeCompanyUpdateShortMessage } from "./processors/freeCompanyUpdateShortMessage";
@@ -123,6 +124,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	eventPlay8,
 	eventPlayN,
 	eventStart,
+	fishCaught,
 	freeCompanyDialog,
 	freeCompanyInfo,
 	freeCompanyUpdateShortMessage,
