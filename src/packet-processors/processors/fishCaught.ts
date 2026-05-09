@@ -7,6 +7,6 @@ export function fishCaught(reader: BufferReader): FishCaught {
 		size: reader.nextUInt16(),
 		unknown: reader.nextUInt16(),
 		unknown2: reader.nextUInt32(),
-		flags: reader.nextUInt32()
+		flags: reader.nextUInt32(),
 	};
 }

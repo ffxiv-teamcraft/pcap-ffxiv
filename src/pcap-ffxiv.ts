@@ -29,7 +29,9 @@ try {
 	// Optional Windows-only native module — not installed on Linux.
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	({ getPIDByName, injectPID } = require("@ffxiv-teamcraft/dll-inject"));
-} catch { /* not available on this platform */ }
+} catch {
+	/* not available on this platform */
+}
 import crypto from "crypto";
 import { exec } from "child_process";
 
@@ -284,7 +286,7 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) { }
+			} catch (e) {}
 		}
 
 		this._options.logger({
