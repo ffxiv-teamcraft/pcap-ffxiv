@@ -23,7 +23,13 @@ import { desynthResultPacketProcessors } from "./packet-processors/desynth-resul
 import { resultDialogPacketProcessors } from "./packet-processors/result-dialog-packet-processors";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 import { Deucalion } from "./Deucalion";
-import { getPIDByName, injectPID } from "@ffxiv-teamcraft/dll-inject";
+let getPIDByName: (name: string) => number = () => -1;
+let injectPID: (pid: number, path: string) => number = () => -1;
+try {
+	// Optional Windows-only native module — not installed on Linux.
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	({ getPIDByName, injectPID } = require("@ffxiv-teamcraft/dll-inject"));
+} catch { /* not available on this platform */ }
 import crypto from "crypto";
 import { exec } from "child_process";
 
@@ -65,7 +71,7 @@ export class CaptureInterface extends EventEmitter {
 			message: JSON.stringify(this._options),
 		});
 
-		if (!existsSync(this._options.deucalionDllPath)) {
+		if (!this._options.bridgeTcpPort && !existsSync(this._options.deucalionDllPath ?? "")) {
 			throw new Error(`Deucalion.dll not found in ${this._options.deucalionDllPath}`);
 		}
 
@@ -171,14 +177,32 @@ export class CaptureInterface extends EventEmitter {
 			if (!this.constants) {
 				reject("Trying to start capture before ready event was emitted");
 			}
+
+			// In TCP bridge mode (Linux), the bridge process has already handled PID
+			// lookup and DLL injection — just open the TCP connection directly.
+			if (this._options.bridgeTcpPort !== undefined) {
+				this._deucalion = new Deucalion(this._options.logger, 0, this._options.name, this._options.bridgeTcpPort);
+				this._deucalion
+					.start()
+					.then(() => {
+						this._deucalion!.on("packet", (p) => this._processSegment(p));
+						this._deucalion!.on("closed", () => this.emit("stopped"));
+						this._deucalion!.on("error", (err) => this.emit("error", err));
+						resolve();
+					})
+					.catch((err) => reject(err));
+				return;
+			}
+
 			this.getXIVPID()
 				.then((pid) => {
-					const buff = readFileSync(this._options.deucalionDllPath);
-					const expectedHash = this._options.deucalionDllPath.endsWith("_12.dll")
+					const dllPath = this._options.deucalionDllPath!;
+					const buff = readFileSync(dllPath);
+					const expectedHash = dllPath.endsWith("_12.dll")
 						? readFileSync(join(__dirname, "dll_12.sum"), "utf-8")
 						: readFileSync(join(__dirname, "dll.sum"), "utf-8");
-					const hash = crypto.createHash("sha256").update(buff).digest("hex");
-					console.log(this._options.deucalionDllPath);
+					const hash = crypto.createHash("sha256").update(new Uint8Array(buff)).digest("hex");
+					console.log(dllPath);
 					if (hash !== expectedHash) {
 						this._options.logger({
 							type: "error",
@@ -187,7 +211,7 @@ export class CaptureInterface extends EventEmitter {
 						reject(`Hash missmatch`);
 						return;
 					}
-					const res = injectPID(pid, this._options.deucalionDllPath);
+					const res = injectPID(pid, dllPath);
 					this._options.logger({
 						type: "info",
 						message: `Deucalion-inj res: [${res}] ${res > 0 ? ErrorCodes[res] : ""}`,
@@ -260,7 +284,7 @@ export class CaptureInterface extends EventEmitter {
 					message: `Loading ${file} from ${localPath}`,
 				});
 				return JSON.parse(content);
-			} catch (e) {}
+			} catch (e) { }
 		}
 
 		this._options.logger({
@@ -354,7 +378,7 @@ export class CaptureInterface extends EventEmitter {
 			header: packet.header,
 			opcode: packet.header.type,
 			type: typeName as any,
-			data: Buffer.from(packet.data),
+			data: packet.data,
 		};
 
 		if (this._options.filter(packet.header, typeName)) {
