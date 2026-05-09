@@ -1,1 +1,1 @@
-export type Region = "Global" | "CN" | "KR";
+export type Region = "Global" | "CN" | "KR" | "TW";
