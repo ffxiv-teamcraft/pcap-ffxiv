@@ -36,6 +36,7 @@ import { eventPlay64 } from "./processors/eventPlay64";
 import { eventPlay8 } from "./processors/eventPlay8";
 import { eventPlayN } from "./processors/eventPlayN";
 import { eventStart } from "./processors/eventStart";
+import { fishCaught } from "./processors/fishCaught";
 import { freeCompanyDialog } from "./processors/freeCompanyDialog";
 import { freeCompanyInfo } from "./processors/freeCompanyInfo";
 import { freeCompanyUpdateShortMessage } from "./processors/freeCompanyUpdateShortMessage";
@@ -58,10 +59,10 @@ import { mount } from "./processors/mount";
 import { npcSpawn } from "./processors/npcSpawn";
 import { objectSpawn } from "./processors/objectSpawn";
 import { persistentEffect } from "./processors/persistentEffect";
+import { playTime } from "./processors/playTime";
 import { playerSetup } from "./processors/playerSetup";
 import { playerSpawn } from "./processors/playerSpawn";
 import { playerStats } from "./processors/playerStats";
-import { playTime } from "./processors/playTime";
 import { prepareZoning } from "./processors/prepareZoning";
 import { resultDialog } from "./processors/resultDialog";
 import { retainerInformation } from "./processors/retainerInformation";
@@ -123,6 +124,7 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	eventPlay8,
 	eventPlayN,
 	eventStart,
+	fishCaught,
 	freeCompanyDialog,
 	freeCompanyInfo,
 	freeCompanyUpdateShortMessage,
@@ -145,10 +147,10 @@ export const packetProcessors: Record<string, PacketProcessor> = {
 	npcSpawn,
 	objectSpawn,
 	persistentEffect,
+	playTime,
 	playerSetup,
 	playerSpawn,
 	playerStats,
-	playTime,
 	prepareZoning,
 	resultDialog,
 	retainerInformation,

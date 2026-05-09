@@ -36,6 +36,7 @@ import { EventPlay64 } from "../definitions";
 import { EventPlay8 } from "../definitions";
 import { EventPlayN } from "../definitions";
 import { EventStart } from "../definitions";
+import { FishCaught } from "../definitions";
 import { FreeCompanyDialog } from "../definitions";
 import { FreeCompanyInfo } from "../definitions";
 import { FreeCompanyUpdateShortMessage } from "../definitions";
@@ -58,10 +59,10 @@ import { Mount } from "../definitions";
 import { NpcSpawn } from "../definitions";
 import { ObjectSpawn } from "../definitions";
 import { PersistentEffect } from "../definitions";
+import { PlayTime } from "../definitions";
 import { PlayerSetup } from "../definitions";
 import { PlayerSpawn } from "../definitions";
 import { PlayerStats } from "../definitions";
-import { PlayTime } from "../definitions";
 import { PrepareZoning } from "../definitions";
 import { ResultDialog } from "../definitions";
 import { RetainerInformation } from "../definitions";
@@ -244,6 +245,10 @@ export interface EventStartMessage extends GenericMessage<EventStart> {
 	type: "eventStart";
 }
 
+export interface FishCaughtMessage extends GenericMessage<FishCaught> {
+	type: "fishCaught";
+}
+
 export interface FreeCompanyDialogMessage extends GenericMessage<FreeCompanyDialog> {
 	type: "freeCompanyDialog";
 }
@@ -332,6 +337,10 @@ export interface PersistentEffectMessage extends GenericMessage<PersistentEffect
 	type: "persistentEffect";
 }
 
+export interface PlayTimeMessage extends GenericMessage<PlayTime> {
+	type: "playTime";
+}
+
 export interface PlayerSetupMessage extends GenericMessage<PlayerSetup> {
 	type: "playerSetup";
 }
@@ -342,10 +351,6 @@ export interface PlayerSpawnMessage extends GenericMessage<PlayerSpawn> {
 
 export interface PlayerStatsMessage extends GenericMessage<PlayerStats> {
 	type: "playerStats";
-}
-
-export interface PlayTimeMessage extends GenericMessage<PlayTime> {
-	type: "playTime";
 }
 
 export interface PrepareZoningMessage extends GenericMessage<PrepareZoning> {
@@ -600,6 +605,7 @@ export type Message =
 	| EventPlay8Message
 	| EventPlayNMessage
 	| EventStartMessage
+	| FishCaughtMessage
 	| FreeCompanyDialogMessage
 	| FreeCompanyInfoMessage
 	| FreeCompanyUpdateShortMessageMessage
@@ -622,10 +628,10 @@ export type Message =
 	| NpcSpawnMessage
 	| ObjectSpawnMessage
 	| PersistentEffectMessage
+	| PlayTimeMessage
 	| PlayerSetupMessage
 	| PlayerSpawnMessage
 	| PlayerStatsMessage
-	| PlayTimeMessage
 	| PrepareZoningMessage
 	| ResultDialogMessage
 	| RetainerInformationMessage
