@@ -1,7 +1,7 @@
 import { createReadStream, createWriteStream, open, ReadStream, WriteStream } from "fs";
 import { createConnection, Socket } from "net";
 import { BufferReader } from "./BufferReader";
-import { DeucalionPacket, DeucalionPayload, Origin } from "./models";
+import { DeucalionPacket, DeucalionPayload, ErrorCodes, Origin } from "./models";
 import { EventEmitter } from "events";
 import { CaptureInterfaceOptions } from "./capture-interface-options";
 
@@ -75,9 +75,14 @@ export class Deucalion extends EventEmitter {
 		});
 	}
 
+	/** Retry budget for startTcp(): 50 tries * 200ms = 10s. The caller only starts the
+	 *  bridge once the game is confirmed running, so this only needs to cover wine64
+	 *  startup and DLL injection time, not waiting for the game to launch. */
+	private static readonly TCP_CONNECT_MAX_TRIES = 50;
+
 	private startTcp(): Promise<void> {
 		this._stopped = false;
-		return new Promise((resolve) => {
+		return new Promise((resolve, reject) => {
 			let tries = 0;
 			const tryConnect = () => {
 				if (this._stopped) return;
@@ -95,14 +100,23 @@ export class Deucalion extends EventEmitter {
 				socket.on("error", (err) => {
 					socket.destroy();
 					tries++;
-					// Log every ~5 seconds so the log isn't flooded
-					if (tries % 25 === 1) {
+					// Log every ~2 seconds so the log isn't flooded
+					if (tries % 10 === 1) {
 						this.logger({
 							type: "info",
 							message: `[TCP] Waiting for deucalion bridge on :${this.bridgeTcpPort} (${tries} attempts)…`,
 						});
 					}
-					if (!this._stopped) setTimeout(tryConnect, 200);
+					if (this._stopped) return;
+					if (tries >= Deucalion.TCP_CONNECT_MAX_TRIES) {
+						this.logger({
+							type: "error",
+							message: `[TCP] Giving up waiting for deucalion bridge on :${this.bridgeTcpPort} after ${tries} attempts: ${err.message}`,
+						});
+						reject(ErrorCodes.BRIDGE_TIMEOUT);
+						return;
+					}
+					setTimeout(tryConnect, 200);
 				});
 			};
 			tryConnect();
